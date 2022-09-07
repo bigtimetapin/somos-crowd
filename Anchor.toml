@@ -1,0 +1,12 @@
+[programs.localnet]
+somos_crowd = ""
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "./node_modules/ts-mocha/bin/ts-mocha -t 1000000 tests/*.ts"
