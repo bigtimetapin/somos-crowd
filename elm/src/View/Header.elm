@@ -3,9 +3,9 @@ module View.Header exposing (view)
 import Html exposing (Html)
 import Html.Attributes exposing (class, src, style, width)
 import Html.Events exposing (onClick)
+import Model.Creator as Creator
 import Model.Model exposing (Model)
 import Model.State as State exposing (State(..))
-import Model.Uploader as Uploader
 import Msg.Msg exposing (Msg(..))
 
 
@@ -20,15 +20,15 @@ view model =
         [ class "is-navbar"
         ]
         [ tab_
-            { state = Upload Uploader.Top
-            , title = "Upload"
+            { state = Create Creator.Top
+            , title = "Create"
             , msg = NoOp
             }
         , Html.div
             [ style "float" "right"
             ]
             [ Html.a
-                [ State.href <| Upload Uploader.Top
+                [ State.href <| Create Creator.Top
                 ]
                 [ Html.img
                     [ src "images/logo/02_somos.png"
@@ -72,9 +72,9 @@ isActive model state =
             "is-active-header-tab"
     in
     case state of
-        Upload _ ->
+        Create _ ->
             case model.state of
-                Upload _ ->
+                Create _ ->
                     class_
 
                 _ ->

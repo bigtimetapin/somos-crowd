@@ -3,8 +3,8 @@ module Msg.Msg exposing (Msg(..), resetViewport)
 import Browser
 import Browser.Dom as Dom
 import Msg.Admin as Admin
+import Msg.Creator as Creator
 import Msg.Generic exposing (FromJsMsg)
-import Msg.Uploader as Uploader
 import Task
 import Url
 
@@ -15,9 +15,9 @@ type
     = NoOp
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
-      -- uploader sub
-    | FromUploader Uploader.From
-    | ToUploader Uploader.To
+      -- creator sub
+    | FromCreator Creator.From
+    | ToCreator Creator.To
       -- admin sub
     | FromAdmin Admin.From
     | ToAdmin Admin.To

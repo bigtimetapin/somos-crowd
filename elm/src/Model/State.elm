@@ -3,13 +3,13 @@ module Model.State exposing (State(..), href, parse)
 import Html
 import Html.Attributes
 import Model.Administrator as Administrator exposing (Administrator)
-import Model.Uploader as Uploader exposing (Uploader)
+import Model.Creator as Creator exposing (Creator)
 import Url
 import Url.Parser as UrlParser exposing ((</>))
 
 
 type State
-    = Upload Uploader
+    = Create Creator
     | Admin Administrator
     | Error String
 
@@ -17,7 +17,7 @@ type State
 urlParser : UrlParser.Parser (State -> c) c
 urlParser =
     UrlParser.oneOf
-        [ UrlParser.map (Upload Uploader.Top) (UrlParser.s "upload")
+        [ UrlParser.map (Create Creator.Top) (UrlParser.s "creator")
         , UrlParser.map (Admin Administrator.Top) (UrlParser.s "admin")
         ]
 
@@ -45,8 +45,8 @@ path state =
         Admin _ ->
             "#/admin"
 
-        Upload uploader ->
-            "#/upload"
+        Create _ ->
+            "#/creator"
 
         Error _ ->
             "#/invalid"

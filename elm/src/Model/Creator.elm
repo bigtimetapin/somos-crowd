@@ -1,9 +1,9 @@
-module Model.Uploader exposing (Uploader(..))
+module Model.Creator exposing (Creator(..))
 
 import Model.Wallet exposing (Wallet)
 
 
-type Uploader
+type Creator
     = Top
     | WaitingForWallet
     | HasWallet Wallet

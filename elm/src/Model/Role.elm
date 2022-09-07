@@ -9,7 +9,7 @@ import Json.Encode as Encode
 
 
 type Role
-    = Uploader
+    = Creator
     | Downloader
 
 
@@ -70,8 +70,8 @@ decode string =
 toString : Role -> String
 toString role =
     case role of
-        Uploader ->
-            "uploader"
+        Creator ->
+            "creator"
 
         Downloader ->
             "downloader"
@@ -80,8 +80,8 @@ toString role =
 fromString : String -> Maybe Role
 fromString string =
     case string of
-        "uploader" ->
-            Just Uploader
+        "creator" ->
+            Just Creator
 
         "downloader" ->
             Just Downloader

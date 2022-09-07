@@ -1,4 +1,4 @@
-module Msg.Uploader exposing (From(..), To(..))
+module Msg.Creator exposing (From(..), To(..))
 
 import Model.Wallet exposing (Wallet)
 

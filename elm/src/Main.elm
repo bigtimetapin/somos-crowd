@@ -6,21 +6,21 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Administrator as Administrator
+import Model.Creator as Creator
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
-import Model.Uploader as Uploader
 import Msg.Admin as AdminMsg
+import Msg.Creator as CreatorMsg
 import Msg.Generic as GenericMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
-import Msg.Uploader as UploaderMsg
 import Sub.Admin as AdminCmd
+import Sub.Creator as CreatorCmd
 import Sub.Sub as Sub
-import Sub.Uploader as UploaderCmd
 import Url
 import View.Admin.Admin
+import View.Create.Create
 import View.Error.Error
 import View.Hero
-import View.Upload.Upload
 
 
 main : Program () Model Msg
@@ -61,18 +61,18 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
-        FromUploader from ->
+        FromCreator from ->
             case from of
                 -- Waiting for wallet
-                UploaderMsg.Connect ->
-                    ( { model | state = Upload <| Uploader.WaitingForWallet }
-                    , UploaderCmd.connectAsUploader ()
+                CreatorMsg.Connect ->
+                    ( { model | state = Create <| Creator.WaitingForWallet }
+                    , CreatorCmd.connectAsCreator ()
                     )
 
-        ToUploader to ->
+        ToCreator to ->
             case to of
-                UploaderMsg.ConnectSuccess wallet ->
-                    ( { model | state = Upload <| Uploader.HasWallet wallet }
+                CreatorMsg.ConnectSuccess wallet ->
+                    ( { model | state = Create <| Creator.HasWallet wallet }
                     , Cmd.none
                     )
 
@@ -121,8 +121,8 @@ view model =
 
         html =
             case model.state of
-                Upload uploader ->
-                    hero <| View.Upload.Upload.body uploader
+                Create creator ->
+                    hero <| View.Create.Create.body creator
 
                 Admin administrator ->
                     hero <| View.Admin.Admin.body administrator

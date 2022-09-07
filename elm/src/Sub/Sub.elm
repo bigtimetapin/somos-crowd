@@ -1,21 +1,21 @@
 module Sub.Sub exposing (subs)
 
 import Msg.Admin as Admin
+import Msg.Creator as Creator
 import Msg.Generic as GenericMsg
 import Msg.Msg exposing (Msg(..))
-import Msg.Uploader as Uploader
 import Sub.Admin as AdminSub
+import Sub.Creator as CreatorSub
 import Sub.Generic exposing (genericError)
-import Sub.Uploader as UploaderSub
 
 
 subs : Sub Msg
 subs =
     Sub.batch
-        [ -- uploader sub
-          UploaderSub.connectAsUploaderSuccess
+        [ -- creator sub
+          CreatorSub.connectAsCreatorSuccess
             (\json ->
-                ToUploader <| Uploader.ConnectSuccess json
+                ToCreator <| Creator.ConnectSuccess json
             )
 
         -- admin sub
