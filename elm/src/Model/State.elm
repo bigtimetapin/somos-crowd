@@ -17,7 +17,8 @@ type State
 urlParser : UrlParser.Parser (State -> c) c
 urlParser =
     UrlParser.oneOf
-        [ UrlParser.map (Create Creator.Top) (UrlParser.s "creator")
+        [ UrlParser.map (Create Creator.Top) UrlParser.top
+        , UrlParser.map (Create Creator.Top) (UrlParser.s "creator")
         , UrlParser.map (Admin Administrator.Top) (UrlParser.s "admin")
         ]
 
