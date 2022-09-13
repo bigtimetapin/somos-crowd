@@ -1,16 +1,21 @@
-module Model.Role exposing (Role(..), decode, encode, encode0)
+module Model.Role.Role exposing (Creator(..), Role(..), decode0, encode, encode0)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
-
-
-
--- TODO; delete?
+import Msg.Creator as CreatorMsg
 
 
 type Role
-    = Creator
-    | Downloader
+    = Create Creator
+
+
+type Creator
+    = FromCreator CreatorMsg.FromCreator
+    | ToCreator ToCreatorMsg
+
+
+type ToCreatorMsg
+    = ConnectAsCreatorSuccess
 
 
 type alias WithMore =
@@ -42,26 +47,16 @@ encode0 role =
     Encode.encode 0 encoder
 
 
-decode : String -> Result String WithMore
-decode string =
+decode0 : String -> Result String (Maybe Role)
+decode0 string =
     let
         decoder : Decode.Decoder (Maybe Role)
         decoder =
             Decode.field "role" <| Decode.map fromString Decode.string
     in
     case Decode.decodeString decoder string of
-        Ok maybeRole ->
-            case maybeRole of
-                Just role ->
-                    case Decode.decodeString (Decode.field "more" Decode.string) string of
-                        Ok more ->
-                            Ok { role = role, more = more }
-
-                        Err error ->
-                            Err <| Decode.errorToString error
-
-                Nothing ->
-                    Err <| String.join " " [ "Could not decode Role in JSON:", string ]
+        Ok value ->
+            Ok value
 
         Err error ->
             Err <| Decode.errorToString error
@@ -70,21 +65,22 @@ decode string =
 toString : Role -> String
 toString role =
     case role of
-        Creator ->
-            "creator"
+        Create creator ->
+            case creator of
+                FromCreator fromCreator ->
+                    CreatorMsg.toString fromCreator
 
-        Downloader ->
-            "downloader"
+                ToCreator toCreatorMsg ->
+                    case toCreatorMsg of
+                        ConnectAsCreatorSuccess ->
+                            "creator-connect-success"
 
 
 fromString : String -> Maybe Role
 fromString string =
     case string of
-        "creator" ->
-            Just Creator
-
-        "downloader" ->
-            Just Downloader
+        "creator-connect" ->
+            Just <| Create ConnectAsCreator
 
         _ ->
             Nothing

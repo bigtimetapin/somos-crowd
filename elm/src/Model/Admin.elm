@@ -1,9 +1,9 @@
-module Model.Administrator exposing (Administrator(..))
+module Model.Admin exposing (Admin(..))
 
 import Model.Wallet exposing (Wallet)
 
 
-type Administrator
+type Admin
     = Top
     | WaitingForWallet
     | HasWallet Wallet

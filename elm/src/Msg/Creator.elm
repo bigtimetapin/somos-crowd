@@ -1,19 +1,14 @@
-module Msg.Creator exposing (From(..), To(..))
-
-import Model.Wallet exposing (Wallet)
+module Msg.Creator exposing (FromCreator(..), toString)
 
 
 type
-    From
+    FromCreator
     -- connect
     = Connect
 
 
-type
-    To
-    -- connect
-    = ConnectSuccess Wallet
-
-
-type alias Json =
-    String
+toString : FromCreator -> String
+toString fromCreator =
+    case fromCreator of
+        Connect ->
+            "creator-connect"

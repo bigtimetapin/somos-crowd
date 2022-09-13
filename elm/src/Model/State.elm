@@ -2,7 +2,7 @@ module Model.State exposing (State(..), href, parse)
 
 import Html
 import Html.Attributes
-import Model.Administrator as Administrator exposing (Administrator)
+import Model.Admin as Administrator exposing (Admin)
 import Model.Creator as Creator exposing (Creator)
 import Url
 import Url.Parser as UrlParser exposing ((</>))
@@ -10,7 +10,7 @@ import Url.Parser as UrlParser exposing ((</>))
 
 type State
     = Create Creator
-    | Admin Administrator
+    | Admin Admin
     | Error String
 
 

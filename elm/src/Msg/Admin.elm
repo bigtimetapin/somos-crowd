@@ -1,13 +1,19 @@
-module Msg.Admin exposing (From(..), To(..))
+module Msg.Admin exposing (FromAdmin(..), toString)
 
 import Model.Wallet exposing (Wallet)
 
 
-type From
+type FromAdmin
     = Connect
     | InitializeTariff Wallet
 
 
-type To
-    = ConnectSuccess Wallet
-    | InitializeTariffSuccess Wallet
+toString : FromAdmin -> String
+toString admin =
+    case admin of
+        Connect ->
+            "admin-connect"
+
+
+        InitializeTariff _ ->
+            "admin-initialize-tariff"

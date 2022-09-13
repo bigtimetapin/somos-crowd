@@ -5,16 +5,18 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
-import Model.Administrator as Administrator
+import Model.Admin as Administrator
 import Model.Creator as Creator
 import Model.Model as Model exposing (Model)
+import Model.Role.Listener as Listener
+import Model.Role.Sender as Sender
 import Model.State as State exposing (State(..))
+import Model.Wallet as Wallet
 import Msg.Admin as AdminMsg
 import Msg.Creator as CreatorMsg
-import Msg.Generic as GenericMsg
+import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
-import Sub.Admin as AdminCmd
-import Sub.Creator as CreatorCmd
+import Sub.Sender exposing (sender)
 import Sub.Sub as Sub
 import Url
 import View.Admin.Admin
@@ -66,43 +68,89 @@ update msg model =
                 -- Waiting for wallet
                 CreatorMsg.Connect ->
                     ( { model | state = Create <| Creator.WaitingForWallet }
-                    , CreatorCmd.connectAsCreator ()
-                    )
-
-        ToCreator to ->
-            case to of
-                CreatorMsg.ConnectSuccess wallet ->
-                    ( { model | state = Create <| Creator.HasWallet wallet }
-                    , Cmd.none
+                    , sender <| Sender.encode0 <| Sender.Create from
                     )
 
         FromAdmin from ->
             case from of
                 AdminMsg.Connect ->
                     ( { model | state = Admin <| Administrator.WaitingForWallet }
-                    , AdminCmd.connectAsAdmin ()
+                    , sender <| Sender.encode0 <| Sender.Administrate from
                     )
 
                 AdminMsg.InitializeTariff wallet ->
                     ( { model | state = Admin <| Administrator.WaitingForInitializeTariff wallet }
-                    , AdminCmd.initializeTariff ()
-                    )
-
-        ToAdmin to ->
-            case to of
-                AdminMsg.ConnectSuccess wallet ->
-                    ( { model | state = Admin <| Administrator.HasWallet wallet }
-                    , Cmd.none
-                    )
-
-                AdminMsg.InitializeTariffSuccess wallet ->
-                    ( { model | state = Admin <| Administrator.InitializedTariff wallet }
-                    , Cmd.none
+                    , sender <| Sender.encode <| { sender = Sender.Administrate from, more = Wallet.encode wallet }
                     )
 
         FromJs fromJsMsg ->
             case fromJsMsg of
-                GenericMsg.Error string ->
+                -- JS sending success for decoding
+                JsMsg.Success json ->
+                    -- decode
+                    case Listener.decode0 json of
+                        -- decode success
+                        Ok maybeListener ->
+                            -- look for role
+                            case maybeListener of
+                                -- found role
+                                Just listener ->
+                                    -- which role?
+                                    case listener of
+                                        -- found msg for creator
+                                        Listener.Create toCreator ->
+                                            case toCreator of
+                                                Listener.ConnectAsCreatorSuccess ->
+                                                    -- look for more
+                                                    -- TODO; abstract f()
+                                                    case Listener.decode1 json of
+                                                        -- more found
+                                                        Ok moreJson ->
+                                                            -- decode
+                                                            case Wallet.decode moreJson of
+                                                                Ok wallet ->
+                                                                    ( { model
+                                                                        | state =
+                                                                            Create <|
+                                                                                Creator.HasWallet wallet
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                -- error from decoder
+                                                                Err string ->
+                                                                    ( { model | state = Error string }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                        -- error from decoder
+                                                        Err string ->
+                                                            ( { model | state = Error string }
+                                                            , Cmd.none
+                                                            )
+
+                                -- undefined role
+                                Nothing ->
+                                    let
+                                        message =
+                                            String.join
+                                                " "
+                                                [ "Invalid role sent from client:"
+                                                , json
+                                                ]
+                                    in
+                                    ( { model | state = Error message }
+                                    , Cmd.none
+                                    )
+
+                        -- error from decoder
+                        Err string ->
+                            ( { model | state = Error string }
+                            , Cmd.none
+                            )
+
+                -- JS sending error to raise
+                JsMsg.Error string ->
                     ( { model | state = Error string }
                     , Cmd.none
                     )

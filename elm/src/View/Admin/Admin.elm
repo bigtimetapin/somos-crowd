@@ -3,14 +3,14 @@ module View.Admin.Admin exposing (body)
 import Html exposing (Html)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
-import Model.Administrator exposing (Administrator(..))
+import Model.Admin exposing (Admin(..))
 import Model.Wallet exposing (Wallet)
 import Msg.Admin as AdminMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Wallet
 
 
-body : Administrator -> Html Msg
+body : Admin -> Html Msg
 body admin =
     let
         html =

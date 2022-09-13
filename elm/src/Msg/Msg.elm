@@ -2,9 +2,9 @@ module Msg.Msg exposing (Msg(..), resetViewport)
 
 import Browser
 import Browser.Dom as Dom
-import Msg.Admin as Admin
-import Msg.Creator as Creator
-import Msg.Generic exposing (FromJsMsg)
+import Msg.Admin exposing (FromAdmin)
+import Msg.Creator exposing (FromCreator)
+import Msg.Js exposing (Js)
 import Task
 import Url
 
@@ -15,14 +15,12 @@ type
     = NoOp
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
-      -- creator sub
-    | FromCreator Creator.From
-    | ToCreator Creator.To
-      -- admin sub
-    | FromAdmin Admin.From
-    | ToAdmin Admin.To
-      -- generic js sub
-    | FromJs FromJsMsg
+      -- creator
+    | FromCreator FromCreator
+      -- admin
+    | FromAdmin FromAdmin
+      -- js ports
+    | FromJs Js
 
 
 resetViewport : Cmd Msg
