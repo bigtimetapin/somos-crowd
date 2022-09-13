@@ -2,6 +2,7 @@ module Model.Wallet exposing (Wallet, decode, encode, slice)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Util.Decode as Util
 
 
 type alias Wallet =
@@ -40,9 +41,4 @@ decode string =
             Decode.map WalletObject
                 (Decode.field "wallet" Decode.string)
     in
-    case Decode.decodeString decoder string of
-        Ok obj ->
-            Ok obj.wallet
-
-        Err error ->
-            Err (Decode.errorToString error)
+    Util.decode string decoder (\a -> a.wallet)

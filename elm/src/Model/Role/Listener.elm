@@ -4,6 +4,7 @@ import Json.Decode as Decode
 import Model.Model exposing (Model)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
+import Util.Decode as Util
 
 
 type Listener
@@ -27,12 +28,7 @@ decode0 string =
         decoder =
             Decode.field "listener" <| Decode.map fromString Decode.string
     in
-    case Decode.decodeString decoder string of
-        Ok value ->
-            Ok value
-
-        Err error ->
-            Err <| Decode.errorToString error
+    Util.decode string decoder (\a -> a)
 
 
 decode1 : String -> Result String Json
@@ -41,12 +37,7 @@ decode1 string =
         decoder =
             Decode.field "more" Decode.string
     in
-    case Decode.decodeString decoder string of
-        Ok value ->
-            Ok value
-
-        Err error ->
-            Err <| Decode.errorToString error
+    Util.decode string decoder (\a -> a)
 
 
 decode2 : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
