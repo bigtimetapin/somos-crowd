@@ -99,35 +99,19 @@ update msg model =
                                     case listener of
                                         -- found msg for creator
                                         Listener.Create toCreator ->
+                                            -- what is creator doing?
                                             case toCreator of
                                                 Listener.ConnectAsCreatorSuccess ->
-                                                    -- look for more
-                                                    -- TODO; abstract f()
-                                                    case Listener.decode1 json of
-                                                        -- more found
-                                                        Ok moreJson ->
-                                                            -- decode
-                                                            case Wallet.decode moreJson of
-                                                                Ok wallet ->
-                                                                    ( { model
-                                                                        | state =
-                                                                            Create <|
-                                                                                Creator.HasWallet wallet
-                                                                      }
-                                                                    , Cmd.none
-                                                                    )
-
-                                                                -- error from decoder
-                                                                Err string ->
-                                                                    ( { model | state = Error string }
-                                                                    , Cmd.none
-                                                                    )
-
-                                                        -- error from decoder
-                                                        Err string ->
-                                                            ( { model | state = Error string }
-                                                            , Cmd.none
-                                                            )
+                                                    let
+                                                        f : Wallet.Wallet -> Model
+                                                        f wallet =
+                                                            { model
+                                                                | state =
+                                                                    Create <|
+                                                                        Creator.HasWallet wallet
+                                                            }
+                                                    in
+                                                    Listener.decode2 model json Wallet.decode f
 
                                 -- undefined role
                                 Nothing ->

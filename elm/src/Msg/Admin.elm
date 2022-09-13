@@ -14,6 +14,5 @@ toString admin =
         Connect ->
             "admin-connect"
 
-
         InitializeTariff _ ->
             "admin-initialize-tariff"

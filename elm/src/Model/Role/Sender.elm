@@ -1,8 +1,8 @@
 module Model.Role.Sender exposing (Sender(..), WithMore, encode, encode0)
 
 import Json.Encode as Encode
-import Msg.Creator as CreatorMsg
 import Msg.Admin as AdminMsg
+import Msg.Creator as CreatorMsg
 
 
 type Sender
@@ -47,7 +47,6 @@ toString role =
 
         Administrate fromAdmin ->
             AdminMsg.toString fromAdmin
-
 
 
 type alias Json =
