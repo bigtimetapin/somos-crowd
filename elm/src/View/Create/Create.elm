@@ -132,8 +132,8 @@ body creator =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , View.Generic.Wallet.view wallet
+                        [ View.Generic.Wallet.view wallet
+                        , header
                         ]
     in
     Html.div
