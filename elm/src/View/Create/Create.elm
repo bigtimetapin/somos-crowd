@@ -134,7 +134,60 @@ body creator =
                         ]
                         [ View.Generic.Wallet.view wallet
                         , header
+                        , Html.div
+                            []
+                            [ Html.button
+                                [ class "is-button-1"
+                                , onClick <| FromCreator
+                                    <| CreatorMsg.InitializeCollection
+                                        wallet { name = "elm-name", symbol = "elm-symbol" }
+                                ]
+                                [ Html.text "initialize collection"
+                                ]
+                            ]
                         ]
+
+                WaitingForCollectionToInitialize wallet ->
+                    Html.div
+                        [ class "has-border-2 px-2 pt-2 pb-6"
+                        ]
+                        [ View.Generic.Wallet.view wallet
+                        , header
+                        , Html.div
+                            [ class "my-2 is-loading"
+                            ]
+                            []
+                        ]
+
+
+                HasCollection collection ->
+                    Html.div
+                        [ class "has-border-2 px-2 pt-2 pb-6"
+                        ]
+                        [ View.Generic.Wallet.view collection.wallet
+                        , header
+                        , Html.div
+                            [ class "has-border-2 px-2 py-2"
+                            ]
+                            [ Html.text <|
+                                String.join
+                                    " "
+                                    [ "name:"
+                                    , collection.name
+                                    ]
+                            ]
+                        , Html.div
+                            [ class "has-border-2 px-2 py-2"
+                            ]
+                            [ Html.text <|
+                                String.join
+                                    " "
+                                    [ "symbol:"
+                                    , collection.symbol
+                                    ]
+                            ]
+                        ]
+
     in
     Html.div
         [ class "container"

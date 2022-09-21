@@ -4,7 +4,7 @@ import Browser
 import Browser.Dom as Dom
 import Msg.Admin exposing (FromAdmin)
 import Msg.Creator exposing (FromCreator)
-import Msg.Js exposing (Js)
+import Msg.Js exposing (FromJs)
 import Task
 import Url
 
@@ -20,7 +20,7 @@ type
       -- admin
     | FromAdmin FromAdmin
       -- js ports
-    | FromJs Js
+    | FromJs FromJs
 
 
 resetViewport : Cmd Msg

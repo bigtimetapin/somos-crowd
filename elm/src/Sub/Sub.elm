@@ -1,6 +1,6 @@
 module Sub.Sub exposing (subs)
 
-import Msg.Js exposing (Js(..))
+import Msg.Js exposing (FromJs(..))
 import Msg.Msg exposing (Msg(..))
 import Sub.Listener exposing (error, success)
 

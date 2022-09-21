@@ -6,6 +6,9 @@ import idl from "./idl.json";
 export const textEncoder = new TextEncoder();
 export const textDecoder = new TextDecoder();
 export const connection = new web3.Connection(network, preflightCommitment);
+export const mplPrefix = "metadata";
+export const mplProgramId = new web3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+export const splTokenProgramId = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 
 // get provider & program
 export function getPP(_phantom) {

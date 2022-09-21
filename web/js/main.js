@@ -1,4 +1,6 @@
 import {getPhantom} from "./phantom";
+import {initializeCollection} from "./anchor/init/initializeCollection";
+import {getPP} from "./anchor/util";
 
 // init phantom
 let phantom = null;
@@ -9,6 +11,7 @@ app.ports.sender.subscribe(async function (json) {
         const sender = JSON.parse(json);
         // match on sender role
         const role = sender.sender;
+        // creator connect
         if (role === "creator-connect") {
             // get phantom
             phantom = await getPhantom();
@@ -25,6 +28,18 @@ app.ports.sender.subscribe(async function (json) {
                         )
                     }
                 )
+            );
+            // or creator initialize collection
+        } else if (role === "creator-initialize-collection") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // invoke rpc
+            await initializeCollection(pp.provider, pp.program, json);
+            // or throw error
+        } else {
+            const msg = "invalid role sent to js: " + role;
+            app.ports.error.send(
+                msg
             );
         }
     } catch (error) {

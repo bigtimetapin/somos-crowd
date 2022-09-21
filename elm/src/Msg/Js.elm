@@ -1,7 +1,7 @@
-module Msg.Js exposing (Js(..))
+module Msg.Js exposing (FromJs(..))
 
 
-type Js
+type FromJs
     = Success Json
     | Error String
 

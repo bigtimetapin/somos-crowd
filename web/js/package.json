@@ -7,7 +7,7 @@
     "@solana/buffer-layout": "^4.0.0"
   },
   "scripts": {
-    "build": "rollup --config"
+    "build": "sh sync-idl.sh; rollup --config"
   },
   "eslintConfig": {
     "extends": [

@@ -1,4 +1,4 @@
-module Model.Role.Listener exposing (Listener(..), ToCreator(..), WithMore, decode0, decode1, decode2)
+module Model.Role.Listener exposing (Listener(..), ToCreator(..), WithMore, decode0, decode2)
 
 import Json.Decode as Decode
 import Model.Model exposing (Model)
@@ -13,6 +13,7 @@ type Listener
 
 type ToCreator
     = ConnectAsCreatorSuccess
+    | InitializeCollectionSuccess
 
 
 type alias WithMore =
@@ -70,6 +71,9 @@ fromString string =
     case string of
         "creator-connect-success" ->
             Just <| Create ConnectAsCreatorSuccess
+
+        "creator-initialize-collection-success" ->
+            Just <| Create InitializeCollectionSuccess
 
         _ ->
             Nothing

@@ -6,6 +6,8 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Admin as Administrator
+import Model.AlmostCollection as AlmostCollection
+import Model.Collection as Collection
 import Model.Creator as Creator
 import Model.Model as Model exposing (Model)
 import Model.Role.Listener as Listener
@@ -71,6 +73,13 @@ update msg model =
                     , sender <| Sender.encode0 <| Sender.Create from
                     )
 
+                CreatorMsg.InitializeCollection wallet almostCollection ->
+                    ( { model | state = Create <| Creator.WaitingForCollectionToInitialize wallet }
+                    , sender <| Sender.encode
+                        <| { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
+                    )
+
+
         FromAdmin from ->
             case from of
                 AdminMsg.Connect ->
@@ -112,6 +121,18 @@ update msg model =
                                                             }
                                                     in
                                                     Listener.decode2 model json Wallet.decode f
+
+                                                Listener.InitializeCollectionSuccess ->
+                                                    let
+                                                        f collection =
+                                                            { model
+                                                                | state =
+                                                                    Create <|
+                                                                        Creator.HasCollection collection
+                                                            }
+                                                    in
+                                                    Listener.decode2 model json Collection.decode f
+
 
                                 -- undefined role
                                 Nothing ->

@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "name": "somos_crowd",
+  "instructions": [
+    {
+      "name": "initializeCollection",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collection",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Authority",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collection",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ImmutableAssets",
+      "msg": "decentralized assets should be immutable."
+    }
+  ]
+}

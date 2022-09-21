@@ -13,40 +13,41 @@ pub mod somos_crowd {
         ctx: Context<InitializeCollection>,
     ) -> Result<()> {
         // build instruction
-        let ix = create_metadata_accounts_v3(
-            mpl_token_metadata::ID,
-            ctx.accounts.metadata.key(),
-            ctx.accounts.mint.key(),
-            ctx.accounts.authority.key(),
-            ctx.accounts.payer.key(),
-            ctx.accounts.authority.key(),
-            String::from("test-name"),
-            String::from("test-symbol"),
-            String::from("test-uri"),
-            None,
-            500,
-            false,
-            false,
-            None,
-            None,
-            None
-        );
-        // unwrap authority bump
-        let authority_bump = *ctx.bumps.get("authority").unwrap();
-        // build signer seeds
-        let seeds = &[
-            "authority".as_bytes(), &ctx.accounts.mint.key().to_bytes(),
-            &[authority_bump]
-        ];
-        let signer_seeds = &[&seeds[..]];
-        // invoke
-        anchor_lang::solana_program::program::invoke_signed(
-            &ix,
-            &[
-                ctx.accounts.metadata.to_account_info()
-            ],
-            signer_seeds
-        ).map_err(Into::into)
+        // let ix = create_metadata_accounts_v3(
+        //     mpl_token_metadata::ID,
+        //     ctx.accounts.metadata.key(),
+        //     ctx.accounts.collection.key(),
+        //     ctx.accounts.authority.key(),
+        //     ctx.accounts.payer.key(),
+        //     ctx.accounts.authority.key(),
+        //     String::from("test-name"),
+        //     String::from("test-symbol"),
+        //     String::from("test-uri"),
+        //     None,
+        //     500,
+        //     false,
+        //     false,
+        //     None,
+        //     None,
+        //     None
+        // );
+        // // unwrap authority bump
+        // let authority_bump = *ctx.bumps.get("authority").unwrap();
+        // // build signer seeds
+        // let seeds = &[
+        //     "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
+        //     &[authority_bump]
+        // ];
+        // let signer_seeds = &[&seeds[..]];
+        // // invoke
+        // anchor_lang::solana_program::program::invoke_signed(
+        //     &ix,
+        //     &[
+        //         ctx.accounts.metadata.to_account_info()
+        //     ],
+        //     signer_seeds
+        // ).map_err(Into::into)
+        Ok(())
     }
 
 }
@@ -57,7 +58,7 @@ pub mod somos_crowd {
 #[derive(Accounts)]
 pub struct InitializeCollection<'info> {
     #[account(init,
-    seeds = [b"authority", mint.key().as_ref()], bump,
+    seeds = [b"authority", collection.key().as_ref()], bump,
     payer = payer,
     space = Authority::SPACE
     )]
@@ -67,12 +68,12 @@ pub struct InitializeCollection<'info> {
     mint::decimals = 0,
     payer = payer
     )]
-    pub mint: Account<'info, Mint>,
+    pub collection: Account<'info, Mint>,
     #[account(init,
     seeds = [
     PREFIX.as_bytes(),
     mpl_token_metadata::ID.as_ref(),
-    mint.key().as_ref()
+    collection.key().as_ref()
     ], bump,
     payer = payer,
     space = MAX_METADATA_LEN,
