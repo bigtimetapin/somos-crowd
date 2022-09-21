@@ -16,11 +16,6 @@
           "isSigner": true
         },
         {
-          "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "payer",
           "isMut": true,
           "isSigner": true

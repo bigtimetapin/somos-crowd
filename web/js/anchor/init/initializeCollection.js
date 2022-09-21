@@ -34,14 +34,13 @@ export async function initializeCollection(provider, program, json) {
             {
                 authority: authority,
                 collection: collection.publicKey,
-                metadata: metadata,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
                 systemProgram: web3.SystemProgram.programId,
                 rent: web3.SYSVAR_RENT_PUBKEY,
-            },
-            [collection]
+            }
         )
+        .signers([collection])
         .rpc()
     // build success
     const success = {
@@ -54,6 +53,7 @@ export async function initializeCollection(provider, program, json) {
             }
         )
     }
+    console.log(JSON.stringify(success));
     // send success to elm
     app.ports.success.send(JSON.stringify(success));
 }

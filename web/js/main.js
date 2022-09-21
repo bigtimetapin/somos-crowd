@@ -8,11 +8,11 @@ let phantom = null;
 app.ports.sender.subscribe(async function (json) {
     try {
         // parse json as object
-        const sender = JSON.parse(json);
+        const parsed = JSON.parse(json);
         // match on sender role
-        const role = sender.sender;
+        const sender = parsed.sender;
         // creator connect
-        if (role === "creator-connect") {
+        if (sender === "creator-connect") {
             // get phantom
             phantom = await getPhantom();
             const publicKey = phantom.connection.publicKey.toString();
@@ -30,14 +30,14 @@ app.ports.sender.subscribe(async function (json) {
                 )
             );
             // or creator initialize collection
-        } else if (role === "creator-initialize-collection") {
+        } else if (sender === "creator-initialize-collection") {
             // get provider & program
             const pp = getPP(phantom);
             // invoke rpc
-            await initializeCollection(pp.provider, pp.program, json);
+            await initializeCollection(pp.provider, pp.program, parsed.more);
             // or throw error
         } else {
-            const msg = "invalid role sent to js: " + role;
+            const msg = "invalid role sent to js: " + sender;
             app.ports.error.send(
                 msg
             );

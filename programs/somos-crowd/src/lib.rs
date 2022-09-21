@@ -69,18 +69,6 @@ pub struct InitializeCollection<'info> {
     payer = payer
     )]
     pub collection: Account<'info, Mint>,
-    #[account(init,
-    seeds = [
-    PREFIX.as_bytes(),
-    mpl_token_metadata::ID.as_ref(),
-    collection.key().as_ref()
-    ], bump,
-    payer = payer,
-    space = MAX_METADATA_LEN,
-    owner = mpl_token_metadata::ID
-    )]
-    /// CHECK: Metaplex-metadata; TODO consider deser impl
-    pub metadata: UncheckedAccount<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program
