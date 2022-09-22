@@ -11,6 +11,9 @@ pub mod somos_crowd {
 
     pub fn initialize_collection(
         ctx: Context<InitializeCollection>,
+        name: String,
+        symbol: String,
+        uri: String,
     ) -> Result<()> {
         // build instruction
         let ix = create_metadata_accounts_v3(
@@ -20,9 +23,9 @@ pub mod somos_crowd {
             ctx.accounts.authority.key(),
             ctx.accounts.payer.key(),
             ctx.accounts.authority.key(),
-            String::from("test-name"),
-            String::from("TST"),
-            String::from("test-uri"),
+            name,
+            symbol,
+            uri,
             None,
             500,
             false,

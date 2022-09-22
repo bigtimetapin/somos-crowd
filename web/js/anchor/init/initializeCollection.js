@@ -29,7 +29,11 @@ export async function initializeCollection(provider, program, json) {
     )
     // invoke rpc
     await program.methods
-        .initializeCollection()
+        .initializeCollection(
+            parsed.name,
+            parsed.symbol,
+            "test-uri"
+        )
         .accounts(
             {
                 authority: authority,
@@ -44,6 +48,8 @@ export async function initializeCollection(provider, program, json) {
         )
         .signers([collection])
         .rpc()
+    // fetch pda
+    console.log(collection.publicKey.toString());
     // build success
     const success = {
         listener: "creator-initialize-collection-success",
@@ -55,7 +61,6 @@ export async function initializeCollection(provider, program, json) {
             }
         )
     }
-    console.log(JSON.stringify(success));
     // send success to elm
     app.ports.success.send(JSON.stringify(success));
 }
