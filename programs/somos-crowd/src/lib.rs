@@ -13,43 +13,47 @@ pub mod somos_crowd {
         ctx: Context<InitializeCollection>,
     ) -> Result<()> {
         // build instruction
-        // let ix = create_metadata_accounts_v3(
-        //     mpl_token_metadata::ID,
-        //     ctx.accounts.metadata.key(),
-        //     ctx.accounts.collection.key(),
-        //     ctx.accounts.authority.key(),
-        //     ctx.accounts.payer.key(),
-        //     ctx.accounts.authority.key(),
-        //     String::from("test-name"),
-        //     String::from("test-symbol"),
-        //     String::from("test-uri"),
-        //     None,
-        //     500,
-        //     false,
-        //     false,
-        //     None,
-        //     None,
-        //     None
-        // );
-        // // unwrap authority bump
-        // let authority_bump = *ctx.bumps.get("authority").unwrap();
-        // // build signer seeds
-        // let seeds = &[
-        //     "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
-        //     &[authority_bump]
-        // ];
-        // let signer_seeds = &[&seeds[..]];
-        // // invoke
-        // anchor_lang::solana_program::program::invoke_signed(
-        //     &ix,
-        //     &[
-        //         ctx.accounts.metadata.to_account_info()
-        //     ],
-        //     signer_seeds
-        // ).map_err(Into::into)
-        Ok(())
+        let ix = create_metadata_accounts_v3(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.metadata.key(),
+            ctx.accounts.collection.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.payer.key(),
+            ctx.accounts.authority.key(),
+            String::from("test-name"),
+            String::from("TST"),
+            String::from("test-uri"),
+            None,
+            500,
+            false,
+            false,
+            None,
+            None,
+            None,
+        );
+        // unwrap authority bump
+        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        // build signer seeds
+        let seeds = &[
+            "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
+            &[authority_bump]
+        ];
+        let signer_seeds = &[&seeds[..]];
+        // invoke
+        anchor_lang::solana_program::program::invoke_signed(
+            &ix,
+            &[
+                ctx.accounts.metadata.to_account_info(),
+                ctx.accounts.collection.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.payer.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+                ctx.accounts.rent.to_account_info()
+            ],
+            signer_seeds,
+        ).map_err(Into::into)
     }
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,13 +74,27 @@ pub struct InitializeCollection<'info> {
     )]
     pub collection: Account<'info, Mint>,
     #[account(mut)]
+    /// CHECK: Metaplex-metadata; TODO consider deser impl
+    pub metadata: UncheckedAccount<'info>,
+    #[account(mut)]
     pub payer: Signer<'info>,
     // token program
     pub token_program: Program<'info, Token>,
+    // metadata program
+    pub metadata_program: Program<'info, MetadataProgram>,
     // system program
     pub system_program: Program<'info, System>,
     // rent program
     pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Clone)]
+pub struct MetadataProgram;
+
+impl anchor_lang::Id for MetadataProgram {
+    fn id() -> Pubkey {
+        mpl_token_metadata::ID
+    }
 }
 
 #[account]

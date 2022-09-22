@@ -34,8 +34,10 @@ export async function initializeCollection(provider, program, json) {
             {
                 authority: authority,
                 collection: collection.publicKey,
+                metadata: metadata,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
+                metadataProgram: mplProgramId,
                 systemProgram: web3.SystemProgram.programId,
                 rent: web3.SYSVAR_RENT_PUBKEY,
             }
