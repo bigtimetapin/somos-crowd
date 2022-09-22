@@ -76,6 +76,8 @@ export async function initializeCollection(provider, program, json) {
     // fetch pda
     console.log(collection.publicKey.toString());
     console.log(masterEditionAta.toString());
+    let authorityPda = await program.account.authority.fetch(authority);
+    console.log(authorityPda.collection.toString());
     // build success
     const success = {
         listener: "creator-initialize-collection-success",

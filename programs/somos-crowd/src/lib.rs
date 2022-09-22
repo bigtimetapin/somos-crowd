@@ -3,7 +3,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX, EDITION, CollectionDetails, Creator};
 use mpl_token_metadata::instruction::{
-    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata
+    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata,
 };
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
@@ -102,7 +102,7 @@ pub mod somos_crowd {
             ],
         ).map_err(Into::into);
         // invoke ata master-edition
-        let invoked2 =  mint_to(
+        let invoked2 = mint_to(
             ata_cpi_context.with_signer(
                 signer_seeds
             ),
@@ -123,6 +123,9 @@ pub mod somos_crowd {
             ],
             signer_seeds,
         ).map_err(Into::into);
+        // collect addresses
+        let authority = &mut ctx.accounts.authority;
+        authority.collection = ctx.accounts.collection.key();
         // chain
         invoked0
             .and_then(|_| invoked1)
@@ -187,6 +190,17 @@ pub struct CreateCollection<'info> {
     pub system_program: Program<'info, System>,
     // rent program
     pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+pub struct MintNewCopy<'info> {
+    #[account(seeds = [b"authority", collection.key().as_ref()], bump,
+    )]
+    pub authority: Account<'info, Authority>,
+    #[account(mut,
+    address = authority.collection
+    )]
+    pub collection: Account<'info, Mint>,
 }
 
 #[derive(Clone)]
