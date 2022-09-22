@@ -3,7 +3,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX, EDITION, CollectionDetails, Creator};
 use mpl_token_metadata::instruction::{
-    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata,
+    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata, set_token_standard,
 };
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
@@ -47,7 +47,7 @@ pub mod somos_crowd {
             ]),
             500,
             false,
-            false,
+            false, // check for setting token standard
             None,
             None,
             Some(CollectionDetails::V1 { size }),
@@ -79,6 +79,14 @@ pub mod somos_crowd {
             ctx.accounts.payer.key(),
             None,
         );
+        // build set token standard instruction
+        let ix_set_token_standard = set_token_standard(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.metadata.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.collection.key(),
+            Some(ctx.accounts.master_edition.key()),
+        );
         // invoke create metadata
         let invoked0 = anchor_lang::solana_program::program::invoke_signed(
             &ix_metadata,
@@ -95,6 +103,7 @@ pub mod somos_crowd {
         );
         match invoked0 {
             Ok(_) => {
+                // invoke sign metadata
                 let invoked1 = anchor_lang::solana_program::program::invoke(
                     &ix_sign_metadata,
                     &[
@@ -104,7 +113,7 @@ pub mod somos_crowd {
                 );
                 match invoked1 {
                     Ok(_) => {
-                        // mint ata
+                        // invoke mint ata
                         match mint_to(
                             ata_cpi_context.with_signer(
                                 signer_seeds
@@ -113,7 +122,7 @@ pub mod somos_crowd {
                         ) {
                             Ok(_) => {
                                 // invoke create master-edition
-                                anchor_lang::solana_program::program::invoke_signed(
+                                match anchor_lang::solana_program::program::invoke_signed(
                                     &ix_mark_master_edition,
                                     &[
                                         ctx.accounts.master_edition.to_account_info(),
@@ -126,7 +135,24 @@ pub mod somos_crowd {
                                         ctx.accounts.rent.to_account_info()
                                     ],
                                     signer_seeds,
-                                ).map_err(Into::into)
+                                ) {
+                                    Ok(_) => {
+                                        // invoke set token standard
+                                        anchor_lang::solana_program::program::invoke_signed(
+                                            &ix_set_token_standard,
+                                            &[
+                                                ctx.accounts.metadata.to_account_info(),
+                                                ctx.accounts.authority.to_account_info(),
+                                                ctx.accounts.collection.to_account_info(),
+                                                ctx.accounts.master_edition.to_account_info()
+                                            ],
+                                            signer_seeds,
+                                        ).map_err(Into::into)
+                                    }
+                                    Err(error) => {
+                                        Err(Error::from(error))
+                                    }
+                                }
                             }
                             err @ Err(_) => {
                                 err
