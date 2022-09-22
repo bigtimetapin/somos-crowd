@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token};
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX, EDITION};
 use mpl_token_metadata::instruction::{create_metadata_accounts_v3, create_master_edition_v3};
 
@@ -42,8 +43,18 @@ pub mod somos_crowd {
             None,
             None,
         );
-        // build master-edition instruction
-        let ix_master_edition = create_master_edition_v3(
+        // build ata master-edition instruction
+        let ata_cpi_accounts = MintTo {
+            mint: ctx.accounts.collection.to_account_info(),
+            to: ctx.accounts.master_edition_ata.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info()
+        };
+        let ata_cpi_context = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            ata_cpi_accounts
+        );
+        // build mark master-edition instruction
+        let ix_mark_master_edition = create_master_edition_v3(
             ctx.accounts.metadata_program.key(),
             ctx.accounts.master_edition.key(),
             ctx.accounts.collection.key(),
@@ -69,21 +80,34 @@ pub mod somos_crowd {
         );
         match invoked0 {
             Ok(_) => {
-                // invoke create master-edition
-                anchor_lang::solana_program::program::invoke_signed(
-                    &ix_master_edition,
-                    &[
-                        ctx.accounts.master_edition.to_account_info(),
-                        ctx.accounts.collection.to_account_info(),
-                        ctx.accounts.authority.to_account_info(),
-                        ctx.accounts.authority.to_account_info(),
-                        ctx.accounts.metadata.to_account_info(),
-                        ctx.accounts.payer.to_account_info(),
-                        ctx.accounts.system_program.to_account_info(),
-                        ctx.accounts.rent.to_account_info()
-                    ],
-                    signer_seeds,
-                ).map_err(Into::into)
+                // mint ata
+                match mint_to(
+                    ata_cpi_context.with_signer(
+                        signer_seeds
+                    ),
+                    1
+                ) {
+                    Ok(_) => {
+                        // invoke create master-edition
+                        anchor_lang::solana_program::program::invoke_signed(
+                            &ix_mark_master_edition,
+                            &[
+                                ctx.accounts.master_edition.to_account_info(),
+                                ctx.accounts.collection.to_account_info(),
+                                ctx.accounts.authority.to_account_info(),
+                                ctx.accounts.authority.to_account_info(),
+                                ctx.accounts.metadata.to_account_info(),
+                                ctx.accounts.payer.to_account_info(),
+                                ctx.accounts.system_program.to_account_info(),
+                                ctx.accounts.rent.to_account_info()
+                            ],
+                            signer_seeds,
+                        ).map_err(Into::into)
+                    }
+                    err @ Err(_) => {
+                        err
+                    }
+                }
             }
             Err(error) => {
                 Err(Error::from(error))
@@ -130,10 +154,18 @@ pub struct CreateCollection<'info> {
     )]
     /// CHECK: uninitialized master-edition
     pub master_edition: UncheckedAccount<'info>,
+    #[account(init,
+    associated_token::mint = collection,
+    associated_token::authority = authority,
+    payer = payer
+    )]
+    pub master_edition_ata: Account<'info, TokenAccount>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program
     pub token_program: Program<'info, Token>,
+    // associated token program
+    pub associated_token_program: Program<'info, AssociatedToken>,
     // metadata program
     pub metadata_program: Program<'info, MetadataProgram>,
     // system program

@@ -1,5 +1,5 @@
 import {web3} from "@project-serum/anchor";
-import {mplEdition, mplPrefix, mplProgramId, splTokenProgramId} from "../util";
+import {mplEdition, mplPrefix, mplProgramId, splAssociatedTokenProgramId, splTokenProgramId} from "../util";
 
 export async function initializeCollection(provider, program, json) {
     // get user wallet
@@ -38,6 +38,16 @@ export async function initializeCollection(provider, program, json) {
         ],
         mplProgramId
     )
+    // derive master-edition-ata
+    let masterEditionAta;
+    [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
+        [
+            authority.toBuffer(),
+            splAssociatedTokenProgramId.toBuffer(),
+            collection.publicKey.toBuffer()
+        ],
+        splAssociatedTokenProgramId
+    )
     // invoke rpc
     await program.methods
         .createCollection(
@@ -51,8 +61,10 @@ export async function initializeCollection(provider, program, json) {
                 collection: collection.publicKey,
                 metadata: metadata,
                 masterEdition: masterEdition,
+                masterEditionAta: masterEditionAta,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
+                associatedTokenProgram: splAssociatedTokenProgramId,
                 metadataProgram: mplProgramId,
                 systemProgram: web3.SystemProgram.programId,
                 rent: web3.SYSVAR_RENT_PUBKEY,

@@ -10,6 +10,7 @@ export const mplPrefix = "metadata";
 export const mplEdition = "edition";
 export const mplProgramId = new web3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 export const splTokenProgramId = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+export const splAssociatedTokenProgramId = new web3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 
 // get provider & program
 export function getPP(_phantom) {
