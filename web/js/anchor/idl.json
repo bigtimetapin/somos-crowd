@@ -3,7 +3,7 @@
   "name": "somos_crowd",
   "instructions": [
     {
-      "name": "initializeCollection",
+      "name": "createCollection",
       "accounts": [
         {
           "name": "authority",
@@ -17,6 +17,11 @@
         },
         {
           "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "masterEdition",
           "isMut": true,
           "isSigner": false
         },

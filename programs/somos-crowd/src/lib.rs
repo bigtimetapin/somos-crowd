@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token};
-use mpl_token_metadata::state::PREFIX;
-use mpl_token_metadata::instruction::create_metadata_accounts_v3;
+use mpl_token_metadata::state::{PREFIX, EDITION};
+use mpl_token_metadata::instruction::{create_metadata_accounts_v3, create_master_edition_v3};
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
 
@@ -9,14 +9,22 @@ declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
 pub mod somos_crowd {
     use super::*;
 
-    pub fn initialize_collection(
-        ctx: Context<InitializeCollection>,
+    pub fn create_collection(
+        ctx: Context<CreateCollection>,
         name: String,
         symbol: String,
         uri: String,
     ) -> Result<()> {
-        // build instruction
-        let ix = create_metadata_accounts_v3(
+        // unwrap authority bump
+        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        // build signer seeds
+        let seeds = &[
+            "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
+            &[authority_bump]
+        ];
+        let signer_seeds = &[&seeds[..]];
+        // build metadata instruction
+        let ix_metadata = create_metadata_accounts_v3(
             ctx.accounts.metadata_program.key(),
             ctx.accounts.metadata.key(),
             ctx.accounts.collection.key(),
@@ -34,17 +42,20 @@ pub mod somos_crowd {
             None,
             None,
         );
-        // unwrap authority bump
-        let authority_bump = *ctx.bumps.get("authority").unwrap();
-        // build signer seeds
-        let seeds = &[
-            "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
-            &[authority_bump]
-        ];
-        let signer_seeds = &[&seeds[..]];
-        // invoke
-        anchor_lang::solana_program::program::invoke_signed(
-            &ix,
+        // build master-edition instruction
+        let ix_master_edition = create_master_edition_v3(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.master_edition.key(),
+            ctx.accounts.collection.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.metadata.key(),
+            ctx.accounts.payer.key(),
+            None,
+        );
+        // invoke create metadata
+        let invoked0 = anchor_lang::solana_program::program::invoke_signed(
+            &ix_metadata,
             &[
                 ctx.accounts.metadata.to_account_info(),
                 ctx.accounts.collection.to_account_info(),
@@ -55,7 +66,29 @@ pub mod somos_crowd {
                 ctx.accounts.rent.to_account_info()
             ],
             signer_seeds,
-        ).map_err(Into::into)
+        );
+        match invoked0 {
+            Ok(_) => {
+                // invoke create master-edition
+                anchor_lang::solana_program::program::invoke_signed(
+                    &ix_master_edition,
+                    &[
+                        ctx.accounts.master_edition.to_account_info(),
+                        ctx.accounts.collection.to_account_info(),
+                        ctx.accounts.authority.to_account_info(),
+                        ctx.accounts.authority.to_account_info(),
+                        ctx.accounts.metadata.to_account_info(),
+                        ctx.accounts.payer.to_account_info(),
+                        ctx.accounts.system_program.to_account_info(),
+                        ctx.accounts.rent.to_account_info()
+                    ],
+                    signer_seeds,
+                ).map_err(Into::into)
+            }
+            Err(error) => {
+                Err(Error::from(error))
+            }
+        }
     }
 }
 
@@ -63,7 +96,7 @@ pub mod somos_crowd {
 // Impl ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Accounts)]
-pub struct InitializeCollection<'info> {
+pub struct CreateCollection<'info> {
     #[account(init,
     seeds = [b"authority", collection.key().as_ref()], bump,
     payer = payer,
@@ -86,6 +119,17 @@ pub struct InitializeCollection<'info> {
     )]
     /// CHECK: uninitialized metadata
     pub metadata: UncheckedAccount<'info>,
+    #[account(mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    metadata_program.key().as_ref(),
+    collection.key().as_ref(),
+    EDITION.as_bytes()
+    ], bump,
+    seeds::program = metadata_program.key()
+    )]
+    /// CHECK: uninitialized master-edition
+    pub master_edition: UncheckedAccount<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program

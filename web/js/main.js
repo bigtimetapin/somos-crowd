@@ -43,6 +43,7 @@ app.ports.sender.subscribe(async function (json) {
             );
         }
     } catch (error) {
+        console.log(error);
         app.ports.error.send(
             error.toString()
         );

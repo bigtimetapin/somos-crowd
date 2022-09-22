@@ -1,5 +1,5 @@
 import {web3} from "@project-serum/anchor";
-import {mplPrefix, mplProgramId, splTokenProgramId} from "../util";
+import {mplEdition, mplPrefix, mplProgramId, splTokenProgramId} from "../util";
 
 export async function initializeCollection(provider, program, json) {
     // get user wallet
@@ -27,9 +27,20 @@ export async function initializeCollection(provider, program, json) {
         ],
         mplProgramId
     )
+    // derive master-edition
+    let masterEdition;
+    [masterEdition, _] = await web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(mplPrefix),
+            mplProgramId.toBuffer(),
+            collection.publicKey.toBuffer(),
+            Buffer.from(mplEdition),
+        ],
+        mplProgramId
+    )
     // invoke rpc
     await program.methods
-        .initializeCollection(
+        .createCollection(
             parsed.name,
             parsed.symbol,
             "test-uri"
@@ -39,6 +50,7 @@ export async function initializeCollection(provider, program, json) {
                 authority: authority,
                 collection: collection.publicKey,
                 metadata: metadata,
+                masterEdition: masterEdition,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
                 metadataProgram: mplProgramId,
@@ -50,6 +62,7 @@ export async function initializeCollection(provider, program, json) {
         .rpc()
     // fetch pda
     console.log(collection.publicKey.toString());
+    console.log(masterEdition.toString());
     // build success
     const success = {
         listener: "creator-initialize-collection-success",
