@@ -43,7 +43,7 @@ export async function initializeCollection(provider, program, json) {
     [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
         [
             authority.toBuffer(),
-            splAssociatedTokenProgramId.toBuffer(),
+            splTokenProgramId.toBuffer(),
             collection.publicKey.toBuffer()
         ],
         splAssociatedTokenProgramId
@@ -74,7 +74,7 @@ export async function initializeCollection(provider, program, json) {
         .rpc()
     // fetch pda
     console.log(collection.publicKey.toString());
-    console.log(masterEdition.toString());
+    console.log(masterEditionAta.toString());
     // build success
     const success = {
         listener: "creator-initialize-collection-success",
