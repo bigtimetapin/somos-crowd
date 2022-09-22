@@ -68,8 +68,8 @@ pub mod somos_crowd {
             ctx.accounts.token_program.to_account_info(),
             ata_cpi_accounts,
         );
-        // build mark master-edition instruction
-        let ix_mark_master_edition = create_master_edition_v3(
+        // build create master-edition instruction
+        let ix_create_master_edition = create_master_edition_v3(
             ctx.accounts.metadata_program.key(),
             ctx.accounts.master_edition.key(),
             ctx.accounts.collection.key(),
@@ -92,57 +92,42 @@ pub mod somos_crowd {
                 ctx.accounts.rent.to_account_info()
             ],
             signer_seeds,
+        ).map_err(Into::into);
+        // invoke sign metadata
+        let invoked1 = anchor_lang::solana_program::program::invoke(
+            &ix_sign_metadata,
+            &[
+                ctx.accounts.metadata.to_account_info(),
+                ctx.accounts.payer.to_account_info()
+            ],
+        ).map_err(Into::into);
+        // invoke ata master-edition
+        let invoked2 =  mint_to(
+            ata_cpi_context.with_signer(
+                signer_seeds
+            ),
+            1,
         );
-        match invoked0 {
-            Ok(_) => {
-                // invoke sign metadata
-                let invoked1 = anchor_lang::solana_program::program::invoke(
-                    &ix_sign_metadata,
-                    &[
-                        ctx.accounts.metadata.to_account_info(),
-                        ctx.accounts.payer.to_account_info()
-                    ],
-                );
-                match invoked1 {
-                    Ok(_) => {
-                        // invoke mint ata
-                        match mint_to(
-                            ata_cpi_context.with_signer(
-                                signer_seeds
-                            ),
-                            1,
-                        ) {
-                            Ok(_) => {
-                                // invoke create master-edition
-                                anchor_lang::solana_program::program::invoke_signed(
-                                    &ix_mark_master_edition,
-                                    &[
-                                        ctx.accounts.master_edition.to_account_info(),
-                                        ctx.accounts.collection.to_account_info(),
-                                        ctx.accounts.authority.to_account_info(),
-                                        ctx.accounts.authority.to_account_info(),
-                                        ctx.accounts.metadata.to_account_info(),
-                                        ctx.accounts.payer.to_account_info(),
-                                        ctx.accounts.system_program.to_account_info(),
-                                        ctx.accounts.rent.to_account_info()
-                                    ],
-                                    signer_seeds,
-                                ).map_err(Into::into)
-                            }
-                            err @ Err(_) => {
-                                err
-                            }
-                        }
-                    }
-                    Err(error) => {
-                        Err(Error::from(error))
-                    }
-                }
-            }
-            Err(error) => {
-                Err(Error::from(error))
-            }
-        }
+        // invoke create master-edition
+        let invoked3 = anchor_lang::solana_program::program::invoke_signed(
+            &ix_create_master_edition,
+            &[
+                ctx.accounts.master_edition.to_account_info(),
+                ctx.accounts.collection.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.metadata.to_account_info(),
+                ctx.accounts.payer.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+                ctx.accounts.rent.to_account_info()
+            ],
+            signer_seeds,
+        ).map_err(Into::into);
+        // chain
+        invoked0
+            .and_then(|_| invoked1)
+            .and_then(|_| invoked2)
+            .and_then(|_| invoked3)
     }
 }
 
