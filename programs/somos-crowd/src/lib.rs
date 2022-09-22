@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token};
-use mpl_token_metadata::state::{PREFIX, MAX_METADATA_LEN};
+use mpl_token_metadata::state::PREFIX;
 use mpl_token_metadata::instruction::create_metadata_accounts_v3;
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
@@ -73,8 +73,15 @@ pub struct InitializeCollection<'info> {
     payer = payer
     )]
     pub collection: Account<'info, Mint>,
-    #[account(mut)]
-    /// CHECK: Metaplex-metadata; TODO consider deser impl
+    #[account(mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    metadata_program.key().as_ref(),
+    collection.key().as_ref()
+    ], bump,
+    seeds::program = metadata_program.key()
+    )]
+    /// CHECK: uninitialized metadata
     pub metadata: UncheckedAccount<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -96,6 +103,7 @@ impl anchor_lang::Id for MetadataProgram {
         mpl_token_metadata::ID
     }
 }
+
 
 #[account]
 pub struct Authority {
