@@ -3,7 +3,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX, EDITION, CollectionDetails, Creator};
 use mpl_token_metadata::instruction::{
-    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata, set_token_standard,
+    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata
 };
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
@@ -47,7 +47,7 @@ pub mod somos_crowd {
             ]),
             500,
             false,
-            false, // check for setting token standard
+            false,
             None,
             None,
             Some(CollectionDetails::V1 { size }),
@@ -78,14 +78,6 @@ pub mod somos_crowd {
             ctx.accounts.metadata.key(),
             ctx.accounts.payer.key(),
             None,
-        );
-        // build set token standard instruction
-        let ix_set_token_standard = set_token_standard(
-            ctx.accounts.metadata_program.key(),
-            ctx.accounts.metadata.key(),
-            ctx.accounts.authority.key(),
-            ctx.accounts.collection.key(),
-            Some(ctx.accounts.master_edition.key()),
         );
         // invoke create metadata
         let invoked0 = anchor_lang::solana_program::program::invoke_signed(
@@ -122,7 +114,7 @@ pub mod somos_crowd {
                         ) {
                             Ok(_) => {
                                 // invoke create master-edition
-                                match anchor_lang::solana_program::program::invoke_signed(
+                                anchor_lang::solana_program::program::invoke_signed(
                                     &ix_mark_master_edition,
                                     &[
                                         ctx.accounts.master_edition.to_account_info(),
@@ -135,24 +127,7 @@ pub mod somos_crowd {
                                         ctx.accounts.rent.to_account_info()
                                     ],
                                     signer_seeds,
-                                ) {
-                                    Ok(_) => {
-                                        // invoke set token standard
-                                        anchor_lang::solana_program::program::invoke_signed(
-                                            &ix_set_token_standard,
-                                            &[
-                                                ctx.accounts.metadata.to_account_info(),
-                                                ctx.accounts.authority.to_account_info(),
-                                                ctx.accounts.collection.to_account_info(),
-                                                ctx.accounts.master_edition.to_account_info()
-                                            ],
-                                            signer_seeds,
-                                        ).map_err(Into::into)
-                                    }
-                                    Err(error) => {
-                                        Err(Error::from(error))
-                                    }
-                                }
+                                ).map_err(Into::into)
                             }
                             err @ Err(_) => {
                                 err
