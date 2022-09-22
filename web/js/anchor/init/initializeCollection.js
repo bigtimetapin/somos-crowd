@@ -1,4 +1,4 @@
-import {web3} from "@project-serum/anchor";
+import {web3, BN} from "@project-serum/anchor";
 import {mplEdition, mplPrefix, mplProgramId, splAssociatedTokenProgramId, splTokenProgramId} from "../util";
 
 export async function initializeCollection(provider, program, json) {
@@ -53,7 +53,8 @@ export async function initializeCollection(provider, program, json) {
         .createCollection(
             parsed.name,
             parsed.symbol,
-            "test-uri"
+            "test-uri",
+            new BN(100)
         )
         .accounts(
             {

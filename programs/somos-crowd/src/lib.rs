@@ -8,6 +8,7 @@ declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
 
 #[program]
 pub mod somos_crowd {
+    use mpl_token_metadata::state::CollectionDetails;
     use super::*;
 
     pub fn create_collection(
@@ -15,6 +16,7 @@ pub mod somos_crowd {
         name: String,
         symbol: String,
         uri: String,
+        size: u64,
     ) -> Result<()> {
         // unwrap authority bump
         let authority_bump = *ctx.bumps.get("authority").unwrap();
@@ -41,17 +43,17 @@ pub mod somos_crowd {
             false,
             None,
             None,
-            None,
+            Some(CollectionDetails::V1 { size }),
         );
         // build ata master-edition instruction
         let ata_cpi_accounts = MintTo {
             mint: ctx.accounts.collection.to_account_info(),
             to: ctx.accounts.master_edition_ata.to_account_info(),
-            authority: ctx.accounts.authority.to_account_info()
+            authority: ctx.accounts.authority.to_account_info(),
         };
         let ata_cpi_context = CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
-            ata_cpi_accounts
+            ata_cpi_accounts,
         );
         // build mark master-edition instruction
         let ix_mark_master_edition = create_master_edition_v3(
@@ -85,7 +87,7 @@ pub mod somos_crowd {
                     ata_cpi_context.with_signer(
                         signer_seeds
                     ),
-                    1
+                    1,
                 ) {
                     Ok(_) => {
                         // invoke create master-edition

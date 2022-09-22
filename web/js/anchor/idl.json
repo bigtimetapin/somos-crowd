@@ -73,6 +73,10 @@
         {
           "name": "uri",
           "type": "string"
+        },
+        {
+          "name": "size",
+          "type": "u64"
         }
       ]
     }
