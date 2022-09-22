@@ -1,14 +1,15 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{PREFIX, EDITION};
-use mpl_token_metadata::instruction::{create_metadata_accounts_v3, create_master_edition_v3};
+use mpl_token_metadata::state::{PREFIX, EDITION, CollectionDetails, Creator};
+use mpl_token_metadata::instruction::{
+    create_metadata_accounts_v3, create_master_edition_v3, sign_metadata,
+};
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
 
 #[program]
 pub mod somos_crowd {
-    use mpl_token_metadata::state::CollectionDetails;
     use super::*;
 
     pub fn create_collection(
@@ -37,13 +38,25 @@ pub mod somos_crowd {
             name,
             symbol,
             uri,
-            None,
+            Some(vec![
+                Creator {
+                    address: ctx.accounts.payer.key(),
+                    verified: false,
+                    share: 100,
+                }
+            ]),
             500,
             false,
             false,
             None,
             None,
             Some(CollectionDetails::V1 { size }),
+        );
+        // build sign metadata instruction
+        let ix_sign_metadata = sign_metadata(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.metadata.key(),
+            ctx.accounts.payer.key(),
         );
         // build ata master-edition instruction
         let ata_cpi_accounts = MintTo {
@@ -82,32 +95,46 @@ pub mod somos_crowd {
         );
         match invoked0 {
             Ok(_) => {
-                // mint ata
-                match mint_to(
-                    ata_cpi_context.with_signer(
-                        signer_seeds
-                    ),
-                    1,
-                ) {
+                let invoked1 = anchor_lang::solana_program::program::invoke(
+                    &ix_sign_metadata,
+                    &[
+                        ctx.accounts.metadata.to_account_info(),
+                        ctx.accounts.payer.to_account_info()
+                    ],
+                );
+                match invoked1 {
                     Ok(_) => {
-                        // invoke create master-edition
-                        anchor_lang::solana_program::program::invoke_signed(
-                            &ix_mark_master_edition,
-                            &[
-                                ctx.accounts.master_edition.to_account_info(),
-                                ctx.accounts.collection.to_account_info(),
-                                ctx.accounts.authority.to_account_info(),
-                                ctx.accounts.authority.to_account_info(),
-                                ctx.accounts.metadata.to_account_info(),
-                                ctx.accounts.payer.to_account_info(),
-                                ctx.accounts.system_program.to_account_info(),
-                                ctx.accounts.rent.to_account_info()
-                            ],
-                            signer_seeds,
-                        ).map_err(Into::into)
+                        // mint ata
+                        match mint_to(
+                            ata_cpi_context.with_signer(
+                                signer_seeds
+                            ),
+                            1,
+                        ) {
+                            Ok(_) => {
+                                // invoke create master-edition
+                                anchor_lang::solana_program::program::invoke_signed(
+                                    &ix_mark_master_edition,
+                                    &[
+                                        ctx.accounts.master_edition.to_account_info(),
+                                        ctx.accounts.collection.to_account_info(),
+                                        ctx.accounts.authority.to_account_info(),
+                                        ctx.accounts.authority.to_account_info(),
+                                        ctx.accounts.metadata.to_account_info(),
+                                        ctx.accounts.payer.to_account_info(),
+                                        ctx.accounts.system_program.to_account_info(),
+                                        ctx.accounts.rent.to_account_info()
+                                    ],
+                                    signer_seeds,
+                                ).map_err(Into::into)
+                            }
+                            err @ Err(_) => {
+                                err
+                            }
+                        }
                     }
-                    err @ Err(_) => {
-                        err
+                    Err(error) => {
+                        Err(Error::from(error))
                     }
                 }
             }
