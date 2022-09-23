@@ -6,7 +6,7 @@ export async function initializeCollection(provider, program, json) {
     const publicKey = provider.wallet.publicKey.toString();
     // parse uploader
     const parsed = JSON.parse(json);
-    // derive new key-pair for collection
+    // derive key-pair for collection
     const collection = web3.Keypair.generate();
     // derive authority
     let authority, _;
@@ -78,6 +78,70 @@ export async function initializeCollection(provider, program, json) {
     console.log(masterEditionAta.toString());
     let authorityPda = await program.account.authority.fetch(authority);
     console.log(authorityPda.collection.toString());
+
+
+    // derive key-pair for new-edition-mint
+    const mint = web3.Keypair.generate();
+    // derive new-metadata
+    let newMetadata;
+    [newMetadata, _] = await web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(mplPrefix),
+            mplProgramId.toBuffer(),
+            mint.publicKey.toBuffer(),
+        ],
+        mplProgramId
+    )
+    // derive new-edition
+    let newEdition;
+    [newEdition, _] = await web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(mplPrefix),
+            mplProgramId.toBuffer(),
+            mint.publicKey.toBuffer(),
+            Buffer.from(mplEdition),
+        ],
+        mplProgramId
+    )
+    // derive new-edition-mark
+    let newEditionMark;
+    const newEditionMarkLiteral = new BN(1).div(new BN(248)).toString;
+    console.log(newEditionMarkLiteral);
+    [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(mplPrefix),
+            mplProgramId.toBuffer(),
+            mint.publicKey.toBuffer(),
+            Buffer.from(mplEdition),
+            Buffer.from(newEditionMarkLiteral)
+        ],
+        mplProgramId
+    )
+    // invoke rpc
+    await program.methods
+        .mintNewCopy()
+        .accounts(
+            {
+                authority: authority,
+                collection: collection,
+                metadata: metadata,
+                masterEdition: masterEdition,
+                masterEditionAta: masterEditionAta,
+                mint: mint.publicKey,
+                newMetadata: newMetadata,
+                newEdition: newEdition,
+                newEditionMark: newEditionMark,
+                payer: provider.wallet.publicKey,
+                tokenProgram: splTokenProgramId,
+                associatedTokenProgram: splAssociatedTokenProgramId,
+                metadataProgram: mplProgramId,
+                systemProgram: web3.SystemProgram.programId,
+                rent: web3.SYSVAR_RENT_PUBKEY,
+            }
+        ).signers([mint])
+        .rpc()
+
+
     // build success
     const success = {
         listener: "creator-initialize-collection-success",
