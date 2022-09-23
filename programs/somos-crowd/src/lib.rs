@@ -353,7 +353,7 @@ pub struct Authority {
 }
 
 impl Authority {
-    const SPACE: usize = 8 + 32;
+    const SPACE: usize = 8 + 32 + 8;
 }
 
 #[error_code]

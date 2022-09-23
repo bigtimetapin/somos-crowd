@@ -105,7 +105,7 @@ export async function initializeCollection(provider, program, json) {
     )
     // derive new-edition-mark
     let newEditionMark;
-    const newEditionMarkLiteral = new BN(1).div(new BN(248)).toString;
+    const newEditionMarkLiteral = new BN(1).div(new BN(248)).toString();
     console.log(newEditionMarkLiteral);
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
         [
@@ -123,7 +123,7 @@ export async function initializeCollection(provider, program, json) {
         .accounts(
             {
                 authority: authority,
-                collection: collection,
+                collection: collection.publicKey,
                 metadata: metadata,
                 masterEdition: masterEdition,
                 masterEditionAta: masterEditionAta,
