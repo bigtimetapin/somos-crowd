@@ -126,9 +126,10 @@ pub mod somos_crowd {
             ],
             signer_seeds,
         ).map_err(Into::into);
-        // collect addresses
+        // init authority data
         let authority = &mut ctx.accounts.authority;
         authority.collection = ctx.accounts.collection.key();
+        authority.num_minted = 0;
         // chain
         invoked0
             .and_then(|_| invoked1)
@@ -136,7 +137,7 @@ pub mod somos_crowd {
             .and_then(|_| invoked3)
     }
 
-    pub fn mint_new_copy(ctx: Context<MintNewCopy>) -> Result<()> {
+    pub fn mint_new_copy(ctx: Context<MintNewCopy>, edition_number: u64) -> Result<()> {
         // unwrap authority bump
         let authority_bump = *ctx.bumps.get("authority").unwrap();
         // build signer seeds
@@ -145,8 +146,6 @@ pub mod somos_crowd {
             &[authority_bump]
         ];
         let signer_seeds = &[&seeds[..]];
-        // increment edition
-        let new_edition_number = ctx.accounts.authority.num_minted + 1;
         // build new edition instruction
         let ix_new_edition = mint_new_edition_from_master_edition_via_token(
             ctx.accounts.metadata_program.key(),
@@ -159,9 +158,9 @@ pub mod somos_crowd {
             ctx.accounts.authority.key(),
             ctx.accounts.master_edition_ata.key(),
             ctx.accounts.authority.key(),
-            ctx.accounts.metadata.to_account_info().key(),
-            ctx.accounts.collection.to_account_info().key(),
-            new_edition_number,
+            ctx.accounts.metadata.key(),
+            ctx.accounts.collection.key(),
+            edition_number,
         );
         // invoke new edition
         anchor_lang::solana_program::program::invoke_signed(
@@ -171,13 +170,16 @@ pub mod somos_crowd {
                 ctx.accounts.new_edition.to_account_info(),
                 ctx.accounts.master_edition.to_account_info(),
                 ctx.accounts.mint.to_account_info(),
+                ctx.accounts.new_edition_mark.to_account_info(),
                 ctx.accounts.authority.to_account_info(),
                 ctx.accounts.payer.to_account_info(),
                 ctx.accounts.authority.to_account_info(),
                 ctx.accounts.master_edition_ata.to_account_info(),
                 ctx.accounts.authority.to_account_info(),
                 ctx.accounts.metadata.to_account_info(),
-                ctx.accounts.collection.to_account_info()
+                ctx.accounts.token_program.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+                ctx.accounts.rent.to_account_info(),
             ],
             signer_seeds,
         ).map_err(Into::into)
@@ -243,6 +245,7 @@ pub struct CreateCollection<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(edition_number: u64)]
 pub struct MintNewCopy<'info> {
     #[account(mut,
     seeds = [b"authority", collection.key().as_ref()], bump,
@@ -314,9 +317,9 @@ pub struct MintNewCopy<'info> {
     seeds = [
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
-    mint.key().as_ref(),
+    collection.key().as_ref(),
     EDITION.as_bytes(),
-    (authority.num_minted + 1).checked_div(EDITION_MARKER_BIT_SIZE).unwrap().to_string().as_bytes()
+    edition_number.checked_div(EDITION_MARKER_BIT_SIZE).unwrap().to_string().as_bytes()
     ], bump,
     seeds::program = metadata_program.key()
     )]

@@ -1,4 +1,5 @@
-import {web3, BN} from "@project-serum/anchor";
+import {web3} from "@project-serum/anchor";
+import {BN} from "bn.js"
 import {mplEdition, mplPrefix, mplProgramId, splAssociatedTokenProgramId, splTokenProgramId} from "../util";
 
 export async function initializeCollection(provider, program, json) {
@@ -105,21 +106,39 @@ export async function initializeCollection(provider, program, json) {
     )
     // derive new-edition-mark
     let newEditionMark;
-    const newEditionMarkLiteral = new BN(1).div(new BN(248)).toString();
+    const newEditionMarkLiteral = (new BN.BN(249)).div(new BN.BN(248)).toString();
     console.log(newEditionMarkLiteral);
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(mplPrefix),
             mplProgramId.toBuffer(),
-            mint.publicKey.toBuffer(),
+            collection.publicKey.toBuffer(),
             Buffer.from(mplEdition),
             Buffer.from(newEditionMarkLiteral)
         ],
         mplProgramId
     )
+    function toBigNumber(number) {
+        return new BN.BN(number)
+    }
+    const newEditionNumber = toBigNumber(248);
+    let theirMark;
+    [theirMark, _] = web3.PublicKey.findProgramAddressSync(
+        [
+            Buffer.from('metadata', 'utf8'),
+            mplProgramId.toBuffer(),
+            collection.publicKey.toBuffer(),
+            Buffer.from('edition', 'utf8'),
+            Buffer.from(newEditionNumber.div(toBigNumber(248)).toString()),
+        ],
+        mplProgramId
+    )
+    console.log(newEditionMark.toString());
+    console.log(theirMark.toString());
+    console.log(newEditionNumber.div(toBigNumber(248)).toString());
     // invoke rpc
     await program.methods
-        .mintNewCopy()
+        .mintNewCopy(newEditionNumber)
         .accounts(
             {
                 authority: authority,
@@ -130,7 +149,7 @@ export async function initializeCollection(provider, program, json) {
                 mint: mint.publicKey,
                 newMetadata: newMetadata,
                 newEdition: newEdition,
-                newEditionMark: newEditionMark,
+                newEditionMark: theirMark,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
                 associatedTokenProgram: splAssociatedTokenProgramId,
