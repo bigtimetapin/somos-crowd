@@ -6,7 +6,7 @@ use mpl_token_metadata::state::{
 };
 use mpl_token_metadata::instruction::{
     create_metadata_accounts_v3, create_master_edition_v3, sign_metadata,
-    mint_new_edition_from_master_edition_via_token,
+    mint_new_edition_from_master_edition_via_token, set_and_verify_sized_collection_item,
 };
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
@@ -80,7 +80,7 @@ pub mod somos_crowd {
             ctx.accounts.authority.key(),
             ctx.accounts.metadata.key(),
             ctx.accounts.payer.key(),
-            None,
+            Some(0),
         );
         // invoke create metadata
         let invoked0 = anchor_lang::solana_program::program::invoke_signed(
@@ -146,6 +146,16 @@ pub mod somos_crowd {
             &[authority_bump]
         ];
         let signer_seeds = &[&seeds[..]];
+        // build ata new-edition instruction
+        let ata_cpi_accounts = MintTo {
+            mint: ctx.accounts.mint.to_account_info(),
+            to: ctx.accounts.new_edition_ata.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info(),
+        };
+        let ata_cpi_context = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            ata_cpi_accounts,
+        );
         // build new-edition instruction
         let ix_new_edition = mint_new_edition_from_master_edition_via_token(
             ctx.accounts.metadata_program.key(),
@@ -162,15 +172,17 @@ pub mod somos_crowd {
             ctx.accounts.collection.key(),
             edition_number,
         );
-        // build ata new-edition instruction
-        let ata_cpi_accounts = MintTo {
-            mint: ctx.accounts.mint.to_account_info(),
-            to: ctx.accounts.new_edition_ata.to_account_info(),
-            authority: ctx.accounts.authority.to_account_info(),
-        };
-        let ata_cpi_context = CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            ata_cpi_accounts,
+        // build set-collection instruction
+        let ix_set_collection = set_and_verify_sized_collection_item(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.new_metadata.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.payer.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.collection.key(),
+            ctx.accounts.metadata.key(),
+            ctx.accounts.master_edition.key(),
+            None,
         );
         // invoke mint-to ata new-edition
         mint_to(
@@ -196,6 +208,20 @@ pub mod somos_crowd {
                 ctx.accounts.metadata.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
                 ctx.accounts.rent.to_account_info(),
+            ],
+            signer_seeds,
+        )?;
+        // invoke set collection
+        anchor_lang::solana_program::program::invoke_signed(
+            &ix_set_collection,
+            &[
+                ctx.accounts.new_metadata.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.payer.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.collection.to_account_info(),
+                ctx.accounts.metadata.to_account_info(),
+                ctx.accounts.master_edition.to_account_info()
             ],
             signer_seeds,
         ).map_err(Into::into)
