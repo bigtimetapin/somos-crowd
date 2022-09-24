@@ -135,7 +135,7 @@ async function printNewCopy(provider, program, authority, collection, metadata, 
     let newEditionAta;
     [newEditionAta, _] = await web3.PublicKey.findProgramAddress(
         [
-            authority.toBuffer(),
+            provider.wallet.publicKey.toBuffer(),
             splTokenProgramId.toBuffer(),
             mint.publicKey.toBuffer()
         ],

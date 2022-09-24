@@ -369,7 +369,7 @@ pub struct MintNewCopy<'info> {
     pub new_edition_mark: UncheckedAccount<'info>,
     #[account(init,
     associated_token::mint = mint,
-    associated_token::authority = authority,
+    associated_token::authority = payer,
     payer = payer
     )]
     pub new_edition_ata: Box<Account<'info, TokenAccount>>,
