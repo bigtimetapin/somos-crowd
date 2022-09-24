@@ -139,67 +139,66 @@ pub mod somos_crowd {
 
     pub fn mint_new_copy(ctx: Context<MintNewCopy>, edition_number: u64) -> Result<()> {
         // unwrap authority bump
-        // let authority_bump = *ctx.bumps.get("authority").unwrap();
-        // // build signer seeds
-        // let seeds = &[
-        //     "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
-        //     &[authority_bump]
-        // ];
-        // let signer_seeds = &[&seeds[..]];
-        // // build new-edition instruction
-        // let ix_new_edition = mint_new_edition_from_master_edition_via_token(
-        //     ctx.accounts.metadata_program.key(),
-        //     ctx.accounts.new_metadata.key(),
-        //     ctx.accounts.new_edition.key(),
-        //     ctx.accounts.master_edition.key(),
-        //     ctx.accounts.mint.key(),
-        //     ctx.accounts.authority.key(),
-        //     ctx.accounts.payer.key(),
-        //     ctx.accounts.authority.key(),
-        //     ctx.accounts.master_edition_ata.key(),
-        //     ctx.accounts.authority.key(),
-        //     ctx.accounts.metadata.key(),
-        //     ctx.accounts.collection.key(),
-        //     edition_number,
-        // );
-        // // build ata new-edition instruction
-        // let ata_cpi_accounts = MintTo {
-        //     mint: ctx.accounts.mint.to_account_info(),
-        //     to: ctx.accounts.new_edition_ata.to_account_info(),
-        //     authority: ctx.accounts.authority.to_account_info(),
-        // };
-        // let ata_cpi_context = CpiContext::new(
-        //     ctx.accounts.token_program.to_account_info(),
-        //     ata_cpi_accounts,
-        // );
-        // // invoke mint-to ata new-edition
-        // mint_to(
-        //     ata_cpi_context.with_signer(
-        //         signer_seeds
-        //     ),
-        //     1,
-        // )?;
-        // // invoke new edition
-        // anchor_lang::solana_program::program::invoke_signed(
-        //     &ix_new_edition,
-        //     &[
-        //         ctx.accounts.new_metadata.to_account_info(),
-        //         ctx.accounts.new_edition.to_account_info(),
-        //         ctx.accounts.master_edition.to_account_info(),
-        //         ctx.accounts.mint.to_account_info(),
-        //         ctx.accounts.new_edition_mark.to_account_info(),
-        //         ctx.accounts.authority.to_account_info(),
-        //         ctx.accounts.payer.to_account_info(),
-        //         ctx.accounts.authority.to_account_info(),
-        //         ctx.accounts.master_edition_ata.to_account_info(),
-        //         ctx.accounts.authority.to_account_info(),
-        //         ctx.accounts.metadata.to_account_info(),
-        //         ctx.accounts.system_program.to_account_info(),
-        //         ctx.accounts.rent.to_account_info(),
-        //     ],
-        //     signer_seeds,
-        // ).map_err(Into::into)
-        Ok(())
+        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        // build signer seeds
+        let seeds = &[
+            "authority".as_bytes(), &ctx.accounts.collection.key().to_bytes(),
+            &[authority_bump]
+        ];
+        let signer_seeds = &[&seeds[..]];
+        // build new-edition instruction
+        let ix_new_edition = mint_new_edition_from_master_edition_via_token(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.new_metadata.key(),
+            ctx.accounts.new_edition.key(),
+            ctx.accounts.master_edition.key(),
+            ctx.accounts.mint.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.payer.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.master_edition_ata.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.metadata.key(),
+            ctx.accounts.collection.key(),
+            edition_number,
+        );
+        // build ata new-edition instruction
+        let ata_cpi_accounts = MintTo {
+            mint: ctx.accounts.mint.to_account_info(),
+            to: ctx.accounts.new_edition_ata.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info(),
+        };
+        let ata_cpi_context = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            ata_cpi_accounts,
+        );
+        // invoke mint-to ata new-edition
+        mint_to(
+            ata_cpi_context.with_signer(
+                signer_seeds
+            ),
+            1,
+        )?;
+        // invoke new edition
+        anchor_lang::solana_program::program::invoke_signed(
+            &ix_new_edition,
+            &[
+                ctx.accounts.new_metadata.to_account_info(),
+                ctx.accounts.new_edition.to_account_info(),
+                ctx.accounts.master_edition.to_account_info(),
+                ctx.accounts.mint.to_account_info(),
+                ctx.accounts.new_edition_mark.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.payer.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.master_edition_ata.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.metadata.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+                ctx.accounts.rent.to_account_info(),
+            ],
+            signer_seeds,
+        ).map_err(Into::into)
     }
 }
 
