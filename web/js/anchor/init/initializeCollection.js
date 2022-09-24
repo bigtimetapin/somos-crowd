@@ -6,6 +6,8 @@ export async function initializeCollection(provider, program, json) {
     const publicKey = provider.wallet.publicKey.toString();
     // parse uploader
     const parsed = JSON.parse(json);
+    // derive key-pair for mint
+    const mint = web3.Keypair.generate()
     // derive key-pair for collection
     const collection = web3.Keypair.generate();
     // derive authority
@@ -13,13 +15,23 @@ export async function initializeCollection(provider, program, json) {
     [authority, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from("authority"),
-            collection.publicKey.toBuffer()
+            mint.publicKey.toBuffer()
         ],
         program.programId
     );
     // derive metadata
     let metadata;
     [metadata, _] = await web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(mplPrefix),
+            mplProgramId.toBuffer(),
+            mint.publicKey.toBuffer(),
+        ],
+        mplProgramId
+    )
+    // derive collection metadata
+    let collectionMetadata;
+    [collectionMetadata, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(mplPrefix),
             mplProgramId.toBuffer(),
@@ -33,7 +45,7 @@ export async function initializeCollection(provider, program, json) {
         [
             Buffer.from(mplPrefix),
             mplProgramId.toBuffer(),
-            collection.publicKey.toBuffer(),
+            mint.publicKey.toBuffer(),
             Buffer.from(mplEdition),
         ],
         mplProgramId
@@ -44,13 +56,13 @@ export async function initializeCollection(provider, program, json) {
         [
             authority.toBuffer(),
             splTokenProgramId.toBuffer(),
-            collection.publicKey.toBuffer()
+            mint.publicKey.toBuffer()
         ],
         splAssociatedTokenProgramId
     )
     // invoke rpc
     await program.methods
-        .createCollection(
+        .createNft(
             parsed.name,
             parsed.symbol,
             "test-uri",
@@ -59,8 +71,10 @@ export async function initializeCollection(provider, program, json) {
         .accounts(
             {
                 authority: authority,
+                mint: mint.publicKey,
                 collection: collection.publicKey,
                 metadata: metadata,
+                collectionMetadata: collectionMetadata,
                 masterEdition: masterEdition,
                 masterEditionAta: masterEditionAta,
                 payer: provider.wallet.publicKey,
@@ -71,13 +85,14 @@ export async function initializeCollection(provider, program, json) {
                 rent: web3.SYSVAR_RENT_PUBKEY,
             }
         )
-        .signers([collection])
+        .signers([mint, collection])
         .rpc()
     // fetch pda
+    console.log(mint.publicKey.toString());
     console.log(collection.publicKey.toString());
     // invoke new copy
-    await printNewCopy(provider, program, authority, collection.publicKey, metadata, masterEdition, masterEditionAta, 1);
-    await printNewCopy(provider, program, authority, collection.publicKey, metadata, masterEdition, masterEditionAta, 2);
+    // await printNewCopy(provider, program, authority, collection.publicKey, metadata, masterEdition, masterEditionAta, 1);
+    // await printNewCopy(provider, program, authority, collection.publicKey, metadata, masterEdition, masterEditionAta, 2);
     // build success
     const success = {
         listener: "creator-initialize-collection-success",
