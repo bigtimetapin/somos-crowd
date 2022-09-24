@@ -136,6 +136,16 @@ export async function initializeCollection(provider, program, json) {
     console.log(newEditionMark.toString());
     console.log(theirMark.toString());
     console.log(newEditionNumber.div(toBigNumber(248)).toString());
+    // derive new-edition-ata
+    let newEditionAta;
+    [newEditionAta, _] = await web3.PublicKey.findProgramAddress(
+        [
+            authority.toBuffer(),
+            splTokenProgramId.toBuffer(),
+            mint.publicKey.toBuffer()
+        ],
+        splAssociatedTokenProgramId
+    )
     // invoke rpc
     await program.methods
         .mintNewCopy(newEditionNumber)
@@ -150,6 +160,7 @@ export async function initializeCollection(provider, program, json) {
                 newMetadata: newMetadata,
                 newEdition: newEdition,
                 newEditionMark: theirMark,
+                newEditionAta: newEditionAta,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
                 associatedTokenProgram: splAssociatedTokenProgramId,

@@ -129,6 +129,11 @@
           "isSigner": false
         },
         {
+          "name": "newEditionAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
