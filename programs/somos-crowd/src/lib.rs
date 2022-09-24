@@ -267,7 +267,7 @@ pub struct MintNewCopy<'info> {
     #[account(mut,
     seeds = [b"authority", collection.key().as_ref()], bump,
     )]
-    pub authority: Account<'info, Authority>,
+    pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
     address = authority.collection,
     owner = token_program.key()
@@ -301,14 +301,14 @@ pub struct MintNewCopy<'info> {
     associated_token::mint = collection,
     associated_token::authority = authority
     )]
-    pub master_edition_ata: Account<'info, TokenAccount>,
+    pub master_edition_ata: Box<Account<'info, TokenAccount>>,
     // TODO: check if mut needed
     #[account(init,
     mint::authority = authority,
     mint::decimals = 0,
     payer = payer
     )]
-    pub mint: Account<'info, Mint>,
+    pub mint: Box<Account<'info, Mint>>,
     #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
@@ -347,7 +347,7 @@ pub struct MintNewCopy<'info> {
     associated_token::authority = authority,
     payer = payer
     )]
-    pub new_edition_ata: Account<'info, TokenAccount>,
+    pub new_edition_ata: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program
