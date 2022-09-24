@@ -1,5 +1,4 @@
-import {web3} from "@project-serum/anchor";
-import {BN} from "bn.js"
+import {web3, BN} from "@project-serum/anchor";
 import {mplEdition, mplPrefix, mplProgramId, splAssociatedTokenProgramId, splTokenProgramId} from "../util";
 
 export async function initializeCollection(provider, program, json) {
@@ -76,15 +75,29 @@ export async function initializeCollection(provider, program, json) {
         .rpc()
     // fetch pda
     console.log(collection.publicKey.toString());
-    console.log(masterEditionAta.toString());
-    let authorityPda = await program.account.authority.fetch(authority);
-    console.log(authorityPda.collection.toString());
+    // invoke new copy
+    await printNewCopy(provider, program, authority, collection.publicKey, metadata, masterEdition, masterEditionAta, 1);
+    await printNewCopy(provider, program, authority, collection.publicKey, metadata, masterEdition, masterEditionAta, 2);
+    // build success
+    const success = {
+        listener: "creator-initialize-collection-success",
+        more: JSON.stringify(
+            {
+                wallet: publicKey,
+                name: parsed.name,
+                symbol: parsed.symbol
+            }
+        )
+    }
+    // send success to elm
+    app.ports.success.send(JSON.stringify(success));
+}
 
-
+async function printNewCopy(provider, program, authority, collection, metadata, masterEdition, masterEditionAta, n) {
     // derive key-pair for new-edition-mint
     const mint = web3.Keypair.generate();
     // derive new-metadata
-    let newMetadata;
+    let newMetadata, _;
     [newMetadata, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(mplPrefix),
@@ -106,36 +119,18 @@ export async function initializeCollection(provider, program, json) {
     )
     // derive new-edition-mark
     let newEditionMark;
-    const newEditionMarkLiteral = (new BN.BN(249)).div(new BN.BN(248)).toString();
-    console.log(newEditionMarkLiteral);
+    const newEditionBN = new BN.BN(n);
+    const newEditionMarkLiteral = newEditionBN.div(new BN.BN(248)).toString();
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(mplPrefix),
             mplProgramId.toBuffer(),
-            collection.publicKey.toBuffer(),
+            collection.toBuffer(),
             Buffer.from(mplEdition),
             Buffer.from(newEditionMarkLiteral)
         ],
         mplProgramId
     )
-    function toBigNumber(number) {
-        return new BN.BN(number)
-    }
-    const newEditionNumber = toBigNumber(248);
-    let theirMark;
-    [theirMark, _] = web3.PublicKey.findProgramAddressSync(
-        [
-            Buffer.from('metadata', 'utf8'),
-            mplProgramId.toBuffer(),
-            collection.publicKey.toBuffer(),
-            Buffer.from('edition', 'utf8'),
-            Buffer.from(newEditionNumber.div(toBigNumber(248)).toString()),
-        ],
-        mplProgramId
-    )
-    console.log(newEditionMark.toString());
-    console.log(theirMark.toString());
-    console.log(newEditionNumber.div(toBigNumber(248)).toString());
     // derive new-edition-ata
     let newEditionAta;
     [newEditionAta, _] = await web3.PublicKey.findProgramAddress(
@@ -148,18 +143,18 @@ export async function initializeCollection(provider, program, json) {
     )
     // invoke rpc
     await program.methods
-        .mintNewCopy(newEditionNumber)
+        .mintNewCopy(newEditionBN)
         .accounts(
             {
                 authority: authority,
-                collection: collection.publicKey,
+                collection: collection,
                 metadata: metadata,
                 masterEdition: masterEdition,
                 masterEditionAta: masterEditionAta,
                 mint: mint.publicKey,
                 newMetadata: newMetadata,
                 newEdition: newEdition,
-                newEditionMark: theirMark,
+                newEditionMark: newEditionMark,
                 newEditionAta: newEditionAta,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
@@ -170,19 +165,5 @@ export async function initializeCollection(provider, program, json) {
             }
         ).signers([mint])
         .rpc()
-
-
-    // build success
-    const success = {
-        listener: "creator-initialize-collection-success",
-        more: JSON.stringify(
-            {
-                wallet: publicKey,
-                name: parsed.name,
-                symbol: parsed.symbol
-            }
-        )
-    }
-    // send success to elm
-    app.ports.success.send(JSON.stringify(success));
+    console.log(mint.publicKey.toString());
 }
