@@ -177,7 +177,6 @@ pub mod somos_crowd {
                 ctx.accounts.master_edition_ata.to_account_info(),
                 ctx.accounts.authority.to_account_info(),
                 ctx.accounts.metadata.to_account_info(),
-                ctx.accounts.token_program.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
                 ctx.accounts.rent.to_account_info(),
             ],
