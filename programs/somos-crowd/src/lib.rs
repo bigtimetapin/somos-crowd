@@ -279,17 +279,17 @@ pub mod somos_crowd {
             edition_number,
         );
         // build set-collection instruction
-        // let ix_set_collection = set_and_verify_sized_collection_item(
-        //     ctx.accounts.metadata_program.key(),
-        //     ctx.accounts.new_metadata.key(),
-        //     ctx.accounts.authority.key(),
-        //     ctx.accounts.payer.key(),
-        //     ctx.accounts.authority.key(),
-        //     ctx.accounts.collection.key(),
-        //     ctx.accounts.collection_metadata.key(),
-        //     ctx.accounts.master_edition.key(),
-        //     None,
-        // );
+        let ix_set_collection = set_and_verify_sized_collection_item(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.new_metadata.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.payer.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.collection.key(),
+            ctx.accounts.collection_metadata.key(),
+            ctx.accounts.collection_master_edition.key(),
+            None,
+        );
         // invoke mint-to ata new-edition
         mint_to(
             ata_cpi_context.with_signer(
@@ -318,20 +318,19 @@ pub mod somos_crowd {
             signer_seeds,
         )?;
         // invoke set collection
-        // anchor_lang::solana_program::program::invoke_signed(
-        //     &ix_set_collection,
-        //     &[
-        //         ctx.accounts.new_metadata.to_account_info(),
-        //         ctx.accounts.authority.to_account_info(),
-        //         ctx.accounts.payer.to_account_info(),
-        //         ctx.accounts.authority.to_account_info(),
-        //         ctx.accounts.mint.to_account_info(),
-        //         ctx.accounts.metadata.to_account_info(),
-        //         ctx.accounts.master_edition.to_account_info()
-        //     ],
-        //     signer_seeds,
-        // ).map_err(Into::into)
-        Ok(())
+        anchor_lang::solana_program::program::invoke_signed(
+            &ix_set_collection,
+            &[
+                ctx.accounts.new_metadata.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.payer.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.collection.to_account_info(),
+                ctx.accounts.collection_metadata.to_account_info(),
+                ctx.accounts.collection_master_edition.to_account_info()
+            ],
+            signer_seeds,
+        ).map_err(Into::into)
     }
 }
 
@@ -501,6 +500,17 @@ pub struct MintNewCopy<'info> {
     )]
     /// CHECK: master-edition
     pub master_edition: UncheckedAccount<'info>,
+    #[account(mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    metadata_program.key().as_ref(),
+    collection.key().as_ref(),
+    EDITION.as_bytes()
+    ], bump,
+    seeds::program = metadata_program.key()
+    )]
+    /// CHECK: collection master-edition
+    pub collection_master_edition: UncheckedAccount<'info>,
     // TODO: check if mut needed
     #[account(mut,
     associated_token::mint = mint,

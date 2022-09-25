@@ -78,10 +78,30 @@ export async function creatNft(provider, program, json) {
     const collection = await createCollection(provider, program, authority, mint.publicKey);
     // invoke new copy
     await printNewCopy(
-        provider, program, authority, mint.publicKey, collection.mint, metadata, collection.metadata, masterEdition, masterEditionAta, 1
+        provider,
+        program,
+        authority,
+        mint.publicKey,
+        collection.mint,
+        metadata,
+        collection.metadata,
+        masterEdition,
+        collection.masterEdition,
+        masterEditionAta,
+        1
     );
     await printNewCopy(
-        provider, program, authority, mint.publicKey, collection.mint, metadata, collection.metadata, masterEdition, masterEditionAta, 2
+        provider,
+        program,
+        authority,
+        mint.publicKey,
+        collection.mint,
+        metadata,
+        collection.metadata,
+        masterEdition,
+        collection.masterEdition,
+        masterEditionAta,
+        2
     );
     // build success
     const success = {
@@ -156,10 +176,9 @@ async function createCollection(provider, program, authority, mint) {
         .signers([collection])
         .rpc()
     console.log(collection.publicKey.toString());
-    return {mint: collection.publicKey, metadata: collectionMetadata}
+    return {mint: collection.publicKey, metadata: collectionMetadata, masterEdition: collectionMasterEdition}
 }
 
-// TODO;
 async function printNewCopy(
     provider,
     program,
@@ -169,6 +188,7 @@ async function printNewCopy(
     metadata,
     collectionMetadata,
     masterEdition,
+    collectionMasterEdition,
     masterEditionAta,
     n
 ) {
@@ -230,6 +250,7 @@ async function printNewCopy(
                 metadata: metadata,
                 collectionMetadata: collectionMetadata,
                 masterEdition: masterEdition,
+                collectionMasterEdition: collectionMasterEdition,
                 masterEditionAta: masterEditionAta,
                 newMint: newMint.publicKey,
                 newMetadata: newMetadata,

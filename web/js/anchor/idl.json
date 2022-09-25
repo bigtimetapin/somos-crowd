@@ -181,6 +181,11 @@
           "isSigner": false
         },
         {
+          "name": "collectionMasterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "masterEditionAta",
           "isMut": true,
           "isSigner": false
