@@ -1,5 +1,5 @@
 import {getPhantom} from "./phantom";
-import {initializeCollection} from "./anchor/init/initializeCollection";
+import {creatNft} from "./anchor/init/init";
 import {getPP} from "./anchor/util";
 
 // init phantom
@@ -34,7 +34,7 @@ app.ports.sender.subscribe(async function (json) {
             // get provider & program
             const pp = getPP(phantom);
             // invoke rpc
-            await initializeCollection(pp.provider, pp.program, parsed.more);
+            await creatNft(pp.provider, pp.program, parsed.more);
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;
