@@ -278,18 +278,6 @@ pub mod somos_crowd {
             ctx.accounts.mint.key(),
             edition_number,
         );
-        // build set-collection instruction
-        let ix_set_collection = set_and_verify_sized_collection_item(
-            ctx.accounts.metadata_program.key(),
-            ctx.accounts.new_metadata.key(),
-            ctx.accounts.authority.key(),
-            ctx.accounts.payer.key(),
-            ctx.accounts.authority.key(),
-            ctx.accounts.collection.key(),
-            ctx.accounts.collection_metadata.key(),
-            ctx.accounts.collection_master_edition.key(),
-            None,
-        );
         // invoke mint-to ata new-edition
         mint_to(
             ata_cpi_context.with_signer(
@@ -316,7 +304,30 @@ pub mod somos_crowd {
                 ctx.accounts.rent.to_account_info(),
             ],
             signer_seeds,
-        )?;
+        ).map_err(Into::into)
+    }
+
+    pub fn add_new_copy_to_collection(ctx: Context<AddNewCopyToCollection>) -> Result<()> {
+        // unwrap authority bump
+        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        // build signer seeds
+        let seeds = &[
+            "authority".as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+            &[authority_bump]
+        ];
+        let signer_seeds = &[&seeds[..]];
+        // build set-collection instruction
+        let ix_set_collection = set_and_verify_sized_collection_item(
+            ctx.accounts.metadata_program.key(),
+            ctx.accounts.new_metadata.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.payer.key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.collection.key(),
+            ctx.accounts.collection_metadata.key(),
+            ctx.accounts.collection_master_edition.key(),
+            None,
+        );
         // invoke set collection
         anchor_lang::solana_program::program::invoke_signed(
             &ix_set_collection,
@@ -451,7 +462,7 @@ pub struct CreateCollection<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(edition_number: u64)]
+#[instruction(edition_number: u64)] // TODO;
 pub struct MintNewCopy<'info> {
     #[account(mut,
     seeds = [b"authority", mint.key().as_ref()], bump,
@@ -462,11 +473,6 @@ pub struct MintNewCopy<'info> {
     owner = token_program.key()
     )]
     pub mint: Account<'info, Mint>,
-    #[account(mut,
-    address = authority.collection,
-    owner = token_program.key()
-    )]
-    pub collection: Account<'info, Mint>,
     // TODO: check if mut needed
     #[account(mut,
     seeds = [
@@ -478,17 +484,6 @@ pub struct MintNewCopy<'info> {
     )]
     /// CHECK: initialized metadata
     pub metadata: UncheckedAccount<'info>,
-    // TODO: check if mut needed
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    collection.key().as_ref()
-    ], bump,
-    seeds::program = metadata_program.key()
-    )]
-    /// CHECK: initialized metadata
-    pub collection_metadata: UncheckedAccount<'info>,
     #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
@@ -500,17 +495,6 @@ pub struct MintNewCopy<'info> {
     )]
     /// CHECK: master-edition
     pub master_edition: UncheckedAccount<'info>,
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    collection.key().as_ref(),
-    EDITION.as_bytes()
-    ], bump,
-    seeds::program = metadata_program.key()
-    )]
-    /// CHECK: collection master-edition
-    pub collection_master_edition: UncheckedAccount<'info>,
     // TODO: check if mut needed
     #[account(mut,
     associated_token::mint = mint,
@@ -575,6 +559,69 @@ pub struct MintNewCopy<'info> {
     pub system_program: Program<'info, System>,
     // rent program
     pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+pub struct AddNewCopyToCollection<'info>{
+    #[account(mut,
+    seeds = [b"authority", mint.key().as_ref()], bump,
+    )]
+    pub authority: Box<Account<'info, Authority>>,
+    #[account(mut,
+    address = authority.mint,
+    owner = token_program.key()
+    )]
+    pub mint: Account<'info, Mint>,
+    #[account(mut,
+    address = authority.collection,
+    owner = token_program.key()
+    )]
+    pub collection: Account<'info, Mint>,
+    #[account(mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    metadata_program.key().as_ref(),
+    collection.key().as_ref()
+    ], bump,
+    seeds::program = metadata_program.key()
+    )]
+    /// CHECK: initialized metadata
+    pub collection_metadata: UncheckedAccount<'info>,
+    #[account(mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    metadata_program.key().as_ref(),
+    collection.key().as_ref(),
+    EDITION.as_bytes()
+    ], bump,
+    seeds::program = metadata_program.key()
+    )]
+    /// CHECK: collection master-edition
+    pub collection_master_edition: UncheckedAccount<'info>,
+    #[account(mut,
+    owner = token_program.key()
+    )]
+    pub new_mint: Account<'info, Mint>,
+    #[account(mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    metadata_program.key().as_ref(),
+    new_mint.key().as_ref()
+    ], bump,
+    seeds::program = metadata_program.key()
+    )]
+    /// CHECK: initialized new-metadata
+    pub new_metadata: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    // token program
+    pub token_program: Program<'info, Token>, // TODO; need ?
+    // metadata program
+    pub metadata_program: Program<'info, MetadataProgram>,
+    // system program
+    pub system_program: Program<'info, System>,
+    // rent program
+    pub rent: Sysvar<'info, Rent>, // TODO; need ?
 }
 
 #[derive(Clone)]

@@ -82,11 +82,8 @@ export async function creatNft(provider, program, json) {
         program,
         authority,
         mint.publicKey,
-        collection.mint,
         metadata,
-        collection.metadata,
         masterEdition,
-        collection.masterEdition,
         masterEditionAta,
         1
     );
@@ -95,11 +92,8 @@ export async function creatNft(provider, program, json) {
         program,
         authority,
         mint.publicKey,
-        collection.mint,
         metadata,
-        collection.metadata,
         masterEdition,
-        collection.masterEdition,
         masterEditionAta,
         2
     );
@@ -184,11 +178,8 @@ async function printNewCopy(
     program,
     authority,
     mint,
-    collection,
     metadata,
-    collectionMetadata,
     masterEdition,
-    collectionMasterEdition,
     masterEditionAta,
     n
 ) {
@@ -246,11 +237,8 @@ async function printNewCopy(
             {
                 authority: authority,
                 mint: mint,
-                collection: collection,
                 metadata: metadata,
-                collectionMetadata: collectionMetadata,
                 masterEdition: masterEdition,
-                collectionMasterEdition: collectionMasterEdition,
                 masterEditionAta: masterEditionAta,
                 newMint: newMint.publicKey,
                 newMetadata: newMetadata,
