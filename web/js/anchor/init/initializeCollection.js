@@ -50,6 +50,17 @@ export async function initializeCollection(provider, program, json) {
         ],
         mplProgramId
     )
+    // derive collection master-edition
+    let collectionMasterEdition;
+    [collectionMasterEdition, _] = await web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(mplPrefix),
+            mplProgramId.toBuffer(),
+            collection.publicKey.toBuffer(),
+            Buffer.from(mplEdition),
+        ],
+        mplProgramId
+    )
     // derive master-edition-ata
     let masterEditionAta;
     [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
@@ -57,6 +68,16 @@ export async function initializeCollection(provider, program, json) {
             authority.toBuffer(),
             splTokenProgramId.toBuffer(),
             mint.publicKey.toBuffer()
+        ],
+        splAssociatedTokenProgramId
+    )
+    // derive collection master-edition-ata
+    let collectionMasterEditionAta;
+    [collectionMasterEditionAta, _] = await web3.PublicKey.findProgramAddress(
+        [
+            authority.toBuffer(),
+            splTokenProgramId.toBuffer(),
+            collection.publicKey.toBuffer()
         ],
         splAssociatedTokenProgramId
     )
@@ -76,7 +97,9 @@ export async function initializeCollection(provider, program, json) {
                 metadata: metadata,
                 collectionMetadata: collectionMetadata,
                 masterEdition: masterEdition,
+                collectionMasterEdition: collectionMasterEdition,
                 masterEditionAta: masterEditionAta,
+                collectionMasterEditionAta: collectionMasterEditionAta,
                 payer: provider.wallet.publicKey,
                 tokenProgram: splTokenProgramId,
                 associatedTokenProgram: splAssociatedTokenProgramId,

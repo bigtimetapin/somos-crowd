@@ -36,7 +36,17 @@
           "isSigner": false
         },
         {
+          "name": "collectionMasterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "masterEditionAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMasterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -99,12 +109,22 @@
           "isSigner": false
         },
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "collection",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMetadata",
           "isMut": true,
           "isSigner": false
         },
@@ -119,7 +139,7 @@
           "isSigner": false
         },
         {
-          "name": "mint",
+          "name": "newMint",
           "isMut": true,
           "isSigner": true
         },
@@ -190,6 +210,10 @@
         "fields": [
           {
             "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "collection",
             "type": "publicKey"
           },
           {
