@@ -78,7 +78,7 @@ export async function creatNft(provider, program, json) {
     // invoke create-collection
     const collection = await createCollection(provider, program, authority, mint.publicKey);
     // invoke new copy
-    await printNewCopy(
+    const copy1 = await printNewCopy(
         provider,
         program,
         authority,
@@ -87,6 +87,14 @@ export async function creatNft(provider, program, json) {
         masterEdition,
         masterEditionAta
     );
+    await addNewCopyToCollection(
+        provider,
+        program,
+        authority,
+        mint.publicKey,
+        collection,
+        copy1
+    )
     await printNewCopy(
         provider,
         program,
@@ -252,4 +260,27 @@ async function printNewCopy(
         ).signers([newMint])
         .rpc()
     console.log(newMint.publicKey.toString());
+    return {mint: newMint.publicKey, metadata: newMetadata}
+}
+
+async function addNewCopyToCollection(provider, program, authority, mint, collection, newCopy) {
+    // invoke rpc
+    await program.methods
+        .addNewCopyToCollection()
+        .accounts(
+            {
+                authority: authority,
+                mint: mint,
+                collection: collection.mint,
+                collectionMetadata: collection.metadata,
+                collectionMasterEdition: collection.masterEdition,
+                newMint: newCopy.mint,
+                newMetadata: newCopy.metadata,
+                payer: provider.wallet.publicKey,
+                tokenProgram: splTokenProgramId,
+                metadataProgram: mplProgramId,
+                systemProgram: web3.SystemProgram.programId,
+                rent: web3.SYSVAR_RENT_PUBKEY,
+            }
+        ).rpc()
 }
