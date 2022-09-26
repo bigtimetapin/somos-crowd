@@ -20,6 +20,7 @@ pub mod somos_crowd {
         name: String,
         symbol: String,
         uri: String,
+        size: u64
     ) -> Result<()> {
         // unwrap authority bump
         let authority_bump = *ctx.bumps.get("authority").unwrap();
@@ -79,7 +80,7 @@ pub mod somos_crowd {
             ctx.accounts.authority.key(),
             ctx.accounts.metadata.key(),
             ctx.accounts.payer.key(),
-            Some(0), // TODO
+            Some(size),
         );
         // invoke create metadata
         anchor_lang::solana_program::program::invoke_signed(
@@ -128,11 +129,12 @@ pub mod somos_crowd {
         // init authority data
         let authority = &mut ctx.accounts.authority;
         authority.mint = ctx.accounts.mint.key();
+        authority.total_supply = 0;
         authority.num_minted = 0;
         Ok(())
     }
 
-    pub fn create_collection(ctx: Context<CreateCollection>, size: u64) -> Result<()> {
+    pub fn create_collection(ctx: Context<CreateCollection>) -> Result<()> {
         // unwrap authority bump
         let authority_bump = *ctx.bumps.get("authority").unwrap();
         // build signer seeds
@@ -164,7 +166,7 @@ pub mod somos_crowd {
             false,
             None,
             None,
-            Some(CollectionDetails::V1 { size }),
+            Some(CollectionDetails::V1 { size: ctx.accounts.authority.total_supply }),
         );
         // build sign collection metadata instruction
         let ix_sign_collection_metadata = sign_metadata(
@@ -243,7 +245,8 @@ pub mod somos_crowd {
         Ok(())
     }
 
-    pub fn mint_new_copy(ctx: Context<MintNewCopy>, edition_number: u64) -> Result<()> {
+    pub fn mint_new_copy(ctx: Context<MintNewCopy>) -> Result<()> {
+        let increment = ctx.accounts.authority.num_minted + 1;
         // unwrap authority bump
         let authority_bump = *ctx.bumps.get("authority").unwrap();
         // build signer seeds
@@ -276,7 +279,7 @@ pub mod somos_crowd {
             ctx.accounts.authority.key(),
             ctx.accounts.metadata.key(),
             ctx.accounts.mint.key(),
-            edition_number,
+            increment,
         );
         // invoke mint-to ata new-edition
         mint_to(
@@ -304,7 +307,11 @@ pub mod somos_crowd {
                 ctx.accounts.rent.to_account_info(),
             ],
             signer_seeds,
-        ).map_err(Into::into)
+        )?;
+        // increment
+        let authority = &mut ctx.accounts.authority;
+        authority.num_minted = increment;
+        Ok(())
     }
 
     pub fn add_new_copy_to_collection(ctx: Context<AddNewCopyToCollection>) -> Result<()> {
@@ -462,7 +469,6 @@ pub struct CreateCollection<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(edition_number: u64)] // TODO;
 pub struct MintNewCopy<'info> {
     #[account(mut,
     seeds = [b"authority", mint.key().as_ref()], bump,
@@ -535,7 +541,7 @@ pub struct MintNewCopy<'info> {
     metadata_program.key().as_ref(),
     mint.key().as_ref(),
     EDITION.as_bytes(),
-    edition_number.checked_div(EDITION_MARKER_BIT_SIZE).unwrap().to_string().as_bytes()
+    (authority.num_minted + 1).checked_div(EDITION_MARKER_BIT_SIZE).unwrap().to_string().as_bytes()
     ], bump,
     seeds::program = metadata_program.key()
     )]
@@ -639,10 +645,11 @@ pub struct Authority {
     pub mint: Pubkey,
     pub collection: Pubkey,
     pub num_minted: u64,
+    pub total_supply: u64,
 }
 
 impl Authority {
-    const SPACE: usize = 8 + 32 + 32 + 8;
+    const SPACE: usize = 8 + 32 + 32 + 8 + 8;
 }
 
 #[error_code]

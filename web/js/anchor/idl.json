@@ -73,6 +73,10 @@
         {
           "name": "uri",
           "type": "string"
+        },
+        {
+          "name": "size",
+          "type": "u64"
         }
       ]
     },
@@ -140,12 +144,7 @@
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "size",
-          "type": "u64"
-        }
-      ]
+      "args": []
     },
     {
       "name": "mintNewCopy",
@@ -231,12 +230,7 @@
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "editionNumber",
-          "type": "u64"
-        }
-      ]
+      "args": []
     },
     {
       "name": "addNewCopyToCollection",
@@ -321,6 +315,10 @@
           },
           {
             "name": "numMinted",
+            "type": "u64"
+          },
+          {
+            "name": "totalSupply",
             "type": "u64"
           }
         ]

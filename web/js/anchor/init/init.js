@@ -53,7 +53,8 @@ export async function creatNft(provider, program, json) {
         .createNft(
             parsed.name,
             parsed.symbol,
-            "test-uri"
+            "test-uri",
+            new BN(100)
         )
         .accounts(
             {
@@ -84,8 +85,7 @@ export async function creatNft(provider, program, json) {
         mint.publicKey,
         metadata,
         masterEdition,
-        masterEditionAta,
-        1
+        masterEditionAta
     );
     await printNewCopy(
         provider,
@@ -94,8 +94,7 @@ export async function creatNft(provider, program, json) {
         mint.publicKey,
         metadata,
         masterEdition,
-        masterEditionAta,
-        2
+        masterEditionAta
     );
     // build success
     const success = {
@@ -148,9 +147,7 @@ async function createCollection(provider, program, authority, mint) {
     )
     // invoke rpc
     await program.methods
-        .createCollection(
-            new BN(100)
-        )
+        .createCollection()
         .accounts(
             {
                 authority: authority,
@@ -180,8 +177,7 @@ async function printNewCopy(
     mint,
     metadata,
     masterEdition,
-    masterEditionAta,
-    n
+    masterEditionAta
 ) {
     // derive key-pair for new-edition-mint
     const newMint = web3.Keypair.generate();
@@ -207,9 +203,10 @@ async function printNewCopy(
         mplProgramId
     )
     // derive new-edition-mark
-    let newEditionMark;
+    let n = (await program.account.authority.fetch(authority)).numMinted + 1;
     const newEditionBN = new BN.BN(n);
     const newEditionMarkLiteral = newEditionBN.div(new BN.BN(248)).toString();
+    let newEditionMark;
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(mplPrefix),
@@ -232,7 +229,7 @@ async function printNewCopy(
     )
     // invoke rpc
     await program.methods
-        .mintNewCopy(newEditionBN)
+        .mintNewCopy()
         .accounts(
             {
                 authority: authority,
