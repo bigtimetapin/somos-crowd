@@ -2,25 +2,37 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{
-    PREFIX, EDITION, EDITION_MARKER_BIT_SIZE, CollectionDetails, Creator,
+    PREFIX, EDITION, EDITION_MARKER_BIT_SIZE, CollectionDetails,
 };
 use mpl_token_metadata::instruction::{
     create_metadata_accounts_v3, create_master_edition_v3, sign_metadata,
     mint_new_edition_from_master_edition_via_token, set_and_verify_sized_collection_item,
 };
+use crate::pda::creator::Creator;
+use crate::ix::init_new_creator;
+
+pub mod pda;
+pub mod ix;
+pub mod error;
 
 declare_id!("HRLqhFshmXMXZmY1Fkz8jJTktMEkoxLssFDtydkW5xXa");
-
 #[program]
 pub mod somos_crowd {
     use super::*;
+
+    pub fn init_new_creator(
+        ctx: Context<InitNewCreator>,
+        seed: String,
+    ) -> Result<()> {
+        init_new_creator::ix(ctx, seed)
+    }
 
     pub fn create_nft(
         ctx: Context<CreateNFT>,
         name: String,
         symbol: String,
         uri: String,
-        size: u64
+        size: u64,
     ) -> Result<()> {
         // unwrap authority bump
         let authority_bump = *ctx.bumps.get("authority").unwrap();
@@ -42,7 +54,7 @@ pub mod somos_crowd {
             symbol,
             uri,
             Some(vec![
-                Creator {
+                mpl_token_metadata::state::Creator {
                     address: ctx.accounts.payer.key(),
                     verified: false,
                     share: 100,
@@ -155,7 +167,7 @@ pub mod somos_crowd {
             String::from("COL"),
             String::from(""),
             Some(vec![
-                Creator {
+                mpl_token_metadata::state::Creator {
                     address: ctx.accounts.payer.key(),
                     verified: false,
                     share: 100,
@@ -355,6 +367,21 @@ pub mod somos_crowd {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Impl ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+#[derive(Accounts)]
+#[instruction(seed: String)]
+pub struct InitNewCreator<'info> {
+    #[account(init,
+    seeds = [seed.as_bytes()], bump,
+    payer = payer,
+    space = pda::creator::SIZE
+    )]
+    pub creator: Account<'info, Creator>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    // system program
+    pub system_program: Program<'info, System>,
+}
+
 #[derive(Accounts)]
 pub struct CreateNFT<'info> {
     #[account(init,
@@ -568,7 +595,7 @@ pub struct MintNewCopy<'info> {
 }
 
 #[derive(Accounts)]
-pub struct AddNewCopyToCollection<'info>{
+pub struct AddNewCopyToCollection<'info> {
     #[account(mut,
     seeds = [b"authority", mint.key().as_ref()], bump,
     )]
@@ -621,7 +648,8 @@ pub struct AddNewCopyToCollection<'info>{
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program
-    pub token_program: Program<'info, Token>, // TODO; need ?
+    pub token_program: Program<'info, Token>,
+    // TODO; need ?
     // metadata program
     pub metadata_program: Program<'info, MetadataProgram>,
     // system program
@@ -650,10 +678,4 @@ pub struct Authority {
 
 impl Authority {
     const SPACE: usize = 8 + 32 + 32 + 8 + 8;
-}
-
-#[error_code]
-pub enum CustomErrors {
-    #[msg("decentralized assets should be immutable.")]
-    ImmutableAssets,
 }
