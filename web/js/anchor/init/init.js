@@ -54,7 +54,7 @@ export async function creatNft(provider, program, json) {
             parsed.name,
             parsed.symbol,
             "test-uri",
-            new BN(100)
+            new BN(2)
         )
         .accounts(
             {
@@ -95,7 +95,7 @@ export async function creatNft(provider, program, json) {
         collection,
         copy1
     )
-    await printNewCopy(
+    const copy2 = await printNewCopy(
         provider,
         program,
         authority,
@@ -104,6 +104,31 @@ export async function creatNft(provider, program, json) {
         masterEdition,
         masterEditionAta
     );
+    await addNewCopyToCollection(
+        provider,
+        program,
+        authority,
+        mint.publicKey,
+        collection,
+        copy2
+    )
+    const copy3 = await printNewCopy(
+        provider,
+        program,
+        authority,
+        mint.publicKey,
+        metadata,
+        masterEdition,
+        masterEditionAta
+    );
+    await addNewCopyToCollection(
+        provider,
+        program,
+        authority,
+        mint.publicKey,
+        collection,
+        copy3
+    )
     // build success
     const success = {
         listener: "creator-initialize-collection-success",
