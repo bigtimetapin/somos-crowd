@@ -8,7 +8,7 @@ use mpl_token_metadata::instruction::{
     create_metadata_accounts_v3, create_master_edition_v3, sign_metadata,
     mint_new_edition_from_master_edition_via_token, set_and_verify_sized_collection_item,
 };
-use crate::pda::creator::Creator;
+use crate::pda::{authority::Authority, creator::Creator};
 use crate::ix::init_new_creator;
 
 pub mod pda;
@@ -35,10 +35,10 @@ pub mod somos_crowd {
         size: u64,
     ) -> Result<()> {
         // unwrap authority bump
-        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
         // build signer seeds
         let seeds = &[
-            "authority".as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+            pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
             &[authority_bump]
         ];
         let signer_seeds = &[&seeds[..]];
@@ -148,10 +148,10 @@ pub mod somos_crowd {
 
     pub fn create_collection(ctx: Context<CreateCollection>) -> Result<()> {
         // unwrap authority bump
-        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
         // build signer seeds
         let seeds = &[
-            "authority".as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+            pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
             &[authority_bump]
         ];
         let signer_seeds = &[&seeds[..]];
@@ -260,10 +260,10 @@ pub mod somos_crowd {
     pub fn mint_new_copy(ctx: Context<MintNewCopy>) -> Result<()> {
         let increment = ctx.accounts.authority.num_minted + 1;
         // unwrap authority bump
-        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
         // build signer seeds
         let seeds = &[
-            "authority".as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+            pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
             &[authority_bump]
         ];
         let signer_seeds = &[&seeds[..]];
@@ -328,10 +328,10 @@ pub mod somos_crowd {
 
     pub fn add_new_copy_to_collection(ctx: Context<AddNewCopyToCollection>) -> Result<()> {
         // unwrap authority bump
-        let authority_bump = *ctx.bumps.get("authority").unwrap();
+        let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
         // build signer seeds
         let seeds = &[
-            "authority".as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+            pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
             &[authority_bump]
         ];
         let signer_seeds = &[&seeds[..]];
@@ -385,9 +385,9 @@ pub struct InitNewCreator<'info> {
 #[derive(Accounts)]
 pub struct CreateNFT<'info> {
     #[account(init,
-    seeds = [b"authority", mint.key().as_ref()], bump,
+    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump,
     payer = payer,
-    space = Authority::SPACE
+    space = pda::authority::SIZE
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(init,
@@ -440,7 +440,7 @@ pub struct CreateNFT<'info> {
 #[derive(Accounts)]
 pub struct CreateCollection<'info> {
     #[account(mut,
-    seeds = [b"authority", mint.key().as_ref()], bump
+    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -498,7 +498,7 @@ pub struct CreateCollection<'info> {
 #[derive(Accounts)]
 pub struct MintNewCopy<'info> {
     #[account(mut,
-    seeds = [b"authority", mint.key().as_ref()], bump,
+    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump,
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -597,7 +597,7 @@ pub struct MintNewCopy<'info> {
 #[derive(Accounts)]
 pub struct AddNewCopyToCollection<'info> {
     #[account(mut,
-    seeds = [b"authority", mint.key().as_ref()], bump,
+    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump,
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -665,17 +665,4 @@ impl anchor_lang::Id for MetadataProgram {
     fn id() -> Pubkey {
         mpl_token_metadata::ID
     }
-}
-
-
-#[account]
-pub struct Authority {
-    pub mint: Pubkey,
-    pub collection: Pubkey,
-    pub num_minted: u64,
-    pub total_supply: u64,
-}
-
-impl Authority {
-    const SPACE: usize = 8 + 32 + 32 + 8 + 8;
 }

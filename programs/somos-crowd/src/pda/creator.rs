@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
-pub const SIZE: usize = MAX_HANDLE_LENGTH
+pub const SIZE: usize = 8 // discriminator
+    + MAX_HANDLE_LENGTH
     + AUTHORITY_SIZE
     + NUM_COLLECTIONS_SIZE
     + HIGHLIGHTED_SIZE;
