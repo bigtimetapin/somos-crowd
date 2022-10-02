@@ -294,7 +294,7 @@ pub struct MintNewCopy<'info> {
 pub struct AddNewCopyToCollection<'info> {
     #[account(seeds = [creator.handle.as_bytes()], bump)]
     pub creator: Box<Account<'info, Creator>>,
-    #[account(seeds = [creator.handle.as_bytes(), & [n]], bump)]
+    #[account(mut, seeds = [creator.handle.as_bytes(), & [n]], bump)]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
     address = authority.mint,

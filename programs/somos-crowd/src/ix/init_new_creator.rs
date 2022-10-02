@@ -23,10 +23,10 @@ pub fn ix(
 fn validate_handle(handle: &String) -> Result<()> {
     match handle.len() > pda::creator::MAX_HANDLE_LENGTH {
         true => {
-            Ok(())
+            Err(CustomErrors::HandleTooLong.into())
         }
         false => {
-            Err(CustomErrors::HandleTooLong.into())
+            Ok(())
         }
     }
 }

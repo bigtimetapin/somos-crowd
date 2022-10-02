@@ -1,19 +1,22 @@
 import {web3, BN} from "@project-serum/anchor";
 import {mplEdition, mplPrefix, mplProgramId, splAssociatedTokenProgramId, splTokenProgramId} from "../util";
+import {initNewCreator} from "../init-new-creator";
 
 export async function creatNft(provider, program, json) {
     // get user wallet
     const publicKey = provider.wallet.publicKey.toString();
     // parse uploader
     const parsed = JSON.parse(json);
+    // derive & create new creator
+    const creator = await initNewCreator(provider, program)
     // derive key-pair for mint
     const mint = web3.Keypair.generate()
     // derive authority
     let authority, _;
     [authority, _] = await web3.PublicKey.findProgramAddress(
         [
-            Buffer.from("authority"),
-            mint.publicKey.toBuffer()
+            Buffer.from(creator.handle),
+            Buffer.from([1])
         ],
         program.programId
     );
@@ -58,6 +61,7 @@ export async function creatNft(provider, program, json) {
         )
         .accounts(
             {
+                creator: creator.pda,
                 authority: authority,
                 mint: mint.publicKey,
                 metadata: metadata,
@@ -74,13 +78,16 @@ export async function creatNft(provider, program, json) {
         .signers([mint])
         .rpc()
     // fetch pda
-    console.log(mint.publicKey.toString());
+    console.log("creator: " + creator.pda.toString());
+    console.log("authority: " + authority.toString());
+    console.log("mint: " + mint.publicKey.toString());
     // invoke create-collection
-    const collection = await createCollection(provider, program, authority, mint.publicKey);
+    const collection = await createCollection(provider, program, creator.pda, authority, mint.publicKey);
     // invoke new copy
     const copy1 = await printNewCopy(
         provider,
         program,
+        creator.pda,
         authority,
         mint.publicKey,
         metadata,
@@ -90,6 +97,7 @@ export async function creatNft(provider, program, json) {
     await addNewCopyToCollection(
         provider,
         program,
+        creator.pda,
         authority,
         mint.publicKey,
         collection,
@@ -98,6 +106,7 @@ export async function creatNft(provider, program, json) {
     const copy2 = await printNewCopy(
         provider,
         program,
+        creator.pda,
         authority,
         mint.publicKey,
         metadata,
@@ -107,27 +116,11 @@ export async function creatNft(provider, program, json) {
     await addNewCopyToCollection(
         provider,
         program,
+        creator.pda,
         authority,
         mint.publicKey,
         collection,
         copy2
-    )
-    const copy3 = await printNewCopy(
-        provider,
-        program,
-        authority,
-        mint.publicKey,
-        metadata,
-        masterEdition,
-        masterEditionAta
-    );
-    await addNewCopyToCollection(
-        provider,
-        program,
-        authority,
-        mint.publicKey,
-        collection,
-        copy3
     )
     // build success
     const success = {
@@ -144,7 +137,7 @@ export async function creatNft(provider, program, json) {
     app.ports.success.send(JSON.stringify(success));
 }
 
-async function createCollection(provider, program, authority, mint) {
+async function createCollection(provider, program, creator, authority, mint) {
     // derive key-pair for collection
     const collection = web3.Keypair.generate();
     // derive collection metadata
@@ -183,6 +176,7 @@ async function createCollection(provider, program, authority, mint) {
         .createCollection()
         .accounts(
             {
+                creator: creator,
                 authority: authority,
                 mint: mint,
                 collection: collection.publicKey,
@@ -206,6 +200,7 @@ async function createCollection(provider, program, authority, mint) {
 async function printNewCopy(
     provider,
     program,
+    creator,
     authority,
     mint,
     metadata,
@@ -262,9 +257,10 @@ async function printNewCopy(
     )
     // invoke rpc
     await program.methods
-        .mintNewCopy()
+        .mintNewCopy(1)
         .accounts(
             {
+                creator: creator,
                 authority: authority,
                 mint: mint,
                 metadata: metadata,
@@ -288,12 +284,13 @@ async function printNewCopy(
     return {mint: newMint.publicKey, metadata: newMetadata}
 }
 
-async function addNewCopyToCollection(provider, program, authority, mint, collection, newCopy) {
+async function addNewCopyToCollection(provider, program, creator, authority, mint, collection, newCopy) {
     // invoke rpc
     await program.methods
-        .addNewCopyToCollection()
+        .addNewCopyToCollection(1)
         .accounts(
             {
+                creator: creator,
                 authority: authority,
                 mint: mint,
                 collection: collection.mint,
