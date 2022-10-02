@@ -6,7 +6,7 @@ use mpl_token_metadata::state::{
 };
 use crate::pda::{authority::Authority, creator::Creator};
 use crate::ix::{
-    init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection
+    init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
 };
 
 pub mod pda;
