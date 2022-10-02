@@ -68,7 +68,8 @@ pub struct InitNewCreator<'info> {
 #[derive(Accounts)]
 pub struct CreateNFT<'info> {
     #[account(mut,
-    seeds = [creator.handle.as_bytes()], bump
+    seeds = [creator.handle.as_bytes()], bump,
+    constraint = creator.authority == payer.key()
     )]
     pub creator: Box<Account<'info, Creator>>,
     #[account(init,
@@ -126,7 +127,9 @@ pub struct CreateNFT<'info> {
 
 #[derive(Accounts)]
 pub struct CreateCollection<'info> {
-    #[account(seeds = [creator.handle.as_bytes()], bump)]
+    #[account(seeds = [creator.handle.as_bytes()], bump,
+    constraint = creator.authority == payer.key()
+    )]
     pub creator: Box<Account<'info, Creator>>,
     #[account(mut,
     seeds = [creator.handle.as_bytes(), & [creator.num_collections]], bump
