@@ -9,10 +9,10 @@ use crate::{CreateCollection, pda};
 
 pub fn ix(ctx: Context<CreateCollection>) -> Result<()> {
     // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
+    let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // build signer seeds
     let seeds = &[
-        pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+        ctx.accounts.creator.handle.as_bytes(), &[ctx.accounts.creator.num_collections],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];

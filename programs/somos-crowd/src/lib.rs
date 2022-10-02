@@ -1,9 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use mpl_token_metadata::state::{
-    PREFIX, EDITION, EDITION_MARKER_BIT_SIZE,
-};
+use mpl_token_metadata::state::{PREFIX, EDITION, EDITION_MARKER_BIT_SIZE};
 use crate::pda::{authority::Authority, creator::Creator};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
@@ -21,9 +19,9 @@ pub mod somos_crowd {
 
     pub fn init_new_creator(
         ctx: Context<InitNewCreator>,
-        seed: String,
+        handle: String,
     ) -> Result<()> {
-        init_new_creator::ix(ctx, seed)
+        init_new_creator::ix(ctx, handle)
     }
 
     pub fn create_nft(
@@ -40,12 +38,12 @@ pub mod somos_crowd {
         create_collection::ix(ctx)
     }
 
-    pub fn mint_new_copy(ctx: Context<MintNewCopy>) -> Result<()> {
-        mint_new_copy::ix(ctx)
+    pub fn mint_new_copy(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
+        mint_new_copy::ix(ctx, n)
     }
 
-    pub fn add_new_copy_to_collection(ctx: Context<AddNewCopyToCollection>) -> Result<()> {
-        add_new_copy_to_collection::ix(ctx)
+    pub fn add_new_copy_to_collection(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
+        add_new_copy_to_collection::ix(ctx, n)
     }
 }
 
@@ -53,10 +51,10 @@ pub mod somos_crowd {
 // Impl ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Accounts)]
-#[instruction(seed: String)]
+#[instruction(handle: String)]
 pub struct InitNewCreator<'info> {
     #[account(init,
-    seeds = [seed.as_bytes()], bump,
+    seeds = [handle.as_bytes()], bump,
     payer = payer,
     space = pda::creator::SIZE
     )]
@@ -69,8 +67,12 @@ pub struct InitNewCreator<'info> {
 
 #[derive(Accounts)]
 pub struct CreateNFT<'info> {
+    #[account(mut,
+    seeds = [creator.handle.as_bytes()], bump
+    )]
+    pub creator: Box<Account<'info, Creator>>,
     #[account(init,
-    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump,
+    seeds = [creator.handle.as_bytes(), & [creator.num_collections + 1]], bump,
     payer = payer,
     space = pda::authority::SIZE
     )]
@@ -124,8 +126,10 @@ pub struct CreateNFT<'info> {
 
 #[derive(Accounts)]
 pub struct CreateCollection<'info> {
+    #[account(seeds = [creator.handle.as_bytes()], bump)]
+    pub creator: Box<Account<'info, Creator>>,
     #[account(mut,
-    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump
+    seeds = [creator.handle.as_bytes(), & [creator.num_collections]], bump
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -181,9 +185,12 @@ pub struct CreateCollection<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(n: u8)]
 pub struct MintNewCopy<'info> {
+    #[account(seeds = [creator.handle.as_bytes()], bump)]
+    pub creator: Box<Account<'info, Creator>>,
     #[account(mut,
-    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump,
+    seeds = [creator.handle.as_bytes(), & [n]], bump,
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -280,10 +287,11 @@ pub struct MintNewCopy<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(n: u8)]
 pub struct AddNewCopyToCollection<'info> {
-    #[account(mut,
-    seeds = [pda::authority::SEED.as_bytes(), mint.key().as_ref()], bump,
-    )]
+    #[account(seeds = [creator.handle.as_bytes()], bump)]
+    pub creator: Box<Account<'info, Creator>>,
+    #[account(seeds = [creator.handle.as_bytes(), & [n]], bump)]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
     address = authority.mint,

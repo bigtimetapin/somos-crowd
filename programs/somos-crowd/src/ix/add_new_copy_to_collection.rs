@@ -3,12 +3,12 @@ use anchor_lang::prelude::{Context, Result};
 use mpl_token_metadata::instruction::set_and_verify_sized_collection_item;
 use crate::{AddNewCopyToCollection, pda};
 
-pub fn ix(ctx: Context<AddNewCopyToCollection>) -> Result<()> {
+pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
     // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
+    let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // build signer seeds
     let seeds = &[
-        pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+        ctx.accounts.creator.handle.as_bytes(), &[n],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];

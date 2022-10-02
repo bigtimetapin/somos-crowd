@@ -2,7 +2,7 @@ use anchor_lang::{Key, ToAccountInfo};
 use anchor_lang::prelude::{Context, CpiContext, Result};
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
-    create_master_edition_v3, create_metadata_accounts_v3, sign_metadata
+    create_master_edition_v3, create_metadata_accounts_v3, sign_metadata,
 };
 use crate::{CreateNFT, pda};
 
@@ -14,10 +14,12 @@ pub fn ix(
     size: u64,
 ) -> Result<()> {
     // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
+    let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
+    // increment collection
+    let increment = ctx.accounts.creator.num_collections + 1;
     // build signer seeds
     let seeds = &[
-        pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+        ctx.accounts.creator.handle.as_bytes(), &[increment],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];
@@ -120,7 +122,10 @@ pub fn ix(
     // init authority data
     let authority = &mut ctx.accounts.authority;
     authority.mint = ctx.accounts.mint.key();
-    authority.total_supply = 0;
+    authority.total_supply = size;
     authority.num_minted = 0;
+    // increment collection
+    let creator = &mut ctx.accounts.creator;
+    creator.num_collections = increment;
     Ok(())
 }

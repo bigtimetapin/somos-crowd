@@ -6,14 +6,14 @@ use crate::pda::creator::Highlighted;
 
 pub fn ix(
     ctx: Context<InitNewCreator>,
-    seed: String,
+    handle: String,
 ) -> Result<()> {
     let creator = &mut ctx.accounts.creator;
     // authority
     creator.authority = ctx.accounts.payer.key();
     // handle
-    validate_handle(&seed)?;
-    creator.handle = seed;
+    validate_handle(&handle)?;
+    creator.handle = handle;
     // collections
     creator.num_collections = 0;
     creator.highlighted = Highlighted { collections: [0; 10] };

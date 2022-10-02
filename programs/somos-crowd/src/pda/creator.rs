@@ -20,7 +20,7 @@ const HIGHLIGHTED_SIZE: usize = 10;
 #[account]
 pub struct Creator {
     pub handle: String,
-    pub authority: Pubkey,
+    pub authority: Pubkey, // TODO; [as NFT, assert]
     pub num_collections: u8,
     pub highlighted: Highlighted,
 }

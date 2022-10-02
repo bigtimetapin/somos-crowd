@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-pub const SEED: &str = "authority";
+pub const BUMP: &str = "authority";
 
 pub const SIZE: usize = 8 // discriminator
     + MINT_SIZE

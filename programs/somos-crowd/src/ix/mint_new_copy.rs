@@ -4,13 +4,13 @@ use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::mint_new_edition_from_master_edition_via_token;
 use crate::{MintNewCopy, pda};
 
-pub fn ix(ctx: Context<MintNewCopy>) -> Result<()> {
+pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     let increment = ctx.accounts.authority.num_minted + 1;
     // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
+    let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // build signer seeds
     let seeds = &[
-        pda::authority::SEED.as_bytes(), &ctx.accounts.mint.key().to_bytes(),
+        ctx.accounts.creator.handle.as_bytes(), &[n],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];
