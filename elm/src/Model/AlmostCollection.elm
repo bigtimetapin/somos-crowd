@@ -2,10 +2,12 @@ module Model.AlmostCollection exposing (AlmostCollection, encode)
 
 import Json.Encode as Encode
 
+
 type alias AlmostCollection =
     { name : String
     , symbol : String
     }
+
 
 encode : AlmostCollection -> String
 encode almostCollection =

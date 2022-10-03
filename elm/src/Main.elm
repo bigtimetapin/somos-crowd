@@ -9,6 +9,7 @@ import Model.Admin as Administrator
 import Model.AlmostCollection as AlmostCollection
 import Model.Collection as Collection
 import Model.Creator as Creator
+import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.Role.Listener as Listener
 import Model.Role.Sender as Sender
@@ -67,18 +68,19 @@ update msg model =
 
         FromCreator from ->
             case from of
-                -- Waiting for wallet
-                CreatorMsg.Connect ->
-                    ( { model | state = Create <| Creator.WaitingForWallet }
-                    , sender <| Sender.encode0 <| Sender.Create from
+                CreatorMsg.AuthorizeHandle handle ->
+                    ( { model | state = Create <| Creator.MaybeHasHandle Creator.WaitingForAuthorization }
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Create from, more = Handle.encode handle }
                     )
 
                 CreatorMsg.InitializeCollection wallet almostCollection ->
                     ( { model | state = Create <| Creator.WaitingForCollectionToInitialize wallet }
-                    , sender <| Sender.encode
-                        <| { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
                     )
-
 
         FromAdmin from ->
             case from of
@@ -110,17 +112,29 @@ update msg model =
                                         Listener.Create toCreator ->
                                             -- what is creator doing?
                                             case toCreator of
-                                                Listener.ConnectAsCreatorSuccess ->
+                                                Listener.HandleAuthorized ->
                                                     let
-                                                        f : Wallet.Wallet -> Model
-                                                        f wallet =
+                                                        f handleWithWallet =
                                                             { model
                                                                 | state =
                                                                     Create <|
-                                                                        Creator.HasWallet wallet
+                                                                        Creator.MaybeHasHandle <|
+                                                                            Creator.Authorized handleWithWallet
                                                             }
                                                     in
-                                                    Listener.decode2 model json Wallet.decode f
+                                                    Listener.decode2 model json Handle.decode f
+
+                                                Listener.HandleUnAuthorized ->
+                                                    let
+                                                        f handleWithWallet =
+                                                            { model
+                                                                | state =
+                                                                    Create <|
+                                                                        Creator.MaybeHasHandle <|
+                                                                            Creator.UnAuthorized handleWithWallet
+                                                            }
+                                                    in
+                                                    Listener.decode2 model json Handle.decode f
 
                                                 Listener.InitializeCollectionSuccess ->
                                                     let
@@ -132,7 +146,6 @@ update msg model =
                                                             }
                                                     in
                                                     Listener.decode2 model json Collection.decode f
-
 
                                 -- undefined role
                                 Nothing ->

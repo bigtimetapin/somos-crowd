@@ -20,7 +20,6 @@ body creator =
                         ]
                         [ Html.button
                             [ class "is-button-1"
-                            , onClick <| FromCreator <| CreatorMsg.Connect
                             , style "float" "right"
                             ]
                             [ Html.text "Connect"
@@ -107,7 +106,6 @@ body creator =
                             []
                             [ Html.button
                                 [ class "is-button-1"
-                                , onClick <| FromCreator <| CreatorMsg.Connect
                                 ]
                                 [ Html.text "Connect"
                                 ]
@@ -117,35 +115,93 @@ body creator =
                             ]
                         ]
 
-                WaitingForWallet ->
+                TypingHandle string ->
                     Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ header
-                        , Html.div
-                            [ class "my-2 is-loading"
-                            ]
-                            []
-                        ]
+                        []
+                        []
 
-                HasWallet wallet ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ View.Generic.Wallet.view wallet
-                        , header
-                        , Html.div
-                            []
-                            [ Html.button
-                                [ class "is-button-1"
-                                , onClick <| FromCreator
-                                    <| CreatorMsg.InitializeCollection
-                                        wallet { name = "elm-name", symbol = "elm-symbol" }
+                MaybeHasHandle maybeHandle ->
+                    case maybeHandle of
+                        Model.Creator.NeedsAuthorization handle ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ Html.text "initialize collection"
+                                [ header
+                                , Html.div
+                                    []
+                                    [ Html.button
+                                        [ class "is-button-1"
+                                        , onClick <|
+                                            FromCreator <|
+                                                CreatorMsg.AuthorizeHandle handle
+                                        ]
+                                        [ Html.text <|
+                                            String.concat
+                                                [ "authorize handle:"
+                                                , " "
+                                                , handle
+                                                ]
+                                        ]
+                                    ]
                                 ]
-                            ]
-                        ]
+
+                        Model.Creator.WaitingForAuthorization ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ header
+                                , Html.div
+                                    [ class "my-2 is-loading"
+                                    ]
+                                    []
+                                ]
+
+                        Model.Creator.UnAuthorized withWallet ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view withWallet.wallet
+                                , header
+                                , Html.div
+                                    []
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "unauthorized handle:"
+                                            , " "
+                                            , withWallet.handle
+                                            ]
+                                    ]
+                                ]
+
+                        Model.Creator.Authorized withWallet ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view withWallet.wallet
+                                , header
+                                , Html.div
+                                    []
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "authorized handle:"
+                                            , " "
+                                            , withWallet.handle
+                                            ]
+                                    ]
+                                , Html.div
+                                    []
+                                    [ Html.button
+                                        [ class "is-button-1"
+                                        , onClick <|
+                                            FromCreator <|
+                                                CreatorMsg.InitializeCollection
+                                                    withWallet.wallet
+                                                    { name = "elm-name", symbol = "elm-symbol" }
+                                        ]
+                                        [ Html.text "initialize collection"
+                                        ]
+                                    ]
+                                ]
 
                 WaitingForCollectionToInitialize wallet ->
                     Html.div
@@ -158,7 +214,6 @@ body creator =
                             ]
                             []
                         ]
-
 
                 HasCollection collection ->
                     Html.div
@@ -187,7 +242,6 @@ body creator =
                                     ]
                             ]
                         ]
-
     in
     Html.div
         [ class "container"

@@ -4,11 +4,13 @@ import Json.Decode as Decode
 import Model.Wallet exposing (Wallet)
 import Util.Decode as Util
 
+
 type alias Collection =
     { wallet : Wallet -- current user; not in on-chain model
     , name : String
     , symbol : String
     }
+
 
 decode : String -> Result String Collection
 decode string =

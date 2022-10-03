@@ -3,6 +3,7 @@ import {network, preflightCommitment, programID} from "./config.js";
 import {PhantomWallet} from "./wallet";
 import idl from "./idl.json";
 
+// TODO; rename & move stuff
 export const textEncoder = new TextEncoder();
 export const textDecoder = new TextDecoder();
 export const connection = new web3.Connection(network, preflightCommitment);

@@ -1,22 +1,21 @@
 module Msg.Creator exposing (FromCreator(..), toString)
 
-
 import Model.AlmostCollection exposing (AlmostCollection)
+import Model.Handle exposing (Handle)
 import Model.Wallet exposing (Wallet)
 
-type
-    FromCreator
-    -- connect
-    = Connect
-    -- init
+
+type FromCreator
+    = AuthorizeHandle Handle
+      -- init
     | InitializeCollection Wallet AlmostCollection
 
 
 toString : FromCreator -> String
 toString fromCreator =
     case fromCreator of
-        Connect ->
-            "creator-connect"
+        AuthorizeHandle _ ->
+            "creator-authorize-handle"
 
         InitializeCollection _ _ ->
             "creator-initialize-collection"

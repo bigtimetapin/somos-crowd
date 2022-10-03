@@ -12,7 +12,8 @@ type Listener
 
 
 type ToCreator
-    = ConnectAsCreatorSuccess
+    = HandleAuthorized
+    | HandleUnAuthorized
     | InitializeCollectionSuccess
 
 
@@ -69,8 +70,11 @@ decode2 model json moreDecoder update =
 fromString : String -> Maybe Listener
 fromString string =
     case string of
-        "creator-connect-success" ->
-            Just <| Create ConnectAsCreatorSuccess
+        "creator-handle-authorized" ->
+            Just <| Create HandleAuthorized
+
+        "creator-handle-unauthorized" ->
+            Just <| Create HandleUnAuthorized
 
         "creator-initialize-collection-success" ->
             Just <| Create InitializeCollectionSuccess

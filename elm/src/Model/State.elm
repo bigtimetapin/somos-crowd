@@ -19,6 +19,9 @@ urlParser =
     UrlParser.oneOf
         [ UrlParser.map (Create Creator.Top) UrlParser.top
         , UrlParser.map (Create Creator.Top) (UrlParser.s "creator")
+        , UrlParser.map
+            (\handle -> Create (Creator.MaybeHasHandle (Creator.NeedsAuthorization handle)))
+            (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map (Admin Administrator.Top) (UrlParser.s "admin")
         ]
 
