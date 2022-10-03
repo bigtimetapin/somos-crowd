@@ -113,6 +113,14 @@ body creator =
                                 """ to get started or to edit your profile
                                 """
                             ]
+                        , Html.div
+                            []
+                            [ Html.button -- TODO; typing handle
+                                [ class "is-button-1"
+                                ]
+                                [
+                                ]
+                            ]
                         ]
 
                 TypingHandle string ->
