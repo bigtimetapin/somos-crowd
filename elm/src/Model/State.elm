@@ -3,7 +3,7 @@ module Model.State exposing (State(..), href, parse)
 import Html
 import Html.Attributes
 import Model.Admin as Administrator exposing (Admin)
-import Model.Creator as Creator exposing (Creator)
+import Model.Creator.Creator as Creator exposing (Creator)
 import Url
 import Url.Parser as UrlParser exposing ((</>))
 
@@ -20,7 +20,7 @@ urlParser =
         [ UrlParser.map (Create Creator.Top) UrlParser.top
         , UrlParser.map (Create Creator.Top) (UrlParser.s "creator")
         , UrlParser.map
-            (\handle -> Create (Creator.MaybeHasHandle (Creator.NeedsAuthorization handle)))
+            (\handle -> Create (Creator.MaybeExisting handle))
             (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map (Admin Administrator.Top) (UrlParser.s "admin")
         ]

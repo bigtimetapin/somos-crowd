@@ -1,10 +1,15 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, href, style, target)
-import Html.Events exposing (onClick)
-import Model.Creator exposing (Creator(..))
-import Msg.Creator as CreatorMsg
+import Html.Attributes exposing (class, href, placeholder, target, type_)
+import Html.Events exposing (onClick, onInput)
+import Model.Creator.Creator exposing (Creator(..))
+import Model.Creator.Existing as Existing
+import Model.Creator.New as New
+import Model.HandleForm as HandleForm
+import Msg.Creator.Creator as CreatorMsg
+import Msg.Creator.Existing as ExistingMsg
+import Msg.Creator.New as NewMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Wallet
 
@@ -16,15 +21,9 @@ body creator =
             case creator of
                 Top ->
                     Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6 pb-6"
+                        [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ Html.button
-                            [ class "is-button-1"
-                            , style "float" "right"
-                            ]
-                            [ Html.text "Connect"
-                            ]
-                        , header
+                        [ header
                         , Html.div
                             [ class "pb-2"
                             ]
@@ -104,152 +103,422 @@ body creator =
                             ]
                         , Html.div
                             []
-                            [ Html.button
+                            [ Html.text
+                                """Login as
+                                """
+                            , Html.button
                                 [ class "is-button-1"
+                                , onClick <| FromCreator
+                                    <| CreatorMsg.Existing <| ExistingMsg.HandleForm <| HandleForm.Start
                                 ]
-                                [ Html.text "Connect"
+                                [ Html.text "existing creator"
                                 ]
                             , Html.text
-                                """ to get started or to edit your profile
+                                """ or get started with a
+                                """
+                            , Html.button
+                                [ class "is-button-1"
+                                , onClick <| FromCreator <| CreatorMsg.New <| NewMsg.HandleForm <| HandleForm.Start
+                                ]
+                                [ Html.text "new profile"
+                                ]
+                            ]
+                        ]
+
+                New newCreator ->
+                    case newCreator of
+                        New.Top wallet ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view wallet
+                                , header
+                                , Html.div
+                                    [ class "field"
+                                    ]
+                                    [ Html.p
+                                        [ class "control has-icons-left"
+                                        ]
+                                        [ Html.input
+                                            [ class "input"
+                                            , type_ "text"
+                                            , placeholder "Handle"
+                                            , onInput <| \s ->
+                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
+                                                    <| HandleForm.TypingHandle s
+                                            ]
+                                            []
+                                        , Html.span
+                                            [ class "icon is-left"
+                                            ]
+                                            [ Html.i
+                                                [ class "fas fa-at"
+                                                ]
+                                                []
+                                            ]
+                                        ]
+                                    ]
+                                ]
+
+
+                        New.TypingHandle wallet string ->
+                            let
+                                select =
+                                    case string of
+                                        "" ->
+                                            Html.div
+                                                []
+                                                []
+
+                                        _ ->
+                                            Html.div
+                                                []
+                                                [ Html.button
+                                                    [ class "is-button-1"
+                                                    , onClick <| FromCreator <| CreatorMsg.New <| NewMsg.HandleForm <|
+                                                        HandleForm.ConfirmHandle string
+                                                    ]
+                                                    [ Html.text <|
+                                                        String.concat
+                                                            [ "proceed with handle as:"
+                                                            , " "
+                                                            , string
+                                                            ]
+                                                    ]
+                                                ]
+                            in
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view wallet
+                                , header
+                                , Html.div
+                                    [ class "field"
+                                    ]
+                                    [ Html.p
+                                        [ class "control has-icons-left"
+                                        ]
+                                        [ Html.input
+                                            [ class "input"
+                                            , type_ "text"
+                                            , placeholder "Handle"
+                                            , onInput <| \s ->
+                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
+                                                    <| HandleForm.TypingHandle s
+                                            ]
+                                            []
+                                        , Html.span
+                                            [ class "icon is-left"
+                                            ]
+                                            [ Html.i
+                                                [ class "fas fa-at"
+                                                ]
+                                                []
+                                            ]
+                                        ]
+                                    ]
+                                , select
+                                ]
+
+
+                        New.HandleInvalid wallet string ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view wallet
+                                , header
+                                , Html.div
+                                    [ class "has-border-2 px-2 py-2"
+                                    ]
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "input handle found to be invalid:"
+                                            , " "
+                                            , string
+                                            ]
+                                    , Html.div
+                                        [ class "pt-1"
+                                        ]
+                                        [ Html.button
+                                            [ class "is-button-1"
+                                            , onClick <|
+                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
+                                                    <| HandleForm.TypingHandle string
+                                            ]
+                                            [ Html.text
+                                                """try again
+                                                """
+                                            ]
+                                        ]
+                                    ]
+                                ]
+
+
+                        New.HandleAlreadyExists wallet string ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view wallet
+                                , header
+                                , Html.div
+                                    [ class "has-border-2 px-2 py-2"
+                                    ]
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "input handle already exists:"
+                                            , " "
+                                            , string
+                                            ]
+                                    , Html.div
+                                        [ class "pt-1"
+                                        ]
+                                        [ Html.button
+                                            [ class "is-button-1"
+                                            , onClick <|
+                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
+                                                    <| HandleForm.TypingHandle string
+                                            ]
+                                            [ Html.text
+                                                """try again
+                                                """
+                                            ]
+                                        ]
+                                    ]
+                                ]
+
+
+
+                Existing existingCreator ->
+                    case existingCreator of
+                        Existing.Top wallet ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view wallet
+                                , header
+                                , Html.div
+                                    [ class "field"
+                                    ]
+                                    [ Html.p
+                                        [ class "control has-icons-left"
+                                        ]
+                                        [ Html.input
+                                            [ class "input"
+                                            , type_ "text"
+                                            , placeholder "Handle"
+                                            , onInput <| \s ->
+                                                FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
+                                                    <| HandleForm.TypingHandle s
+                                            ]
+                                            []
+                                        , Html.span
+                                            [ class "icon is-left"
+                                            ]
+                                            [ Html.i
+                                                [ class "fas fa-at"
+                                                ]
+                                                []
+                                            ]
+                                        ]
+                                    ]
+                                ]
+
+
+                        Existing.HandleForm wallet handleFormStatus ->
+                            case handleFormStatus of
+                                Existing.TypingHandle string ->
+                                    let
+                                        select =
+                                            case string of
+                                                "" ->
+                                                    Html.div
+                                                        []
+                                                        []
+
+                                                _ ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.button
+                                                            [ class "is-button-1"
+                                                            , onClick <| FromCreator
+                                                                <| CreatorMsg.Existing <| ExistingMsg.HandleForm
+                                                                <| HandleForm.ConfirmHandle string
+                                                            ]
+                                                            [ Html.text <|
+                                                                String.concat
+                                                                    [ "proceed with handle as:"
+                                                                    , " "
+                                                                    , string
+                                                                    ]
+                                                            ]
+                                                        ]
+                                    in
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
+                                        , Html.div
+                                            [ class "field"
+                                            ]
+                                            [ Html.p
+                                                [ class "control has-icons-left"
+                                                ]
+                                                [ Html.input
+                                                    [ class "input"
+                                                    , type_ "text"
+                                                    , placeholder "Handle"
+                                                    , onInput <| \s ->
+                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
+                                                            <| HandleForm.TypingHandle s
+                                                    ]
+                                                    []
+                                                , Html.span
+                                                    [ class "icon is-left"
+                                                    ]
+                                                    [ Html.i
+                                                        [ class "fas fa-at"
+                                                        ]
+                                                        []
+                                                    ]
+                                                ]
+                                            ]
+                                        , select
+                                        ]
+
+
+                                Existing.HandleInvalid string ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
+                                        , Html.div
+                                            [ class "has-border-2 px-2 py-2"
+                                            ]
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "input handle found to be invalid:"
+                                                    , " "
+                                                    , string
+                                                    ]
+                                            , Html.div
+                                                [ class "pt-1"
+                                                ]
+                                                [ Html.button
+                                                    [ class "is-button-1"
+                                                    , onClick <|
+                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
+                                                            <| HandleForm.TypingHandle string
+                                                    ]
+                                                    [ Html.text
+                                                        """try again
+                                                        """
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+
+
+                                Existing.HandleDoesNotExist string ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
+                                        , Html.div
+                                            [ class "has-border-2 px-2 py-2"
+                                            ]
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "input handle does-not-exist:"
+                                                    , " "
+                                                    , string
+                                                    ]
+                                            , Html.div
+                                                [ class "pt-1"
+                                                ]
+                                                [ Html.button
+                                                    [ class "is-button-1"
+                                                    , onClick <|
+                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
+                                                            <| HandleForm.TypingHandle string
+                                                    ]
+                                                    [ Html.text
+                                                        """try again
+                                                        """
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+
+
+                                Existing.UnAuthorized handle ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
+                                        , Html.div
+                                            [ class "has-border-2 px-2 py-2"
+                                            ]
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "connected wallet is not authorized to manage handle:"
+                                                    , " "
+                                                    , handle
+                                                    ]
+                                            , Html.div
+                                                [ class "pt-1"
+                                                ]
+                                                [ Html.button
+                                                    [ class "is-button-1"
+                                                    , onClick <|
+                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
+                                                            <| HandleForm.TypingHandle handle
+                                                    ]
+                                                    [ Html.text
+                                                        """try again
+                                                        """
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+
+
+
+
+                        Existing.Authorized wallet handle ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view wallet
+                                , header
+                                , Html.div
+                                    []
+                                    [ Html.text
+                                        """authorized
+                                        """
+                                    ]
+                                ]
+
+
+
+                MaybeExisting string ->
+                    Html.div
+                        [ class "has-border-2 px-2 pt-2 pb-6"
+                        ]
+                        [ header
+                        , Html.div
+                            []
+                            [ Html.text
+                                """maybe existing
                                 """
                             ]
-                        , Html.div
-                            []
-                            [ Html.button -- TODO; typing handle
-                                [ class "is-button-1"
-                                ]
-                                [
-                                ]
-                            ]
                         ]
 
-                TypingHandle string ->
-                    Html.div
-                        []
-                        []
 
-                MaybeHasHandle maybeHandle ->
-                    case maybeHandle of
-                        Model.Creator.NeedsAuthorization handle ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ header
-                                , Html.div
-                                    []
-                                    [ Html.button
-                                        [ class "is-button-1"
-                                        , onClick <|
-                                            FromCreator <|
-                                                CreatorMsg.AuthorizeHandle handle
-                                        ]
-                                        [ Html.text <|
-                                            String.concat
-                                                [ "authorize handle:"
-                                                , " "
-                                                , handle
-                                                ]
-                                        ]
-                                    ]
-                                ]
 
-                        Model.Creator.WaitingForAuthorization ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ header
-                                , Html.div
-                                    [ class "my-2 is-loading"
-                                    ]
-                                    []
-                                ]
-
-                        Model.Creator.UnAuthorized withWallet ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ View.Generic.Wallet.view withWallet.wallet
-                                , header
-                                , Html.div
-                                    []
-                                    [ Html.text <|
-                                        String.concat
-                                            [ "unauthorized handle:"
-                                            , " "
-                                            , withWallet.handle
-                                            ]
-                                    ]
-                                ]
-
-                        Model.Creator.Authorized withWallet ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ View.Generic.Wallet.view withWallet.wallet
-                                , header
-                                , Html.div
-                                    []
-                                    [ Html.text <|
-                                        String.concat
-                                            [ "authorized handle:"
-                                            , " "
-                                            , withWallet.handle
-                                            ]
-                                    ]
-                                , Html.div
-                                    []
-                                    [ Html.button
-                                        [ class "is-button-1"
-                                        , onClick <|
-                                            FromCreator <|
-                                                CreatorMsg.InitializeCollection
-                                                    withWallet.wallet
-                                                    { name = "elm-name", symbol = "elm-symbol" }
-                                        ]
-                                        [ Html.text "initialize collection"
-                                        ]
-                                    ]
-                                ]
-
-                WaitingForCollectionToInitialize wallet ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ View.Generic.Wallet.view wallet
-                        , header
-                        , Html.div
-                            [ class "my-2 is-loading"
-                            ]
-                            []
-                        ]
-
-                HasCollection collection ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ View.Generic.Wallet.view collection.wallet
-                        , header
-                        , Html.div
-                            [ class "has-border-2 px-2 py-2"
-                            ]
-                            [ Html.text <|
-                                String.join
-                                    " "
-                                    [ "name:"
-                                    , collection.name
-                                    ]
-                            ]
-                        , Html.div
-                            [ class "has-border-2 px-2 py-2"
-                            ]
-                            [ Html.text <|
-                                String.join
-                                    " "
-                                    [ "symbol:"
-                                    , collection.symbol
-                                    ]
-                            ]
-                        ]
     in
     Html.div
         [ class "container"

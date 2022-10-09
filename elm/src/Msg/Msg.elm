@@ -3,7 +3,7 @@ module Msg.Msg exposing (Msg(..), resetViewport)
 import Browser
 import Browser.Dom as Dom
 import Msg.Admin exposing (FromAdmin)
-import Msg.Creator exposing (FromCreator)
+import Msg.Creator.Creator exposing (FromCreator)
 import Msg.Js exposing (FromJs)
 import Task
 import Url

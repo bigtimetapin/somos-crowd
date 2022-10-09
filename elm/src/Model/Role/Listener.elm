@@ -1,7 +1,8 @@
-module Model.Role.Listener exposing (Listener(..), ToCreator(..), WithMore, decode0, decode2)
+module Model.Role.Listener exposing (Listener(..), WithMore, decode0, decode2)
 
 import Json.Decode as Decode
 import Model.Model exposing (Model)
+import Model.Role.Creator.Creator as Creator exposing (ToCreator)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
 import Util.Decode as Util
@@ -9,12 +10,6 @@ import Util.Decode as Util
 
 type Listener
     = Create ToCreator
-
-
-type ToCreator
-    = HandleAuthorized
-    | HandleUnAuthorized
-    | InitializeCollectionSuccess
 
 
 type alias WithMore =
@@ -69,17 +64,12 @@ decode2 model json moreDecoder update =
 
 fromString : String -> Maybe Listener
 fromString string =
-    case string of
-        "creator-handle-authorized" ->
-            Just <| Create HandleAuthorized
+    case Creator.fromString string of
+        Just toCreator ->
+            Just <| Create toCreator
 
-        "creator-handle-unauthorized" ->
-            Just <| Create HandleUnAuthorized
 
-        "creator-initialize-collection-success" ->
-            Just <| Create InitializeCollectionSuccess
-
-        _ ->
+        Nothing ->
             Nothing
 
 
