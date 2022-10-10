@@ -84,7 +84,9 @@ update msg model =
                                     )
 
                                 HandleForm.TypingHandle string ->
-                                    ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle string }
+                                    ( { model | state = Create <| Creator.New <|
+                                        NewCreator.TypingHandle <| String.toLower string
+                                        }
                                     , Cmd.none
                                     )
 
@@ -121,7 +123,7 @@ update msg model =
                                             Create <|
                                                 Creator.Existing <|
                                                     ExistingCreator.HandleForm <|
-                                                        ExistingCreator.TypingHandle string
+                                                        ExistingCreator.TypingHandle <| String.toLower string
                                       }
                                     , Cmd.none
                                     )
@@ -131,7 +133,8 @@ update msg model =
                                         | state =
                                             Create <|
                                                 Creator.Existing <|
-                                                    ExistingCreator.HandleForm ExistingCreator.WaitingForHandleConfirmation
+                                                    ExistingCreator.HandleForm
+                                                        ExistingCreator.WaitingForHandleConfirmation
                                       }
                                     , sender <|
                                         Sender.encode <|
@@ -172,29 +175,28 @@ update msg model =
                                                     case new of
                                                         ToNewCreator.HandleInvalid ->
                                                             let
-                                                                f handleWithWallet =
+                                                                f handle =
                                                                     { model
                                                                         | state =
                                                                             Create <|
                                                                                 Creator.New <|
-                                                                                    NewCreator.HandleInvalid
-                                                                                        handleWithWallet.handle
+                                                                                    NewCreator.HandleInvalid handle
                                                                     }
                                                             in
-                                                            Listener.decode2 model json Handle.decode f
+                                                            Listener.decode model json Handle.decode f
 
                                                         ToNewCreator.HandleAlreadyExists ->
                                                             let
-                                                                f handleWithWallet =
+                                                                f handle =
                                                                     { model
                                                                         | state =
                                                                             Create <|
                                                                                 Creator.New <|
                                                                                     NewCreator.HandleAlreadyExists
-                                                                                        handleWithWallet.handle
+                                                                                        handle
                                                                     }
                                                             in
-                                                            Listener.decode2 model json Handle.decode f
+                                                            Listener.decode model json Handle.decode f
 
                                                         ToNewCreator.NewHandleSuccess ->
                                                             let
@@ -208,7 +210,7 @@ update msg model =
                                                                                         handleWithWallet.handle
                                                                     }
                                                             in
-                                                            Listener.decode2 model json Handle.decode f
+                                                            Listener.decode model json Handle.decodeWithWallet f
 
                                                 ToCreator.Existing existing ->
                                                     case existing of
@@ -216,45 +218,45 @@ update msg model =
                                                             case handleFormStatus of
                                                                 ToExistingCreator.Invalid ->
                                                                     let
-                                                                        f handleWithWallet =
+                                                                        f handle =
                                                                             { model
                                                                                 | state =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
                                                                                                 ExistingCreator.HandleInvalid
-                                                                                                    handleWithWallet.handle
+                                                                                                    handle
                                                                             }
                                                                     in
-                                                                    Listener.decode2 model json Handle.decode f
+                                                                    Listener.decode model json Handle.decode f
 
                                                                 ToExistingCreator.DoesNotExist ->
                                                                     let
-                                                                        f handleWithWallet =
+                                                                        f handle =
                                                                             { model
                                                                                 | state =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
                                                                                                 ExistingCreator.HandleDoesNotExist
-                                                                                                    handleWithWallet.handle
+                                                                                                    handle
                                                                             }
                                                                     in
-                                                                    Listener.decode2 model json Handle.decode f
+                                                                    Listener.decode model json Handle.decode f
 
                                                                 ToExistingCreator.UnAuthorized ->
                                                                     let
-                                                                        f handleWithWallet =
+                                                                        f handle =
                                                                             { model
                                                                                 | state =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
                                                                                                 ExistingCreator.UnAuthorized
-                                                                                                    handleWithWallet.handle
+                                                                                                    handle
                                                                             }
                                                                     in
-                                                                    Listener.decode2 model json Handle.decode f
+                                                                    Listener.decode model json Handle.decode f
 
                                                                 ToExistingCreator.Authorized ->
                                                                     let
@@ -268,7 +270,7 @@ update msg model =
                                                                                                 handleWithWallet.handle
                                                                             }
                                                                     in
-                                                                    Listener.decode2 model json Handle.decode f
+                                                                    Listener.decode model json Handle.decodeWithWallet f
 
                                 -- undefined role
                                 Nothing ->

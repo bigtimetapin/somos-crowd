@@ -1,12 +1,12 @@
 import {Program, AnchorProvider, web3} from "@project-serum/anchor";
-import {network, preflightCommitment, programID} from "./config.js";
-import {PhantomWallet} from "./wallet";
+import {NETWORK, COMMITMENT, PROGRAM_ID} from "./config.js";
+import {EphemeralWallet, PhantomWallet} from "./wallet";
 import idl from "./idl.json";
 
 // TODO; rename & move stuff
 export const textEncoder = new TextEncoder();
 export const textDecoder = new TextDecoder();
-export const connection = new web3.Connection(network, preflightCommitment);
+export const connection = new web3.Connection(NETWORK, COMMITMENT);
 export const mplPrefix = "metadata";
 export const mplEdition = "edition";
 export const mplProgramId = new web3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
@@ -16,12 +16,22 @@ export const splAssociatedTokenProgramId = new web3.PublicKey('ATokenGPvbdGVxr1b
 // get provider & program
 export function getPP(_phantom) {
     // build wallet
-    const wallet = new PhantomWallet(_phantom)
+    const wallet = new PhantomWallet(_phantom);
     // set provider
-    const provider = new AnchorProvider(connection, wallet, preflightCommitment);
-    // fetch current state of program
+    const provider = new AnchorProvider(connection, wallet, COMMITMENT);
     // program
-    const program = new Program(idl, programID, provider);
+    const program = new Program(idl, PROGRAM_ID, provider);
+    return {provider: provider, program: program}
+}
+
+// get ephemeral provider & program
+export function getEphemeralPP(){
+    // build wallet
+    const wallet = new EphemeralWallet();
+    // set provider
+    const provider = new AnchorProvider(connection, wallet, COMMITMENT);
+    // program
+    const program = new Program(idl, PROGRAM_ID, provider);
     return {provider: provider, program: program}
 }
 

@@ -28,3 +28,26 @@ export class PhantomWallet implements Wallet {
     }
 
 }
+
+export class EphemeralWallet implements Wallet {
+
+    constructor(readonly payer) {
+    }
+
+    get publicKey(): PublicKey {
+        return this.payer.publicKey;
+    }
+
+    async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
+        return txs.map((t) => {
+            t.partialSign(this.payer);
+            return t;
+        });
+    }
+
+    async signTransaction(tx: Transaction): Promise<Transaction> {
+        tx.partialSign(this.payer);
+        return tx;
+    }
+
+}

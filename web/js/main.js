@@ -1,7 +1,8 @@
 import {getPhantom} from "./phantom";
 import {creatNft} from "./anchor/init/init";
-import {getPP} from "./anchor/util";
-import {deriveCreatorPda} from "./anchor/pda/derive-creator-pda";
+import {getEphemeralPP, getPP} from "./anchor/util";
+import {validateHandle, assertCreatorPdaDoesNotExistAlready} from "./anchor/pda/creator-pda";
+import {initNewCreator} from "./anchor/init-new-creator";
 
 // init phantom
 let phantom = null;
@@ -13,45 +14,33 @@ app.ports.sender.subscribe(async function (json) {
         // match on sender role
         const sender = parsed.sender;
         // creator connect
-        if (sender === "creator-authorize-handle") {
-            // get phantom
-            phantom = await getPhantom();
-            const publicKey = phantom.connection.publicKey.toString();
-            // get provider & program
-            const pp = getPP(phantom);
+        if (sender === "new-creator-confirm-handle") {
             // parse more json
             const more = JSON.parse(parsed.more);
-            // derive creator-pda
-            const creator = await deriveCreatorPda(pp.provider, pp.program, more.handle);
-            // authorize
-            if (publicKey === creator.authority) {
-                app.ports.success.send(
-                    JSON.stringify(
-                        {
-                            listener: "creator-handle-authorized",
-                            more: JSON.stringify(
-                                {
-                                    handle: more.handle,
-                                    wallet: publicKey
-                                }
-                            )
-                        }
-                    )
+            // validate handle
+            const validated = validateHandle(more.handle);
+            if (validated) {
+                // get ephemeral provider & program
+                const ephemeralPP = getEphemeralPP();
+                // assert creator pda does-not-exist
+                const creator = await assertCreatorPdaDoesNotExistAlready(
+                    ephemeralPP.provider,
+                    ephemeralPP.program,
+                    validated
                 );
-            } else {
-                app.ports.success.send(
-                    JSON.stringify(
-                        {
-                            listener: "creator-handle-unauthorized",
-                            more: JSON.stringify(
-                                {
-                                    handle: more.handle,
-                                    wallet: publicKey
-                                }
-                            )
-                        }
-                    )
-                );
+                // create pda
+                if (creator) {
+                    // get phantom
+                    phantom = await getPhantom();
+                    // get provider & program
+                    const pp = getPP(phantom);
+                    // invoke init-new-creator
+                    console.log(validated);
+                    console.log(creator);
+                    console.log(pp.provider.connection._blockhashInfo);
+                    await initNewCreator(pp.provider, pp.program, validated, creator);
+                    console.log(pp.provider.connection._blockhashInfo);
+                }
             }
             // or creator initialize collection
         } else if (sender === "creator-initialize-collection") {

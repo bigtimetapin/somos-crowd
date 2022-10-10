@@ -1,4 +1,4 @@
-module Model.Handle exposing (Handle, WithWallet, decode, encode)
+module Model.Handle exposing (Handle, WithWallet, decode, decodeWithWallet, encode)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -27,8 +27,18 @@ type alias WithWallet =
     }
 
 
-decode : String -> Result String WithWallet
+decode : String -> Result String Wallet
 decode string =
+    let
+        decoder : Decode.Decoder Wallet
+        decoder =
+            Decode.field "handle" Decode.string
+    in
+    Util.decode string decoder identity
+
+
+decodeWithWallet : String -> Result String WithWallet
+decodeWithWallet string =
     let
         decoder : Decode.Decoder WithWallet
         decoder =

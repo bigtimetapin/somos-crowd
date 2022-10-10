@@ -1,4 +1,4 @@
-module Sub.Listener.Listener exposing (Listener(..), WithMore, decode0, decode2)
+module Sub.Listener.Listener exposing (Listener(..), WithMore, decode, decode0)
 
 import Json.Decode as Decode
 import Model.Model exposing (Model)
@@ -28,18 +28,9 @@ decode0 string =
     Util.decode string decoder (\a -> a)
 
 
-decode1 : String -> Result String Json
-decode1 string =
-    let
-        decoder =
-            Decode.field "more" Decode.string
-    in
-    Util.decode string decoder (\a -> a)
-
-
-decode2 : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
-decode2 model json moreDecoder update =
-    case decode1 json of
+decode : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
+decode model json moreDecoder update =
+    case decodeMore json of
         -- more found
         Ok moreJson ->
             -- decode
@@ -60,6 +51,15 @@ decode2 model json moreDecoder update =
             ( { model | state = Model.Error string }
             , Cmd.none
             )
+
+
+decodeMore : String -> Result String Json
+decodeMore string =
+    let
+        decoder =
+            Decode.field "more" Decode.string
+    in
+    Util.decode string decoder (\a -> a)
 
 
 fromString : String -> Maybe Listener
