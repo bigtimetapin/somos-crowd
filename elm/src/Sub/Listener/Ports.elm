@@ -1,4 +1,4 @@
-port module Sub.Listener exposing (..)
+port module Sub.Listener.Ports exposing (error, success)
 
 
 port success : (Json -> msg) -> Sub msg

@@ -3,7 +3,7 @@ module View.Header exposing (view)
 import Html exposing (Html)
 import Html.Attributes exposing (class, src, style, width)
 import Html.Events exposing (onClick)
-import Model.Creator as Creator
+import Model.Creator.Creator as Creator
 import Model.Model exposing (Model)
 import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))

@@ -108,8 +108,11 @@ body creator =
                                 """
                             , Html.button
                                 [ class "is-button-1"
-                                , onClick <| FromCreator
-                                    <| CreatorMsg.Existing <| ExistingMsg.HandleForm <| HandleForm.Start
+                                , onClick <|
+                                    FromCreator <|
+                                        CreatorMsg.Existing <|
+                                            ExistingMsg.HandleForm <|
+                                                HandleForm.Start
                                 ]
                                 [ Html.text "existing creator"
                                 ]
@@ -127,12 +130,11 @@ body creator =
 
                 New newCreator ->
                     case newCreator of
-                        New.Top wallet ->
+                        New.Top ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view wallet
-                                , header
+                                [ header
                                 , Html.div
                                     [ class "field"
                                     ]
@@ -143,9 +145,12 @@ body creator =
                                             [ class "input"
                                             , type_ "text"
                                             , placeholder "Handle"
-                                            , onInput <| \s ->
-                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
-                                                    <| HandleForm.TypingHandle s
+                                            , onInput <|
+                                                \s ->
+                                                    FromCreator <|
+                                                        CreatorMsg.New <|
+                                                            NewMsg.HandleForm <|
+                                                                HandleForm.TypingHandle s
                                             ]
                                             []
                                         , Html.span
@@ -160,8 +165,7 @@ body creator =
                                     ]
                                 ]
 
-
-                        New.TypingHandle wallet string ->
+                        New.TypingHandle string ->
                             let
                                 select =
                                     case string of
@@ -175,8 +179,11 @@ body creator =
                                                 []
                                                 [ Html.button
                                                     [ class "is-button-1"
-                                                    , onClick <| FromCreator <| CreatorMsg.New <| NewMsg.HandleForm <|
-                                                        HandleForm.ConfirmHandle string
+                                                    , onClick <|
+                                                        FromCreator <|
+                                                            CreatorMsg.New <|
+                                                                NewMsg.HandleForm <|
+                                                                    HandleForm.ConfirmHandle string
                                                     ]
                                                     [ Html.text <|
                                                         String.concat
@@ -190,8 +197,7 @@ body creator =
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view wallet
-                                , header
+                                [ header
                                 , Html.div
                                     [ class "field"
                                     ]
@@ -202,9 +208,12 @@ body creator =
                                             [ class "input"
                                             , type_ "text"
                                             , placeholder "Handle"
-                                            , onInput <| \s ->
-                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
-                                                    <| HandleForm.TypingHandle s
+                                            , onInput <|
+                                                \s ->
+                                                    FromCreator <|
+                                                        CreatorMsg.New <|
+                                                            NewMsg.HandleForm <|
+                                                                HandleForm.TypingHandle s
                                             ]
                                             []
                                         , Html.span
@@ -220,13 +229,22 @@ body creator =
                                 , select
                                 ]
 
-
-                        New.HandleInvalid wallet string ->
+                        New.WaitingForHandleConfirmation ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view wallet
-                                , header
+                                [ header
+                                , Html.div
+                                    [ class "is-loading"
+                                    ]
+                                    []
+                                ]
+
+                        New.HandleInvalid string ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ header
                                 , Html.div
                                     [ class "has-border-2 px-2 py-2"
                                     ]
@@ -242,8 +260,10 @@ body creator =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
-                                                    <| HandleForm.TypingHandle string
+                                                FromCreator <|
+                                                    CreatorMsg.New <|
+                                                        NewMsg.HandleForm <|
+                                                            HandleForm.TypingHandle string
                                             ]
                                             [ Html.text
                                                 """try again
@@ -253,13 +273,11 @@ body creator =
                                     ]
                                 ]
 
-
-                        New.HandleAlreadyExists wallet string ->
+                        New.HandleAlreadyExists string ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view wallet
-                                , header
+                                [ header
                                 , Html.div
                                     [ class "has-border-2 px-2 py-2"
                                     ]
@@ -275,8 +293,10 @@ body creator =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCreator <| CreatorMsg.New <| NewMsg.HandleForm
-                                                    <| HandleForm.TypingHandle string
+                                                FromCreator <|
+                                                    CreatorMsg.New <|
+                                                        NewMsg.HandleForm <|
+                                                            HandleForm.TypingHandle string
                                             ]
                                             [ Html.text
                                                 """try again
@@ -286,16 +306,13 @@ body creator =
                                     ]
                                 ]
 
-
-
                 Existing existingCreator ->
                     case existingCreator of
-                        Existing.Top wallet ->
+                        Existing.Top ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view wallet
-                                , header
+                                [ header
                                 , Html.div
                                     [ class "field"
                                     ]
@@ -306,9 +323,12 @@ body creator =
                                             [ class "input"
                                             , type_ "text"
                                             , placeholder "Handle"
-                                            , onInput <| \s ->
-                                                FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
-                                                    <| HandleForm.TypingHandle s
+                                            , onInput <|
+                                                \s ->
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing <|
+                                                            ExistingMsg.HandleForm <|
+                                                                HandleForm.TypingHandle s
                                             ]
                                             []
                                         , Html.span
@@ -323,8 +343,7 @@ body creator =
                                     ]
                                 ]
 
-
-                        Existing.HandleForm wallet handleFormStatus ->
+                        Existing.HandleForm handleFormStatus ->
                             case handleFormStatus of
                                 Existing.TypingHandle string ->
                                     let
@@ -340,9 +359,11 @@ body creator =
                                                         []
                                                         [ Html.button
                                                             [ class "is-button-1"
-                                                            , onClick <| FromCreator
-                                                                <| CreatorMsg.Existing <| ExistingMsg.HandleForm
-                                                                <| HandleForm.ConfirmHandle string
+                                                            , onClick <|
+                                                                FromCreator <|
+                                                                    CreatorMsg.Existing <|
+                                                                        ExistingMsg.HandleForm <|
+                                                                            HandleForm.ConfirmHandle string
                                                             ]
                                                             [ Html.text <|
                                                                 String.concat
@@ -356,8 +377,7 @@ body creator =
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
+                                        [ header
                                         , Html.div
                                             [ class "field"
                                             ]
@@ -368,9 +388,12 @@ body creator =
                                                     [ class "input"
                                                     , type_ "text"
                                                     , placeholder "Handle"
-                                                    , onInput <| \s ->
-                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
-                                                            <| HandleForm.TypingHandle s
+                                                    , onInput <|
+                                                        \s ->
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing <|
+                                                                    ExistingMsg.HandleForm <|
+                                                                        HandleForm.TypingHandle s
                                                     ]
                                                     []
                                                 , Html.span
@@ -386,13 +409,22 @@ body creator =
                                         , select
                                         ]
 
+                                Existing.WaitingForHandleConfirmation ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ header
+                                        , Html.div
+                                            [ class "is-loading"
+                                            ]
+                                            []
+                                        ]
 
                                 Existing.HandleInvalid string ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
+                                        [ header
                                         , Html.div
                                             [ class "has-border-2 px-2 py-2"
                                             ]
@@ -408,8 +440,10 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
-                                                            <| HandleForm.TypingHandle string
+                                                        FromCreator <|
+                                                            CreatorMsg.Existing <|
+                                                                ExistingMsg.HandleForm <|
+                                                                    HandleForm.TypingHandle string
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -419,13 +453,11 @@ body creator =
                                             ]
                                         ]
 
-
                                 Existing.HandleDoesNotExist string ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
+                                        [ header
                                         , Html.div
                                             [ class "has-border-2 px-2 py-2"
                                             ]
@@ -441,8 +473,10 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
-                                                            <| HandleForm.TypingHandle string
+                                                        FromCreator <|
+                                                            CreatorMsg.Existing <|
+                                                                ExistingMsg.HandleForm <|
+                                                                    HandleForm.TypingHandle string
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -452,13 +486,11 @@ body creator =
                                             ]
                                         ]
 
-
                                 Existing.UnAuthorized handle ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
+                                        [ header
                                         , Html.div
                                             [ class "has-border-2 px-2 py-2"
                                             ]
@@ -474,8 +506,10 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <| CreatorMsg.Existing <| ExistingMsg.HandleForm
-                                                            <| HandleForm.TypingHandle handle
+                                                        FromCreator <|
+                                                            CreatorMsg.Existing <|
+                                                                ExistingMsg.HandleForm <|
+                                                                    HandleForm.TypingHandle handle
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -484,9 +518,6 @@ body creator =
                                                 ]
                                             ]
                                         ]
-
-
-
 
                         Existing.Authorized wallet handle ->
                             Html.div
@@ -502,8 +533,6 @@ body creator =
                                     ]
                                 ]
 
-
-
                 MaybeExisting string ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
@@ -516,9 +545,6 @@ body creator =
                                 """
                             ]
                         ]
-
-
-
     in
     Html.div
         [ class "container"

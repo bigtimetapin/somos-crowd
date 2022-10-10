@@ -1,13 +1,13 @@
-module Model.Role.Sender exposing (Sender(..), WithMore, encode, encode0)
+module Sub.Sender.Sender exposing (Sender(..), WithMore, encode, encode0)
 
 import Json.Encode as Encode
-import Msg.Admin as AdminMsg
-import Msg.Creator.Creator as CreatorMsg
+import Msg.Admin as AdminMsg exposing (FromAdmin)
+import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
 
 
 type Sender
-    = Create CreatorMsg.FromCreator
-    | Administrate AdminMsg.FromAdmin
+    = Create FromCreator
+    | Administrate FromAdmin
 
 
 type alias WithMore =

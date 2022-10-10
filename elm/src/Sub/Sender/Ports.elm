@@ -1,4 +1,4 @@
-port module Sub.Sender exposing (sender)
+port module Sub.Sender.Ports exposing (sender)
 
 
 port sender : Json -> Cmd msg

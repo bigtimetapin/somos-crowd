@@ -2,7 +2,7 @@ module Sub.Sub exposing (subs)
 
 import Msg.Js exposing (FromJs(..))
 import Msg.Msg exposing (Msg(..))
-import Sub.Listener exposing (error, success)
+import Sub.Listener.Ports exposing (error, success)
 
 
 subs : Sub Msg

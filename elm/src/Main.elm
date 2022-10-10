@@ -7,24 +7,25 @@ import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Admin as Administrator
 import Model.Creator.Creator as Creator
-import Model.Creator.Existing as Existing
+import Model.Creator.Existing as ExistingCreator
 import Model.Creator.New as NewCreator
 import Model.Handle as Handle
 import Model.HandleForm as HandleForm
 import Model.Model as Model exposing (Model)
-import Model.Role.Creator.Existing as ToExistingCreator
-import Model.Role.Creator.New as ToNewCreator
-import Model.Role.Listener as Listener
-import Model.Role.Sender as Sender
 import Model.State as State exposing (State(..))
 import Model.Wallet as Wallet
 import Msg.Admin as AdminMsg
 import Msg.Creator.Creator as FromCreator
-import Msg.Creator.New as FromNewCreator
 import Msg.Creator.Existing as FromExistingCreator
+import Msg.Creator.New as FromNewCreator
 import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
-import Sub.Sender exposing (sender)
+import Sub.Listener.Creator.Creator as ToCreator
+import Sub.Listener.Creator.Existing as ToExistingCreator
+import Sub.Listener.Creator.New as ToNewCreator
+import Sub.Listener.Listener as Listener
+import Sub.Sender.Ports exposing (sender)
+import Sub.Sender.Sender as Sender
 import Sub.Sub as Sub
 import Url
 import View.Admin.Admin
@@ -77,38 +78,65 @@ update msg model =
                     case new of
                         FromNewCreator.HandleForm handleForm ->
                             case handleForm of
-                                HandleForm.Start wallet ->
-                                    ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle wallet ""}
+                                HandleForm.Start ->
+                                    ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle "" }
                                     , Cmd.none
                                     )
 
-                                HandleForm.TypingHandle wallet string ->
-                                    ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle wallet string }
+                                HandleForm.TypingHandle string ->
+                                    ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle string }
                                     , Cmd.none
                                     )
 
-
-                                HandleForm.ConfirmHandle wallet handle ->
-                                    ( { model | state = Create <| Creator.New <|
-                                        NewCreator.WaitingForHandleConfirmation wallet
-                                        }
+                                HandleForm.ConfirmHandle handle ->
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.New <|
+                                                    NewCreator.WaitingForHandleConfirmation
+                                      }
                                     , sender <|
                                         Sender.encode <|
                                             { sender = Sender.Create from, more = Handle.encode handle }
                                     )
 
-
-
-
                 FromCreator.Existing existing ->
                     case existing of
-                        FromExisting.HandleForm handleForm ->
+                        FromExistingCreator.HandleForm handleForm ->
+                            case handleForm of
+                                HandleForm.Start ->
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.Existing <|
+                                                    ExistingCreator.HandleForm <|
+                                                        ExistingCreator.TypingHandle ""
+                                      }
+                                    , Cmd.none
+                                    )
 
+                                HandleForm.TypingHandle string ->
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.Existing <|
+                                                    ExistingCreator.HandleForm <|
+                                                        ExistingCreator.TypingHandle string
+                                      }
+                                    , Cmd.none
+                                    )
 
-                        FromExisting.InitializeCollection wallet almostCollection ->
-
-
-
+                                HandleForm.ConfirmHandle handle ->
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.Existing <|
+                                                    ExistingCreator.HandleForm ExistingCreator.WaitingForHandleConfirmation
+                                      }
+                                    , sender <|
+                                        Sender.encode <|
+                                            { sender = Sender.Create from, more = Handle.encode handle }
+                                    )
 
         FromAdmin from ->
             case from of
@@ -140,108 +168,107 @@ update msg model =
                                         Listener.Create toCreator ->
                                             -- what is creator doing?
                                             case toCreator of
-                                                FromCreator.New new ->
+                                                ToCreator.New new ->
                                                     case new of
-                                                        FromNew.HandleInvalid ->
+                                                        ToNewCreator.HandleInvalid ->
                                                             let
                                                                 f handleWithWallet =
-                                                                    { model | state = Create <|
-                                                                        Creator.New <|
-                                                                            NewCreator.HandleInvalid
-                                                                                handleWithWallet.wallet
-                                                                                handleWithWallet.handle
+                                                                    { model
+                                                                        | state =
+                                                                            Create <|
+                                                                                Creator.New <|
+                                                                                    NewCreator.HandleInvalid
+                                                                                        handleWithWallet.handle
                                                                     }
                                                             in
                                                             Listener.decode2 model json Handle.decode f
 
-
-                                                        FromNew.HandleAlreadyExists ->
+                                                        ToNewCreator.HandleAlreadyExists ->
                                                             let
                                                                 f handleWithWallet =
-                                                                    { model | state = Create <|
-                                                                        Creator.New <|
-                                                                            NewCreator.HandleAlreadyExists
-                                                                                handleWithWallet.wallet
-                                                                                handleWithWallet.handle
+                                                                    { model
+                                                                        | state =
+                                                                            Create <|
+                                                                                Creator.New <|
+                                                                                    NewCreator.HandleAlreadyExists
+                                                                                        handleWithWallet.handle
                                                                     }
                                                             in
                                                             Listener.decode2 model json Handle.decode f
 
-
-
-                                                        FromNew.NewHandleSuccess ->
+                                                        ToNewCreator.NewHandleSuccess ->
                                                             let
                                                                 f handleWithWallet =
-                                                                    { model | state = Create <|
-                                                                        Creator.Existing <|
-                                                                            Existing.Authorized
-                                                                                handleWithWallet.wallet
-                                                                                handleWithWallet.handle
-                                                                    }
-                                                            in
-                                                            Listener.decode2 model json Handle.decode f
-
-
-
-                                                FromCreator.Existing existing ->
-                                                    case existing of
-                                                        FromExisting.HandleForm handleFormStatus ->
-                                                            case handleFormStatus of
-                                                                FromExisting.Invalid ->
-                                                                    let
-                                                                        f handleWithWallet =
-                                                                            { model | state = Create <|
+                                                                    { model
+                                                                        | state =
+                                                                            Create <|
                                                                                 Creator.Existing <|
-                                                                                    Existing.HandleForm
-                                                                                        handleWithWallet.wallet <|
-                                                                                        Existing.HandleInvalid
-                                                                                            handleWithWallet.handle
-                                                                            }
-                                                                    in
-                                                                    Listener.decode2 model json Handle.decode f
-
-
-                                                                FromExisting.DoesNotExist ->
-                                                                    let
-                                                                        f handleWithWallet =
-                                                                            { model | state = Create <|
-                                                                                Creator.Existing <|
-                                                                                    Existing.HandleForm
-                                                                                        handleWithWallet.wallet <|
-                                                                                        Existing.HandleDoesNotExist
-                                                                                            handleWithWallet.handle
-                                                                            }
-                                                                    in
-                                                                    Listener.decode2 model json Handle.decode f
-
-
-                                                                FromExisting.UnAuthorized ->
-                                                                    let
-                                                                        f handleWithWallet =
-                                                                            { model | state = Create <|
-                                                                                Creator.Existing <|
-                                                                                    Existing.HandleForm
-                                                                                        handleWithWallet.wallet <|
-                                                                                        Existing.UnAuthorized
-                                                                                            handleWithWallet.handle
-                                                                            }
-                                                                    in
-                                                                    Listener.decode2 model json Handle.decode f
-
-
-                                                                FromExisting.Authorized ->
-                                                                    let
-                                                                        f handleWithWallet =
-                                                                            { model | state = Create <|
-                                                                                Creator.Existing <|
-                                                                                    Existing.Authorized
+                                                                                    ExistingCreator.Authorized
                                                                                         handleWithWallet.wallet
                                                                                         handleWithWallet.handle
+                                                                    }
+                                                            in
+                                                            Listener.decode2 model json Handle.decode f
+
+                                                ToCreator.Existing existing ->
+                                                    case existing of
+                                                        ToExistingCreator.HandleForm handleFormStatus ->
+                                                            case handleFormStatus of
+                                                                ToExistingCreator.Invalid ->
+                                                                    let
+                                                                        f handleWithWallet =
+                                                                            { model
+                                                                                | state =
+                                                                                    Create <|
+                                                                                        Creator.Existing <|
+                                                                                            ExistingCreator.HandleForm <|
+                                                                                                ExistingCreator.HandleInvalid
+                                                                                                    handleWithWallet.handle
                                                                             }
                                                                     in
                                                                     Listener.decode2 model json Handle.decode f
 
+                                                                ToExistingCreator.DoesNotExist ->
+                                                                    let
+                                                                        f handleWithWallet =
+                                                                            { model
+                                                                                | state =
+                                                                                    Create <|
+                                                                                        Creator.Existing <|
+                                                                                            ExistingCreator.HandleForm <|
+                                                                                                ExistingCreator.HandleDoesNotExist
+                                                                                                    handleWithWallet.handle
+                                                                            }
+                                                                    in
+                                                                    Listener.decode2 model json Handle.decode f
 
+                                                                ToExistingCreator.UnAuthorized ->
+                                                                    let
+                                                                        f handleWithWallet =
+                                                                            { model
+                                                                                | state =
+                                                                                    Create <|
+                                                                                        Creator.Existing <|
+                                                                                            ExistingCreator.HandleForm <|
+                                                                                                ExistingCreator.UnAuthorized
+                                                                                                    handleWithWallet.handle
+                                                                            }
+                                                                    in
+                                                                    Listener.decode2 model json Handle.decode f
+
+                                                                ToExistingCreator.Authorized ->
+                                                                    let
+                                                                        f handleWithWallet =
+                                                                            { model
+                                                                                | state =
+                                                                                    Create <|
+                                                                                        Creator.Existing <|
+                                                                                            ExistingCreator.Authorized
+                                                                                                handleWithWallet.wallet
+                                                                                                handleWithWallet.handle
+                                                                            }
+                                                                    in
+                                                                    Listener.decode2 model json Handle.decode f
 
                                 -- undefined role
                                 Nothing ->

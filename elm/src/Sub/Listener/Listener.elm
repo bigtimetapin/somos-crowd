@@ -1,10 +1,10 @@
-module Model.Role.Listener exposing (Listener(..), WithMore, decode0, decode2)
+module Sub.Listener.Listener exposing (Listener(..), WithMore, decode0, decode2)
 
 import Json.Decode as Decode
 import Model.Model exposing (Model)
-import Model.Role.Creator.Creator as Creator exposing (ToCreator)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
+import Sub.Listener.Creator.Creator as ToCreator exposing (ToCreator)
 import Util.Decode as Util
 
 
@@ -64,10 +64,9 @@ decode2 model json moreDecoder update =
 
 fromString : String -> Maybe Listener
 fromString string =
-    case Creator.fromString string of
+    case ToCreator.fromString string of
         Just toCreator ->
             Just <| Create toCreator
-
 
         Nothing ->
             Nothing

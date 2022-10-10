@@ -1,4 +1,5 @@
-module Model.Role.Creator.New exposing (New(..), fromString)
+module Sub.Listener.Creator.New exposing (New(..), fromString)
+
 
 type New
     = HandleInvalid
