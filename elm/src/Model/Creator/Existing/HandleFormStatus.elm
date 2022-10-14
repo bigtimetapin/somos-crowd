@@ -1,13 +1,7 @@
-module Model.Creator.Existing exposing (Existing(..), HandleFormStatus(..))
+module Model.Creator.Existing.HandleFormStatus exposing (..)
 
 import Model.Handle exposing (Handle)
 import Model.Wallet exposing (Wallet)
-
-
-type Existing
-    = Top
-    | HandleForm HandleFormStatus
-    | Authorized Wallet Handle
 
 
 type HandleFormStatus

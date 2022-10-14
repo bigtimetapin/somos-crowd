@@ -1,7 +1,7 @@
 module Model.Creator.Creator exposing (Creator(..))
 
-import Model.Creator.Existing exposing (Existing)
-import Model.Creator.New exposing (New)
+import Model.Creator.Existing.Existing exposing (Existing)
+import Model.Creator.New.New exposing (New)
 
 
 type Creator

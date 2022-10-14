@@ -1,4 +1,4 @@
-module Model.Creator.New exposing (New(..))
+module Model.Creator.New.New exposing (New(..))
 
 
 type New

@@ -4,8 +4,10 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, href, placeholder, target, type_)
 import Html.Events exposing (onClick, onInput)
 import Model.Creator.Creator exposing (Creator(..))
-import Model.Creator.Existing as Existing
-import Model.Creator.New as New
+import Model.Creator.Existing.Authorized as Authorized
+import Model.Creator.Existing.Existing as Existing
+import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
+import Model.Creator.New.New as New
 import Model.HandleForm as HandleForm
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing as ExistingMsg
@@ -345,7 +347,7 @@ body creator =
 
                         Existing.HandleForm handleFormStatus ->
                             case handleFormStatus of
-                                Existing.TypingHandle string ->
+                                ExistingHandleFormStatus.TypingHandle string ->
                                     let
                                         select =
                                             case string of
@@ -409,7 +411,7 @@ body creator =
                                         , select
                                         ]
 
-                                Existing.WaitingForHandleConfirmation ->
+                                ExistingHandleFormStatus.WaitingForHandleConfirmation ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
@@ -420,7 +422,7 @@ body creator =
                                             []
                                         ]
 
-                                Existing.HandleInvalid string ->
+                                ExistingHandleFormStatus.HandleInvalid string ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
@@ -453,7 +455,7 @@ body creator =
                                             ]
                                         ]
 
-                                Existing.HandleDoesNotExist string ->
+                                ExistingHandleFormStatus.HandleDoesNotExist string ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
@@ -486,7 +488,7 @@ body creator =
                                             ]
                                         ]
 
-                                Existing.UnAuthorized wallet handle ->
+                                ExistingHandleFormStatus.UnAuthorized wallet handle ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
@@ -520,19 +522,24 @@ body creator =
                                             ]
                                         ]
 
-                        Existing.Authorized wallet handle ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ View.Generic.Wallet.view wallet
-                                , header
-                                , Html.div
-                                    []
-                                    [ Html.text
-                                        """authorized
-                                        """
-                                    ]
-                                ]
+                        Existing.Authorized authorized ->
+                            case authorized of
+                                Authorized.Top wallet handle ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
+                                        , Html.div
+                                            []
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "authorized as:"
+                                                    , " "
+                                                    , handle
+                                                    ]
+                                            ]
+                                        ]
 
                 MaybeExisting string ->
                     Html.div

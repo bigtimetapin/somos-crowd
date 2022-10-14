@@ -7,8 +7,10 @@ import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Admin as Administrator
 import Model.Creator.Creator as Creator
-import Model.Creator.Existing as ExistingCreator
-import Model.Creator.New as NewCreator
+import Model.Creator.Existing.Authorized as Authorized
+import Model.Creator.Existing.Existing as ExistingCreator
+import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
+import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.HandleForm as HandleForm
 import Model.Model as Model exposing (Model)
@@ -116,7 +118,7 @@ update msg model =
                                             Create <|
                                                 Creator.Existing <|
                                                     ExistingCreator.HandleForm <|
-                                                        ExistingCreator.TypingHandle ""
+                                                        ExistingHandleFormStatus.TypingHandle ""
                                       }
                                     , Cmd.none
                                     )
@@ -127,7 +129,7 @@ update msg model =
                                             Create <|
                                                 Creator.Existing <|
                                                     ExistingCreator.HandleForm <|
-                                                        ExistingCreator.TypingHandle <|
+                                                        ExistingHandleFormStatus.TypingHandle <|
                                                             String.toLower string
                                       }
                                     , Cmd.none
@@ -139,7 +141,7 @@ update msg model =
                                             Create <|
                                                 Creator.Existing <|
                                                     ExistingCreator.HandleForm
-                                                        ExistingCreator.WaitingForHandleConfirmation
+                                                        ExistingHandleFormStatus.WaitingForHandleConfirmation
                                       }
                                     , sender <|
                                         Sender.encode <|
@@ -210,9 +212,10 @@ update msg model =
                                                                         | state =
                                                                             Create <|
                                                                                 Creator.Existing <|
-                                                                                    ExistingCreator.Authorized
-                                                                                        handleWithWallet.wallet
-                                                                                        handleWithWallet.handle
+                                                                                    ExistingCreator.Authorized <|
+                                                                                        Authorized.Top
+                                                                                            handleWithWallet.wallet
+                                                                                            handleWithWallet.handle
                                                                     }
                                                             in
                                                             Listener.decode model json Handle.decodeWithWallet f
@@ -229,7 +232,7 @@ update msg model =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
-                                                                                                ExistingCreator.HandleInvalid
+                                                                                                ExistingHandleFormStatus.HandleInvalid
                                                                                                     handle
                                                                             }
                                                                     in
@@ -243,7 +246,7 @@ update msg model =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
-                                                                                                ExistingCreator.HandleDoesNotExist
+                                                                                                ExistingHandleFormStatus.HandleDoesNotExist
                                                                                                     handle
                                                                             }
                                                                     in
@@ -258,7 +261,7 @@ update msg model =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
-                                                                                                ExistingCreator.UnAuthorized
+                                                                                                ExistingHandleFormStatus.UnAuthorized
                                                                                                     handleWithWallet.wallet
                                                                                                     handleWithWallet.handle
                                                                             }
@@ -272,9 +275,10 @@ update msg model =
                                                                                 | state =
                                                                                     Create <|
                                                                                         Creator.Existing <|
-                                                                                            ExistingCreator.Authorized
-                                                                                                handleWithWallet.wallet
-                                                                                                handleWithWallet.handle
+                                                                                            ExistingCreator.Authorized <|
+                                                                                                Authorized.Top
+                                                                                                    handleWithWallet.wallet
+                                                                                                    handleWithWallet.handle
                                                                             }
                                                                     in
                                                                     Listener.decode model json Handle.decodeWithWallet f
