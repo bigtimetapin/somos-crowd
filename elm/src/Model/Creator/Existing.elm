@@ -15,4 +15,4 @@ type HandleFormStatus
     | WaitingForHandleConfirmation
     | HandleInvalid String
     | HandleDoesNotExist String
-    | UnAuthorized Handle
+    | UnAuthorized Wallet Handle

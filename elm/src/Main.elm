@@ -252,17 +252,18 @@ update msg model =
                                                                 ToExistingCreator.UnAuthorized ->
                                                                     -- TODO; decode wallet
                                                                     let
-                                                                        f handle =
+                                                                        f handleWithWallet =
                                                                             { model
                                                                                 | state =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.HandleForm <|
                                                                                                 ExistingCreator.UnAuthorized
-                                                                                                    handle
+                                                                                                    handleWithWallet.wallet
+                                                                                                    handleWithWallet.handle
                                                                             }
                                                                     in
-                                                                    Listener.decode model json Handle.decode f
+                                                                    Listener.decode model json Handle.decodeWithWallet f
 
                                                                 ToExistingCreator.Authorized ->
                                                                     let

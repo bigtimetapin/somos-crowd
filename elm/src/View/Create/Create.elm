@@ -486,11 +486,12 @@ body creator =
                                             ]
                                         ]
 
-                                Existing.UnAuthorized handle ->
+                                Existing.UnAuthorized wallet handle ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-                                        [ header
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
                                         , Html.div
                                             [ class "has-border-2 px-2 py-2"
                                             ]
