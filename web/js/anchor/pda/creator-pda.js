@@ -14,7 +14,7 @@ export async function deriveCreatorPda(provider, program, handle) {
 
 export async function assertCreatorPdaDoesNotExistAlready(provider, program, handle) {
     // derive pda
-    const pda = await deriveCreatorPda(provider, program, handle)
+    const pda = await deriveCreatorPda(provider, program, handle);
     // fetch pda
     let creator;
     try {
@@ -38,7 +38,33 @@ export async function assertCreatorPdaDoesNotExistAlready(provider, program, han
     return creator
 }
 
-export function validateHandle(handle) {
+export async function assertCreatorPdaDoesExistAlready(provider, program, handle) {
+    // derive pda
+    const pda = await deriveCreatorPda(provider, program, handle);
+    // fetch pda
+    let creator;
+    try {
+        creator = await getCreatorPda(program, pda);
+        let msg = "found handle: " + handle;
+        msg = msg + ". " + "still need to authorize."
+        console.log(msg);
+    } catch (error) {
+        const msg = "handle does not exist yet: " + handle;
+        console.log(msg);
+        creator = null;
+    }
+    return creator
+}
+
+export function validateHandleForNewCreator(handle) {
+    return validateHandle(handle, "new-creator-handle-invalid")
+}
+
+export function validateHandleForExistingCreator(handle) {
+    return validateHandle(handle, "existing-creator-handle-invalid")
+}
+
+function validateHandle(handle, listener) {
     if (isValidHandle(handle)) {
         return handle
     } else {
@@ -47,7 +73,7 @@ export function validateHandle(handle) {
         app.ports.success.send(
             JSON.stringify(
                 {
-                    listener: "new-creator-invalid-handle",
+                    listener: listener,
                     more: JSON.stringify(handle)
                 }
             )

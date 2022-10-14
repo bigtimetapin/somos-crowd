@@ -84,9 +84,13 @@ update msg model =
                                     )
 
                                 HandleForm.TypingHandle string ->
-                                    ( { model | state = Create <| Creator.New <|
-                                        NewCreator.TypingHandle <| String.toLower string
-                                        }
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.New <|
+                                                    NewCreator.TypingHandle <|
+                                                        String.toLower string
+                                      }
                                     , Cmd.none
                                     )
 
@@ -123,7 +127,8 @@ update msg model =
                                             Create <|
                                                 Creator.Existing <|
                                                     ExistingCreator.HandleForm <|
-                                                        ExistingCreator.TypingHandle <| String.toLower string
+                                                        ExistingCreator.TypingHandle <|
+                                                            String.toLower string
                                       }
                                     , Cmd.none
                                     )
@@ -245,6 +250,7 @@ update msg model =
                                                                     Listener.decode model json Handle.decode f
 
                                                                 ToExistingCreator.UnAuthorized ->
+                                                                    -- TODO; decode wallet
                                                                     let
                                                                         f handle =
                                                                             { model

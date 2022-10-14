@@ -1,7 +1,12 @@
 import {getPhantom} from "./phantom";
 import {creatNft} from "./anchor/init/init";
 import {getEphemeralPP, getPP} from "./anchor/util";
-import {validateHandle, assertCreatorPdaDoesNotExistAlready} from "./anchor/pda/creator-pda";
+import {
+    validateHandleForNewCreator,
+    validateHandleForExistingCreator,
+    assertCreatorPdaDoesNotExistAlready,
+    assertCreatorPdaDoesExistAlready
+} from "./anchor/pda/creator-pda";
 import {initNewCreator} from "./anchor/init-new-creator";
 
 // init phantom
@@ -18,7 +23,7 @@ app.ports.sender.subscribe(async function (json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandle(more.handle);
+            const validated = validateHandleForNewCreator(more.handle);
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
@@ -39,6 +44,61 @@ app.ports.sender.subscribe(async function (json) {
                 }
             }
             // or creator initialize collection
+        } else if (sender === "existing-creator-confirm-handle") {
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // validate handle
+            const validated = validateHandleForExistingCreator(more.handle);
+            if (validated) {
+                // get ephemeral provider & program
+                const ephemeralPP = getEphemeralPP();
+                // asert creator pda exists
+                const creator = await assertCreatorPdaDoesExistAlready(
+                    ephemeralPP.provider,
+                    ephemeralPP.program,
+                    validated
+                )
+                // authorize pda
+                if (creator) {
+                    // get phantom
+                    phantom = await getPhantom();
+                    // get provider & program
+                    const pp = getPP(phantom);
+                    // assert authority is current user
+                    const current = pp.provider.wallet.publicKey.toString()
+                    if (creator.authority.toString() === current) {
+                        console.log("user authorized");
+                        app.ports.success.send(
+                            JSON.stringify(
+                                {
+                                    listener: "creator-handle-authorized",
+                                    more: JSON.stringify(
+                                        {
+                                            handle: validated,
+                                            wallet: current
+                                        }
+                                    )
+                                }
+                            )
+                        );
+                    } else {
+                        console.log("user unauthorized");
+                        app.ports.success.send(
+                            JSON.stringify(
+                                {
+                                    listener: "creator-handle-unauthorized",
+                                    more: JSON.stringify(
+                                        {
+                                            handle: validated,
+                                            wallet: current
+                                        }
+                                    )
+                                }
+                            )
+                        );
+                    }
+                }
+            }
         } else if (sender === "creator-initialize-collection") {
             // get provider & program
             const pp = getPP(phantom);

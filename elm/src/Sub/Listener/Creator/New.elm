@@ -10,7 +10,7 @@ type New
 fromString : String -> Maybe New
 fromString string =
     case string of
-        "new-creator-invalid-handle" ->
+        "new-creator-handle-invalid" ->
             Just HandleInvalid
 
         "creator-handle-already-exists" ->
