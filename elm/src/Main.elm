@@ -253,7 +253,6 @@ update msg model =
                                                                     Listener.decode model json Handle.decode f
 
                                                                 ToExistingCreator.UnAuthorized ->
-                                                                    -- TODO; decode wallet
                                                                     let
                                                                         f handleWithWallet =
                                                                             { model
