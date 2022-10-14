@@ -27,12 +27,12 @@ type alias WithWallet =
     }
 
 
-decode : String -> Result String Wallet
+decode : String -> Result String Handle
 decode string =
     let
-        decoder : Decode.Decoder Wallet
+        decoder : Decode.Decoder Handle
         decoder =
-            Decode.field "handle" Decode.string
+            Decode.string
     in
     Util.decode string decoder identity
 

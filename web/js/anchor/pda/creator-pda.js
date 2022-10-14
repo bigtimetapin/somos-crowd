@@ -25,7 +25,7 @@ export async function assertCreatorPdaDoesNotExistAlready(provider, program, han
             JSON.stringify(
                 {
                     listener: "creator-handle-already-exists",
-                    more: handle
+                    more: JSON.stringify(handle)
                 }
             )
         );
@@ -48,7 +48,7 @@ export function validateHandle(handle) {
             JSON.stringify(
                 {
                     listener: "new-creator-invalid-handle",
-                    more: handle
+                    more: JSON.stringify(handle)
                 }
             )
         );

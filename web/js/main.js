@@ -35,11 +35,7 @@ app.ports.sender.subscribe(async function (json) {
                     // get provider & program
                     const pp = getPP(phantom);
                     // invoke init-new-creator
-                    console.log(validated);
-                    console.log(creator);
-                    console.log(pp.provider.connection._blockhashInfo);
                     await initNewCreator(pp.provider, pp.program, validated, creator);
-                    console.log(pp.provider.connection._blockhashInfo);
                 }
             }
             // or creator initialize collection

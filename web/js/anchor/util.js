@@ -6,7 +6,6 @@ import idl from "./idl.json";
 // TODO; rename & move stuff
 export const textEncoder = new TextEncoder();
 export const textDecoder = new TextDecoder();
-export const connection = new web3.Connection(NETWORK, COMMITMENT);
 export const mplPrefix = "metadata";
 export const mplEdition = "edition";
 export const mplProgramId = new web3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
@@ -18,7 +17,8 @@ export function getPP(_phantom) {
     // build wallet
     const wallet = new PhantomWallet(_phantom);
     // set provider
-    const provider = new AnchorProvider(connection, wallet, COMMITMENT);
+    const connection = new web3.Connection(NETWORK, COMMITMENT);
+    const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
     // program
     const program = new Program(idl, PROGRAM_ID, provider);
     return {provider: provider, program: program}
@@ -26,10 +26,12 @@ export function getPP(_phantom) {
 
 // get ephemeral provider & program
 export function getEphemeralPP(){
+    const keypair = web3.Keypair.generate();
     // build wallet
-    const wallet = new EphemeralWallet();
+    const wallet = new EphemeralWallet(keypair);
     // set provider
-    const provider = new AnchorProvider(connection, wallet, COMMITMENT);
+    const connection = new web3.Connection(NETWORK, COMMITMENT);
+    const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
     // program
     const program = new Program(idl, PROGRAM_ID, provider);
     return {provider: provider, program: program}

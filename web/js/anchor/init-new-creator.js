@@ -1,7 +1,6 @@
 import {web3} from "@project-serum/anchor";
 
 export async function initNewCreator(provider, program, handle, pda) {
-    // invoke rpc
     try {
         await program.methods
             .initNewCreator(
@@ -14,7 +13,7 @@ export async function initNewCreator(provider, program, handle, pda) {
                     systemProgram: web3.SystemProgram.programId,
                 }
             )
-            .rpc()
+            .rpc();
         app.ports.success.send(
             JSON.stringify(
                 {

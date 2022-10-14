@@ -31,7 +31,7 @@ export class PhantomWallet implements Wallet {
 
 export class EphemeralWallet implements Wallet {
 
-    constructor(readonly payer) {
+    constructor(readonly payer: Keypair) {
     }
 
     get publicKey(): PublicKey {
