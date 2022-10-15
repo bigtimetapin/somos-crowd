@@ -5,7 +5,7 @@ import Model.HandleForm exposing (HandleForm(..))
 
 type Existing
     = HandleForm HandleForm
-
+    -- | CreateNewCollection TODO
 
 
 -- create new collection

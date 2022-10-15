@@ -5,6 +5,7 @@ export async function getAuthorityPda(program, pda) {
 }
 
 export async function deriveAuthorityPda(program, handle, index) {
+    console.log(index);
     // derive pda
     let pda, _;
     [pda, _] = await web3.PublicKey.findProgramAddress(
