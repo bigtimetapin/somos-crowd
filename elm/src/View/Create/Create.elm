@@ -13,6 +13,7 @@ import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing as ExistingMsg
 import Msg.Creator.New as NewMsg
 import Msg.Msg exposing (Msg(..))
+import View.Generic.Collection
 import View.Generic.Wallet
 
 
@@ -524,11 +525,11 @@ body creator =
 
                         Existing.Authorized authorized ->
                             case authorized of
-                                Authorized.Top wallet handle ->
+                                Authorized.Top withCollections ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-                                        [ View.Generic.Wallet.view wallet
+                                        [ View.Generic.Wallet.view withCollections.wallet
                                         , header
                                         , Html.div
                                             []
@@ -536,9 +537,15 @@ body creator =
                                                 String.concat
                                                     [ "authorized as:"
                                                     , " "
-                                                    , handle
+                                                    , withCollections.handle
                                                     ]
                                             ]
+                                        , Html.div
+                                            []
+                                          <|
+                                            List.map
+                                                View.Generic.Collection.view
+                                                withCollections.collections
                                         ]
 
                 MaybeExisting string ->

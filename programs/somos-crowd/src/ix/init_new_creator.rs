@@ -2,7 +2,7 @@ use anchor_lang::Key;
 use anchor_lang::prelude::{Context, Result};
 use crate::{InitNewCreator, pda};
 use crate::error::CustomErrors;
-use crate::pda::creator::Highlighted;
+use crate::pda::creator::Pinned;
 
 pub fn ix(
     ctx: Context<InitNewCreator>,
@@ -16,7 +16,7 @@ pub fn ix(
     creator.handle = handle;
     // collections
     creator.num_collections = 0;
-    creator.highlighted = Highlighted { collections: [0; 10] };
+    creator.pinned = Pinned { collections: [0; 10] };
     Ok(())
 }
 

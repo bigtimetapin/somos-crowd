@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use mpl_token_metadata::state::{MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_URI_LENGTH};
 
 pub const BUMP: &str = "authority";
 
@@ -6,7 +7,10 @@ pub const SIZE: usize = 8 // discriminator
     + MINT_SIZE
     + COLLECTION_SIZE
     + NUM_MINTED
-    + TOTAL_SUPPLY;
+    + TOTAL_SUPPLY
+    + MAX_NAME_LENGTH
+    + MAX_SYMBOL_LENGTH
+    + MAX_URI_LENGTH;
 
 const MINT_SIZE: usize = 32;
 
@@ -22,4 +26,7 @@ pub struct Authority {
     pub collection: Pubkey,
     pub num_minted: u64,
     pub total_supply: u64,
+    pub name: String,
+    pub symbol: String,
+    pub uri: String
 }

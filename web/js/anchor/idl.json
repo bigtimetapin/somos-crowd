@@ -376,6 +376,18 @@
           {
             "name": "totalSupply",
             "type": "u64"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
           }
         ]
       }
@@ -398,9 +410,9 @@
             "type": "u8"
           },
           {
-            "name": "highlighted",
+            "name": "pinned",
             "type": {
-              "defined": "Highlighted"
+              "defined": "Pinned"
             }
           }
         ]
@@ -409,7 +421,7 @@
   ],
   "types": [
     {
-      "name": "Highlighted",
+      "name": "Pinned",
       "type": {
         "kind": "struct",
         "fields": [

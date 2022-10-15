@@ -8,6 +8,7 @@ import {
     assertCreatorPdaDoesExistAlready
 } from "./anchor/pda/creator-pda";
 import {initNewCreator} from "./anchor/init-new-creator";
+import {getCreatorCollections} from "./anchor/get-creator-collections";
 
 // init phantom
 let phantom = null;
@@ -67,7 +68,9 @@ app.ports.sender.subscribe(async function (json) {
                     // assert authority is current user
                     const current = pp.provider.wallet.publicKey.toString()
                     if (creator.authority.toString() === current) {
-                        console.log("user authorized");
+                        // get collections
+                        const collections = await getCreatorCollections(pp.program, creator);
+                        console.log(collections)
                         app.ports.success.send(
                             JSON.stringify(
                                 {
@@ -75,7 +78,8 @@ app.ports.sender.subscribe(async function (json) {
                                     more: JSON.stringify(
                                         {
                                             handle: validated,
-                                            wallet: current
+                                            wallet: current,
+                                            collections: collections
                                         }
                                     )
                                 }

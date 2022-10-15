@@ -1,8 +1,7 @@
 module Model.Creator.Existing.Authorized exposing (..)
 
-import Model.Handle exposing (Handle)
-import Model.Wallet exposing (Wallet)
+import Model.Creator.Existing.WithCollections exposing (WithCollections)
 
 
 type Authorized
-    = Top Wallet Handle
+    = Top WithCollections

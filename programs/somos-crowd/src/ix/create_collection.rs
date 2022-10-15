@@ -24,9 +24,9 @@ pub fn ix(ctx: Context<CreateCollection>) -> Result<()> {
         ctx.accounts.authority.key(),
         ctx.accounts.payer.key(),
         ctx.accounts.authority.key(),
-        String::from("Collection"),
-        String::from("COL"),
-        String::from(""),
+        String::from("Dap-Cool"), // TODO
+        String::from("DAPCOOL"), // TODO
+        String::from(""), // TODO
         Some(vec![
             mpl_token_metadata::state::Creator {
                 address: ctx.accounts.payer.key(),

@@ -10,6 +10,7 @@ import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
+import Model.Creator.Existing.WithCollections as WithCollections
 import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.HandleForm as HandleForm
@@ -214,8 +215,10 @@ update msg model =
                                                                                 Creator.Existing <|
                                                                                     ExistingCreator.Authorized <|
                                                                                         Authorized.Top
-                                                                                            handleWithWallet.wallet
-                                                                                            handleWithWallet.handle
+                                                                                            { handle = handleWithWallet.handle
+                                                                                            , wallet = handleWithWallet.wallet
+                                                                                            , collections = []
+                                                                                            }
                                                                     }
                                                             in
                                                             Listener.decode model json Handle.decodeWithWallet f
@@ -269,18 +272,17 @@ update msg model =
 
                                                                 ToExistingCreator.Authorized ->
                                                                     let
-                                                                        f handleWithWallet =
+                                                                        f withCollections =
                                                                             { model
                                                                                 | state =
                                                                                     Create <|
                                                                                         Creator.Existing <|
                                                                                             ExistingCreator.Authorized <|
                                                                                                 Authorized.Top
-                                                                                                    handleWithWallet.wallet
-                                                                                                    handleWithWallet.handle
+                                                                                                    withCollections
                                                                             }
                                                                     in
-                                                                    Listener.decode model json Handle.decodeWithWallet f
+                                                                    Listener.decode model json WithCollections.decode f
 
                                 -- undefined role
                                 Nothing ->

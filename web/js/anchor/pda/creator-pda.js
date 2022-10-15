@@ -1,5 +1,6 @@
 import {web3} from "@project-serum/anchor";
 
+// TODO; drop unused provider
 export async function deriveCreatorPda(provider, program, handle) {
     // derive pda
     let pda, _;

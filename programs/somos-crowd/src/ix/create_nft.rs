@@ -31,7 +31,7 @@ pub fn ix(
         ctx.accounts.authority.key(),
         ctx.accounts.payer.key(),
         ctx.accounts.authority.key(),
-        name,
+        name.clone(),
         symbol,
         uri,
         Some(vec![
@@ -124,6 +124,7 @@ pub fn ix(
     authority.mint = ctx.accounts.mint.key();
     authority.total_supply = size;
     authority.num_minted = 0;
+    authority.name = name; // already validated by metaplex
     // increment collection
     let creator = &mut ctx.accounts.creator;
     creator.num_collections = increment;
