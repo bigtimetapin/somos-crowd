@@ -86,7 +86,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                HandleForm.TypingHandle string ->
+                                HandleForm.Typing string ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -97,7 +97,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                HandleForm.ConfirmHandle handle ->
+                                HandleForm.Confirm handle ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -124,7 +124,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                HandleForm.TypingHandle string ->
+                                HandleForm.Typing string ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -136,7 +136,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                HandleForm.ConfirmHandle handle ->
+                                HandleForm.Confirm handle ->
                                     ( { model
                                         | state =
                                             Create <|

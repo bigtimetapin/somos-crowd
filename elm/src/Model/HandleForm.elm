@@ -1,9 +1,11 @@
-module Model.HandleForm exposing (HandleForm(..))
-
-import Model.Handle exposing (Handle)
+module Model.HandleForm exposing (StringForm(..))
 
 
-type HandleForm
+type StringForm
     = Start
-    | TypingHandle String
-    | ConfirmHandle Handle
+    | Typing String
+    | Confirm Confirmed
+
+
+type alias Confirmed =
+    String

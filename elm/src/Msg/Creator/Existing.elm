@@ -1,13 +1,14 @@
 module Msg.Creator.Existing exposing (Existing(..), toString)
 
-import Model.HandleForm exposing (HandleForm(..))
+import Model.HandleForm exposing (StringForm(..))
 
 
 type Existing
-    = HandleForm HandleForm
-    -- | CreateNewCollection TODO
+    = HandleForm StringForm
 
 
+
+-- | CreateNewCollection TODO
 -- create new collection
 -- | InitializeCollection Wallet AlmostCollection
 
@@ -17,7 +18,7 @@ toString existing =
     case existing of
         HandleForm handleForm ->
             case handleForm of
-                ConfirmHandle _ ->
+                Confirm _ ->
                     "existing-creator-confirm-handle"
 
                 _ ->

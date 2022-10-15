@@ -153,7 +153,7 @@ body creator =
                                                     FromCreator <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
-                                                                HandleForm.TypingHandle s
+                                                                HandleForm.Typing s
                                             ]
                                             []
                                         , Html.span
@@ -186,7 +186,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.New <|
                                                                 NewMsg.HandleForm <|
-                                                                    HandleForm.ConfirmHandle string
+                                                                    HandleForm.Confirm string
                                                     ]
                                                     [ Html.text <|
                                                         String.concat
@@ -216,7 +216,7 @@ body creator =
                                                     FromCreator <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
-                                                                HandleForm.TypingHandle s
+                                                                HandleForm.Typing s
                                             ]
                                             []
                                         , Html.span
@@ -266,7 +266,7 @@ body creator =
                                                 FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
-                                                            HandleForm.TypingHandle string
+                                                            HandleForm.Typing string
                                             ]
                                             [ Html.text
                                                 """try again
@@ -299,7 +299,7 @@ body creator =
                                                 FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
-                                                            HandleForm.TypingHandle string
+                                                            HandleForm.Typing string
                                             ]
                                             [ Html.text
                                                 """try again
@@ -331,7 +331,7 @@ body creator =
                                                     FromCreator <|
                                                         CreatorMsg.Existing <|
                                                             ExistingMsg.HandleForm <|
-                                                                HandleForm.TypingHandle s
+                                                                HandleForm.Typing s
                                             ]
                                             []
                                         , Html.span
@@ -366,7 +366,7 @@ body creator =
                                                                 FromCreator <|
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.HandleForm <|
-                                                                            HandleForm.ConfirmHandle string
+                                                                            HandleForm.Confirm string
                                                             ]
                                                             [ Html.text <|
                                                                 String.concat
@@ -396,7 +396,7 @@ body creator =
                                                             FromCreator <|
                                                                 CreatorMsg.Existing <|
                                                                     ExistingMsg.HandleForm <|
-                                                                        HandleForm.TypingHandle s
+                                                                        HandleForm.Typing s
                                                     ]
                                                     []
                                                 , Html.span
@@ -446,7 +446,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    HandleForm.TypingHandle string
+                                                                    HandleForm.Typing string
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -479,7 +479,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    HandleForm.TypingHandle string
+                                                                    HandleForm.Typing string
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -513,7 +513,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    HandleForm.TypingHandle handle
+                                                                    HandleForm.Typing handle
                                                     ]
                                                     [ Html.text
                                                         """try again

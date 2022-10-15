@@ -1,10 +1,10 @@
 module Msg.Creator.New exposing (New(..), toString)
 
-import Model.HandleForm exposing (HandleForm(..))
+import Model.HandleForm exposing (StringForm(..))
 
 
 type New
-    = HandleForm HandleForm
+    = HandleForm StringForm
 
 
 toString : New -> String
@@ -12,7 +12,7 @@ toString new =
     case new of
         HandleForm handleForm ->
             case handleForm of
-                ConfirmHandle _ ->
+                Confirm _ ->
                     "new-creator-confirm-handle"
 
                 _ ->
