@@ -549,6 +549,7 @@ body creator =
                                                         CreatorMsg.Existing <|
                                                             ExistingMsg.StartCreatingNewCollection
                                                                 withCollections.wallet
+                                                                withCollections.handle
                                                 ]
                                                 [ Html.text "create new collection"
                                                 ]
@@ -561,7 +562,7 @@ body creator =
                                                 withCollections.collections
                                         ]
 
-                                Authorized.CreatingNewCollection wallet newCollection ->
+                                Authorized.CreatingNewCollection wallet handle newCollection ->
                                     let
                                         nameForm =
                                             case newCollection.name of
@@ -582,6 +583,7 @@ body creator =
                                                                                 CreatorMsg.Existing <|
                                                                                     ExistingMsg.NewCollectionForm
                                                                                         wallet
+                                                                                        handle
                                                                                     <|
                                                                                         NewCollectionForm.Name
                                                                                             (StringForm.Confirm string)
@@ -613,6 +615,7 @@ body creator =
                                                                                 CreatorMsg.Existing <|
                                                                                     ExistingMsg.NewCollectionForm
                                                                                         wallet
+                                                                                        handle
                                                                                     <|
                                                                                         NewCollectionForm.Name
                                                                                             (StringForm.Typing s)
@@ -648,6 +651,7 @@ body creator =
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.NewCollectionForm
                                                                             wallet
+                                                                            handle
                                                                         <|
                                                                             NewCollectionForm.Name
                                                                                 (StringForm.Typing "")
@@ -679,6 +683,7 @@ body creator =
                                                                                 CreatorMsg.Existing <|
                                                                                     ExistingMsg.NewCollectionForm
                                                                                         wallet
+                                                                                        handle
                                                                                     <|
                                                                                         NewCollectionForm.Symbol
                                                                                             (StringForm.Confirm upper)
@@ -710,6 +715,7 @@ body creator =
                                                                                 CreatorMsg.Existing <|
                                                                                     ExistingMsg.NewCollectionForm
                                                                                         wallet
+                                                                                        handle
                                                                                     <|
                                                                                         NewCollectionForm.Symbol
                                                                                             (StringForm.Typing s)
@@ -745,6 +751,7 @@ body creator =
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.NewCollectionForm
                                                                             wallet
+                                                                            handle
                                                                         <|
                                                                             NewCollectionForm.Symbol
                                                                                 (StringForm.Typing "")
@@ -766,7 +773,10 @@ body creator =
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.CreateNewCollection
                                                                             wallet
-                                                                            { name = name, symbol = symbol }
+                                                                            { handle = handle
+                                                                            , name = name
+                                                                            , symbol = symbol
+                                                                            }
                                                             ]
                                                             [ Html.text "create"
                                                             ]

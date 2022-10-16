@@ -152,18 +152,18 @@ update msg model =
                                             { sender = Sender.Create from, more = Handle.encode handle }
                                     )
 
-                        FromExistingCreator.StartCreatingNewCollection wallet ->
+                        FromExistingCreator.StartCreatingNewCollection wallet handle ->
                             ( { model
                                 | state =
                                     Create <|
                                         Creator.Existing <|
                                             ExistingCreator.Authorized <|
-                                                Authorized.CreatingNewCollection wallet NewCollection.default
+                                                Authorized.CreatingNewCollection wallet handle NewCollection.default
                               }
                             , Cmd.none
                             )
 
-                        FromExistingCreator.NewCollectionForm wallet newCollectionForm ->
+                        FromExistingCreator.NewCollectionForm wallet handle newCollectionForm ->
                             case newCollectionForm of
                                 NewCollectionForm.Name stringForm newCollection ->
                                     let
@@ -177,6 +177,7 @@ update msg model =
                                                     ExistingCreator.Authorized <|
                                                         Authorized.CreatingNewCollection
                                                             wallet
+                                                            handle
                                                             bumpNewCollection
                                       }
                                     , Cmd.none
@@ -194,6 +195,7 @@ update msg model =
                                                     ExistingCreator.Authorized <|
                                                         Authorized.CreatingNewCollection
                                                             wallet
+                                                            handle
                                                             bumpNewCollection
                                       }
                                     , Cmd.none
@@ -333,19 +335,19 @@ update msg model =
                                                                     in
                                                                     Listener.decode model json Handle.decodeWithWallet f
 
-                                                                ToExistingCreator.Authorized ->
-                                                                    let
-                                                                        f withCollections =
-                                                                            { model
-                                                                                | state =
-                                                                                    Create <|
-                                                                                        Creator.Existing <|
-                                                                                            ExistingCreator.Authorized <|
-                                                                                                Authorized.Top
-                                                                                                    withCollections
-                                                                            }
-                                                                    in
-                                                                    Listener.decode model json WithCollections.decode f
+                                                        ToExistingCreator.Authorized ->
+                                                            let
+                                                                f withCollections =
+                                                                    { model
+                                                                        | state =
+                                                                            Create <|
+                                                                                Creator.Existing <|
+                                                                                    ExistingCreator.Authorized <|
+                                                                                        Authorized.Top
+                                                                                            withCollections
+                                                                    }
+                                                            in
+                                                            Listener.decode model json WithCollections.decode f
 
                                 -- undefined role
                                 Nothing ->

@@ -7,7 +7,7 @@ import {
     assertCreatorPdaDoesNotExistAlready,
     assertCreatorPdaDoesExistAlready
 } from "./anchor/pda/creator-pda";
-import {initNewCreator} from "./anchor/init-new-creator";
+import {initNewCreator} from "./anchor/methods/init-new-creator";
 import {getCreatorCollections} from "./anchor/get-creator-collections";
 
 // init phantom
@@ -30,7 +30,6 @@ app.ports.sender.subscribe(async function (json) {
                 const ephemeralPP = getEphemeralPP();
                 // assert creator pda does-not-exist
                 const creator = await assertCreatorPdaDoesNotExistAlready(
-                    ephemeralPP.provider,
                     ephemeralPP.program,
                     validated
                 );
@@ -55,7 +54,6 @@ app.ports.sender.subscribe(async function (json) {
                 const ephemeralPP = getEphemeralPP();
                 // asert creator pda exists
                 const creator = await assertCreatorPdaDoesExistAlready(
-                    ephemeralPP.provider,
                     ephemeralPP.program,
                     validated
                 )
@@ -68,13 +66,13 @@ app.ports.sender.subscribe(async function (json) {
                     // assert authority is current user
                     const current = pp.provider.wallet.publicKey.toString()
                     if (creator.authority.toString() === current) {
-                        // get collections
+                        // get collections; TODO method
                         const collections = await getCreatorCollections(pp.program, creator);
                         console.log(collections)
                         app.ports.success.send(
                             JSON.stringify(
                                 {
-                                    listener: "creator-handle-authorized",
+                                    listener: "creator-authorized",
                                     more: JSON.stringify(
                                         {
                                             handle: validated,
@@ -103,11 +101,13 @@ app.ports.sender.subscribe(async function (json) {
                     }
                 }
             }
-        } else if (sender === "creator-initialize-collection") {
+        } else if (sender === "creator-create-new-collection") {
             // get provider & program
             const pp = getPP(phantom);
+            // parse more json
+            const more = JSON.parse(parsed.more);
             // invoke rpc
-            await creatNft(pp.provider, pp.program, parsed.more);
+            await creatNft(pp.provider, pp.program, more.handle, more.name, more.symbol);
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;

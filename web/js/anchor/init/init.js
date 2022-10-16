@@ -1,140 +1,109 @@
 import {web3, BN} from "@project-serum/anchor";
 import {mplEdition, mplPrefix, mplProgramId, splAssociatedTokenProgramId, splTokenProgramId} from "../util";
-import {initNewCreator} from "../init-new-creator";
+import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
+import {deriveAuthorityPda, getAuthorityPda} from "../pda/authority-pda";
+import {getCreatorCollections} from "../get-creator-collections";
 
-export async function creatNft(provider, program, json) {
-    // get user wallet
-    const publicKey = provider.wallet.publicKey.toString();
-    // parse uploader
-    const parsed = JSON.parse(json);
-    // derive & create new creator
-    const creator = await initNewCreator(provider, program)
-    // derive key-pair for mint
-    const mint = web3.Keypair.generate()
-    // derive authority
-    let authority, _;
-    [authority, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(creator.handle),
-            Buffer.from([1])
-        ],
-        program.programId
-    );
-    // derive metadata
-    let metadata;
-    [metadata, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(mplPrefix),
-            mplProgramId.toBuffer(),
-            mint.publicKey.toBuffer(),
-        ],
-        mplProgramId
-    )
-    // derive master-edition
-    let masterEdition;
-    [masterEdition, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(mplPrefix),
-            mplProgramId.toBuffer(),
-            mint.publicKey.toBuffer(),
-            Buffer.from(mplEdition),
-        ],
-        mplProgramId
-    )
-    // derive master-edition-ata
-    let masterEditionAta;
-    [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
-        [
-            authority.toBuffer(),
-            splTokenProgramId.toBuffer(),
-            mint.publicKey.toBuffer()
-        ],
-        splAssociatedTokenProgramId
-    )
-    // invoke rpc
-    await program.methods
-        .createNft(
-            parsed.name,
-            parsed.symbol,
-            "test-uri",
-            new BN(2)
+export async function creatNft(provider, program, handle, name, symbol) {
+    try {
+        // get user wallet
+        const publicKey = provider.wallet.publicKey.toString();
+        // get creator
+        const creatorPda = await deriveCreatorPda(program, handle);
+        const creator = await getCreatorPda(program, creatorPda);
+        // derive authority pda
+        const authorityIndex = creator.numCollections + 1;
+        const authorityPda = await deriveAuthorityPda(program, handle, authorityIndex);
+        // derive key-pair for mint
+        const mint = web3.Keypair.generate();
+        // derive metadata
+        let metadata, _;
+        [metadata, _] = await web3.PublicKey.findProgramAddress(
+            [
+                Buffer.from(mplPrefix),
+                mplProgramId.toBuffer(),
+                mint.publicKey.toBuffer(),
+            ],
+            mplProgramId
         )
-        .accounts(
-            {
-                creator: creator.pda,
-                authority: authority,
-                mint: mint.publicKey,
-                metadata: metadata,
-                masterEdition: masterEdition,
-                masterEditionAta: masterEditionAta,
-                payer: provider.wallet.publicKey,
-                tokenProgram: splTokenProgramId,
-                associatedTokenProgram: splAssociatedTokenProgramId,
-                metadataProgram: mplProgramId,
-                systemProgram: web3.SystemProgram.programId,
-                rent: web3.SYSVAR_RENT_PUBKEY,
-            }
+        // derive master-edition
+        let masterEdition;
+        [masterEdition, _] = await web3.PublicKey.findProgramAddress(
+            [
+                Buffer.from(mplPrefix),
+                mplProgramId.toBuffer(),
+                mint.publicKey.toBuffer(),
+                Buffer.from(mplEdition),
+            ],
+            mplProgramId
         )
-        .signers([mint])
-        .rpc()
-    // fetch pda
-    console.log("creator: " + creator.pda.toString());
-    console.log("authority: " + authority.toString());
-    console.log("mint: " + mint.publicKey.toString());
-    // invoke create-collection
-    const collection = await createCollection(provider, program, creator.pda, authority, mint.publicKey);
-    // invoke new copy
-    const copy1 = await printNewCopy(
-        provider,
-        program,
-        creator.pda,
-        authority,
-        mint.publicKey,
-        metadata,
-        masterEdition,
-        masterEditionAta
-    );
-    await addNewCopyToCollection(
-        provider,
-        program,
-        creator.pda,
-        authority,
-        mint.publicKey,
-        collection,
-        copy1
-    )
-    const copy2 = await printNewCopy(
-        provider,
-        program,
-        creator.pda,
-        authority,
-        mint.publicKey,
-        metadata,
-        masterEdition,
-        masterEditionAta
-    );
-    await addNewCopyToCollection(
-        provider,
-        program,
-        creator.pda,
-        authority,
-        mint.publicKey,
-        collection,
-        copy2
-    )
-    // build success
-    const success = {
-        listener: "creator-initialize-collection-success",
-        more: JSON.stringify(
-            {
-                wallet: publicKey,
-                name: parsed.name,
-                symbol: parsed.symbol
-            }
+        // derive master-edition-ata
+        let masterEditionAta;
+        [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
+            [
+                authorityPda.toBuffer(),
+                splTokenProgramId.toBuffer(),
+                mint.publicKey.toBuffer()
+            ],
+            splAssociatedTokenProgramId
+        )
+        // invoke rpc
+        await program.methods
+            .createNft(
+                name,
+                symbol,
+                "test-uri",
+                new BN(2) // TODO; supply
+            )
+            .accounts(
+                {
+                    creator: creatorPda,
+                    authority: authorityPda,
+                    mint: mint.publicKey,
+                    metadata: metadata,
+                    masterEdition: masterEdition,
+                    masterEditionAta: masterEditionAta,
+                    payer: provider.wallet.publicKey,
+                    tokenProgram: splTokenProgramId,
+                    associatedTokenProgram: splAssociatedTokenProgramId,
+                    metadataProgram: mplProgramId,
+                    systemProgram: web3.SystemProgram.programId,
+                    rent: web3.SYSVAR_RENT_PUBKEY,
+                }
+            )
+            .signers([mint])
+            .rpc()
+        // fetch pda
+        console.log("creator: " + creatorPda.toString());
+        console.log("authority: " + authorityPda.toString());
+        console.log("mint: " + mint.publicKey.toString());
+        // invoke create-collection
+        await createCollection(
+            provider, program, creatorPda, authorityPda, mint.publicKey
+        );
+        // get collections TODO; fetch fetch creator pda
+        const collections = await getCreatorCollections(program, creator);
+        console.log(collections)
+        app.ports.success.send(
+            JSON.stringify(
+                {
+                    listener: "creator-authorized",
+                    more: JSON.stringify(
+                        {
+                            handle: handle,
+                            wallet: publicKey,
+                            collections: collections
+                        }
+                    )
+                }
+            )
+        );
+    } catch (error) {
+        console.log(error.toString())
+        app.ports.error.send(
+            error.toString()
         )
     }
-    // send success to elm
-    app.ports.success.send(JSON.stringify(success));
 }
 
 async function createCollection(provider, program, creator, authority, mint) {
@@ -202,6 +171,7 @@ async function printNewCopy(
     program,
     creator,
     authority,
+    authorityIndex,
     mint,
     metadata,
     masterEdition,
@@ -231,7 +201,7 @@ async function printNewCopy(
         mplProgramId
     )
     // derive new-edition-mark
-    let n = (await program.account.authority.fetch(authority)).numMinted + 1;
+    let n = (await getAuthorityPda(program, authority)).numMinted + 1;
     const newEditionBN = new BN.BN(n);
     const newEditionMarkLiteral = newEditionBN.div(new BN.BN(248)).toString();
     let newEditionMark;
@@ -257,7 +227,7 @@ async function printNewCopy(
     )
     // invoke rpc
     await program.methods
-        .mintNewCopy(1)
+        .mintNewCopy(authorityIndex)
         .accounts(
             {
                 creator: creator,
@@ -284,10 +254,10 @@ async function printNewCopy(
     return {mint: newMint.publicKey, metadata: newMetadata}
 }
 
-async function addNewCopyToCollection(provider, program, creator, authority, mint, collection, newCopy) {
+async function addNewCopyToCollection(provider, program, creator, authority, authorityIndex, mint, collection, newCopy) {
     // invoke rpc
     await program.methods
-        .addNewCopyToCollection(1)
+        .addNewCopyToCollection(authorityIndex)
         .accounts(
             {
                 creator: creator,

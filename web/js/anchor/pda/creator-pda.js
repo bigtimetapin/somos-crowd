@@ -1,7 +1,6 @@
 import {web3} from "@project-serum/anchor";
 
-// TODO; drop unused provider
-export async function deriveCreatorPda(provider, program, handle) {
+export async function deriveCreatorPda(program, handle) {
     // derive pda
     let pda, _;
     [pda, _] = await web3.PublicKey.findProgramAddress(
@@ -13,9 +12,13 @@ export async function deriveCreatorPda(provider, program, handle) {
     return pda
 }
 
-export async function assertCreatorPdaDoesNotExistAlready(provider, program, handle) {
+export async function getCreatorPda(program, pda) {
+    return await program.account.creator.fetch(pda);
+}
+
+export async function assertCreatorPdaDoesNotExistAlready(program, handle) {
     // derive pda
-    const pda = await deriveCreatorPda(provider, program, handle);
+    const pda = await deriveCreatorPda(program, handle);
     // fetch pda
     let creator;
     try {
@@ -39,9 +42,9 @@ export async function assertCreatorPdaDoesNotExistAlready(provider, program, han
     return creator
 }
 
-export async function assertCreatorPdaDoesExistAlready(provider, program, handle) {
+export async function assertCreatorPdaDoesExistAlready(program, handle) {
     // derive pda
-    const pda = await deriveCreatorPda(provider, program, handle);
+    const pda = await deriveCreatorPda(program, handle);
     // fetch pda
     let creator;
     try {
@@ -81,10 +84,6 @@ function validateHandle(handle, listener) {
         );
         return null
     }
-}
-
-async function getCreatorPda(program, pda) {
-    return await program.account.creator.fetch(pda);
 }
 
 function isValidHandle(handle) {
