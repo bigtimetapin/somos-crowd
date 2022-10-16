@@ -6,21 +6,24 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Admin as Administrator
+import Model.AlmostCollection as AlmostCollection
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
+import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.Existing.WithCollections as WithCollections
 import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
-import Model.HandleForm as HandleForm
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
+import Model.StringForm as StringForm
 import Model.Wallet as Wallet
 import Msg.Admin as AdminMsg
 import Msg.Creator.Creator as FromCreator
-import Msg.Creator.Existing as FromExistingCreator
-import Msg.Creator.New as FromNewCreator
+import Msg.Creator.Existing.Existing as FromExistingCreator
+import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
+import Msg.Creator.New.New as FromNewCreator
 import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
 import Sub.Listener.Creator.Creator as ToCreator
@@ -79,14 +82,14 @@ update msg model =
             case from of
                 FromCreator.New new ->
                     case new of
+                        FromNewCreator.StartHandleForm ->
+                            ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle "" }
+                            , Cmd.none
+                            )
+
                         FromNewCreator.HandleForm handleForm ->
                             case handleForm of
-                                HandleForm.Start ->
-                                    ( { model | state = Create <| Creator.New <| NewCreator.TypingHandle "" }
-                                    , Cmd.none
-                                    )
-
-                                HandleForm.Typing string ->
+                                StringForm.Typing string ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -97,7 +100,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                HandleForm.Confirm handle ->
+                                StringForm.Confirm handle ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -111,20 +114,20 @@ update msg model =
 
                 FromCreator.Existing existing ->
                     case existing of
+                        FromExistingCreator.StartHandleForm ->
+                            ( { model
+                                | state =
+                                    Create <|
+                                        Creator.Existing <|
+                                            ExistingCreator.HandleForm <|
+                                                ExistingHandleFormStatus.TypingHandle ""
+                              }
+                            , Cmd.none
+                            )
+
                         FromExistingCreator.HandleForm handleForm ->
                             case handleForm of
-                                HandleForm.Start ->
-                                    ( { model
-                                        | state =
-                                            Create <|
-                                                Creator.Existing <|
-                                                    ExistingCreator.HandleForm <|
-                                                        ExistingHandleFormStatus.TypingHandle ""
-                                      }
-                                    , Cmd.none
-                                    )
-
-                                HandleForm.Typing string ->
+                                StringForm.Typing string ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -136,7 +139,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                HandleForm.Confirm handle ->
+                                StringForm.Confirm handle ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -148,6 +151,66 @@ update msg model =
                                         Sender.encode <|
                                             { sender = Sender.Create from, more = Handle.encode handle }
                                     )
+
+                        FromExistingCreator.StartCreatingNewCollection wallet ->
+                            ( { model
+                                | state =
+                                    Create <|
+                                        Creator.Existing <|
+                                            ExistingCreator.Authorized <|
+                                                Authorized.CreatingNewCollection wallet NewCollection.default
+                              }
+                            , Cmd.none
+                            )
+
+                        FromExistingCreator.NewCollectionForm wallet newCollectionForm ->
+                            case newCollectionForm of
+                                NewCollectionForm.Name stringForm newCollection ->
+                                    let
+                                        bumpNewCollection =
+                                            { newCollection | name = stringForm }
+                                    in
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.Existing <|
+                                                    ExistingCreator.Authorized <|
+                                                        Authorized.CreatingNewCollection
+                                                            wallet
+                                                            bumpNewCollection
+                                      }
+                                    , Cmd.none
+                                    )
+
+                                NewCollectionForm.Symbol stringForm newCollection ->
+                                    let
+                                        bumpNewCollection =
+                                            { newCollection | symbol = stringForm }
+                                    in
+                                    ( { model
+                                        | state =
+                                            Create <|
+                                                Creator.Existing <|
+                                                    ExistingCreator.Authorized <|
+                                                        Authorized.CreatingNewCollection
+                                                            wallet
+                                                            bumpNewCollection
+                                      }
+                                    , Cmd.none
+                                    )
+
+                        FromExistingCreator.CreateNewCollection wallet almostCollection ->
+                            ( { model
+                                | state =
+                                    Create <|
+                                        Creator.Existing <|
+                                            ExistingCreator.Authorized <|
+                                                Authorized.WaitingForNewCollectionCreation wallet
+                              }
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
+                            )
 
         FromAdmin from ->
             case from of

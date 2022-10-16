@@ -1,7 +1,7 @@
 module Msg.Creator.Creator exposing (FromCreator(..), toString)
 
-import Msg.Creator.Existing as Existing exposing (Existing)
-import Msg.Creator.New as New exposing (New)
+import Msg.Creator.Existing.Existing as Existing exposing (Existing)
+import Msg.Creator.New.New as New exposing (New)
 
 
 type FromCreator

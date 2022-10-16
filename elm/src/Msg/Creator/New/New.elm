@@ -1,10 +1,11 @@
-module Msg.Creator.New exposing (New(..), toString)
+module Msg.Creator.New.New exposing (New(..), toString)
 
-import Model.HandleForm exposing (StringForm(..))
+import Model.StringForm exposing (StringForm(..))
 
 
 type New
-    = HandleForm StringForm
+    = StartHandleForm
+    | HandleForm StringForm
 
 
 toString : New -> String
@@ -17,3 +18,6 @@ toString new =
 
                 _ ->
                     "no-op"
+
+        _ ->
+            "no-op"
