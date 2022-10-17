@@ -4,7 +4,7 @@ import Model.AlmostCollection exposing (AlmostCollection)
 import Model.Handle exposing (Handle)
 import Model.StringForm exposing (StringForm(..))
 import Model.Wallet exposing (Wallet)
-import Msg.Creator.Existing.NewCollectionForm exposing (NewCollectionForm)
+import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (NewCollectionForm)
 
 
 type Existing
@@ -26,6 +26,15 @@ toString existing =
 
                 _ ->
                     "no-op"
+
+        NewCollectionForm _ _ form ->
+            case form of
+                NewCollectionForm.Image ->
+                    "creator-prepare-image-form"
+
+                _ ->
+                    "no-op"
+
 
         CreateNewCollection _ _ ->
             "creator-create-new-collection"

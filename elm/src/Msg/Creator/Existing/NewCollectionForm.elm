@@ -5,5 +5,6 @@ import Model.StringForm exposing (StringForm)
 
 
 type NewCollectionForm
-    = Name StringForm NewCollection
+    = Image
+    | Name StringForm NewCollection
     | Symbol StringForm NewCollection

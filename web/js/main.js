@@ -115,6 +115,22 @@ app.ports.sender.subscribe(async function (json) {
                     }
                 }
             }
+        } else if (sender === "creator-prepare-image-form") {
+            const img = document.getElementById("dap-cool-collection-logo");
+            const imgSelector = document.getElementById("dap-cool-collection-logo-selector");
+            imgSelector.addEventListener("change", (selectEvent) => {
+                // capture file list
+                const fileList = selectEvent.target.files;
+                if (fileList.length === 1) {
+                    const file = fileList[0];
+                    // read image
+                    const reader = new FileReader();
+                    reader.addEventListener("load", (readEvent) => {
+                        img.src = readEvent.target.result;
+                    });
+                    reader.readAsDataURL(file);
+                }
+            });
         } else if (sender === "creator-create-new-collection") {
             // get provider & program
             const pp = getPP(phantom);

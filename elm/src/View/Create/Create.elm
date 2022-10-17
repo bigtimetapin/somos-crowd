@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, href, placeholder, target, type_)
+import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_)
 import Html.Events exposing (onClick, onInput)
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Authorized as Authorized
@@ -564,6 +564,39 @@ body creator =
 
                                 Authorized.CreatingNewCollection wallet handle newCollection ->
                                     let
+                                        imageForm =
+                                            Html.div
+                                                []
+                                                [ Html.input
+                                                    [ id "dap-cool-collection-logo-selector"
+                                                    , type_ "file"
+                                                    , accept <|
+                                                        String.join
+                                                            ", "
+                                                            [ ".jpg"
+                                                            , ".jpeg"
+                                                            , ".png"
+                                                            ]
+                                                    , onClick <|
+                                                        FromCreator <|
+                                                            CreatorMsg.Existing <|
+                                                                ExistingMsg.NewCollectionForm
+                                                                    wallet
+                                                                    handle
+                                                                <|
+                                                                    NewCollectionForm.Image
+                                                    ]
+                                                    []
+                                                , Html.div
+                                                    []
+                                                    [ Html.img
+                                                        [ src "images/upload/default-pfp.jpg"
+                                                        , id "dap-cool-collection-logo"
+                                                        ]
+                                                        []
+                                                    ]
+                                                ]
+
                                         nameForm =
                                             case newCollection.name of
                                                 StringForm.Typing string ->
@@ -786,12 +819,14 @@ body creator =
                                                     Html.div
                                                         []
                                                         []
+
                                     in
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
                                         [ View.Generic.Wallet.view wallet
                                         , header
+                                        , imageForm
                                         , nameForm
                                         , symbolFrom
                                         , create
@@ -804,7 +839,7 @@ body creator =
                                         [ View.Generic.Wallet.view wallet
                                         , header
                                         , Html.div
-                                            [ class "is-waiting"
+                                            [ class "is-loading"
                                             ]
                                             []
                                         ]

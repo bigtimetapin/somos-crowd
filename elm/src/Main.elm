@@ -201,6 +201,12 @@ update msg model =
                                     , Cmd.none
                                     )
 
+                                NewCollectionForm.Image ->
+                                    ( model
+                                    , sender <| Sender.encode0 <| Sender.Create from -- prepare image form events
+                                    )
+
+
                         FromExistingCreator.CreateNewCollection wallet almostCollection ->
                             ( { model
                                 | state =
