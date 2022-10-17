@@ -1,4 +1,4 @@
-import {deriveAuthorityPda, getAuthorityPda} from "./pda/authority-pda";
+import {deriveAuthorityPda, getAuthorityPda} from "./authority-pda";
 
 export async function getCreatorCollections(program, creator) {
     // build array of collections

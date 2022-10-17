@@ -1,14 +1,14 @@
 import {getPhantom} from "./phantom";
-import {creatNft} from "./anchor/init/init";
-import {getEphemeralPP, getPP} from "./anchor/util";
+import {getEphemeralPP, getPP} from "./anchor/util/context";
 import {
     validateHandleForNewCreator,
     validateHandleForExistingCreator,
     assertCreatorPdaDoesNotExistAlready,
     assertCreatorPdaDoesExistAlready
 } from "./anchor/pda/creator-pda";
+import {getCreatorCollections} from "./anchor/pda/get-creator-collections";
 import {initNewCreator} from "./anchor/methods/init-new-creator";
-import {getCreatorCollections} from "./anchor/get-creator-collections";
+import {creatNft} from "./anchor/methods/create-nft";
 
 // init phantom
 let phantom = null;
