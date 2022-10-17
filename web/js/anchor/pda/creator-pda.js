@@ -55,6 +55,14 @@ export async function assertCreatorPdaDoesExistAlready(program, handle) {
     } catch (error) {
         const msg = "handle does not exist yet: " + handle;
         console.log(msg);
+        app.ports.success.send(
+            JSON.stringify(
+                {
+                    listener: "creator-handle-dne",
+                    more: JSON.stringify(handle)
+                }
+            )
+        );
         creator = null;
     }
     return creator

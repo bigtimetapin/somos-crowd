@@ -32,8 +32,8 @@ pub fn ix(
         ctx.accounts.payer.key(),
         ctx.accounts.authority.key(),
         name.clone(),
-        symbol,
-        uri,
+        symbol.clone(),
+        uri.clone(),
         Some(vec![
             mpl_token_metadata::state::Creator {
                 address: ctx.accounts.payer.key(),
@@ -125,6 +125,8 @@ pub fn ix(
     authority.total_supply = size;
     authority.num_minted = 0;
     authority.name = name; // already validated by metaplex
+    authority.symbol = symbol; // already validated by metaplex
+    authority.uri = uri; // already validated by metaplex
     // increment collection
     let creator = &mut ctx.accounts.creator;
     creator.num_collections = increment;

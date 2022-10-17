@@ -69,6 +69,20 @@ app.ports.sender.subscribe(async function (json) {
                         // get collections; TODO method
                         const collections = await getCreatorCollections(pp.program, creator);
                         console.log(collections)
+                        console.log(
+                            JSON.stringify(
+                                {
+                                    listener: "creator-authorized",
+                                    more: JSON.stringify(
+                                        {
+                                            handle: validated,
+                                            wallet: current,
+                                            collections: collections
+                                        }
+                                    )
+                                }
+                            )
+                        )
                         app.ports.success.send(
                             JSON.stringify(
                                 {

@@ -6,8 +6,6 @@ import {getCreatorCollections} from "../get-creator-collections";
 
 export async function creatNft(provider, program, handle, name, symbol) {
     try {
-        // get user wallet
-        const publicKey = provider.wallet.publicKey.toString();
         // get creator
         const creatorPda = await deriveCreatorPda(program, handle);
         const creator = await getCreatorPda(program, creatorPda);
@@ -81,8 +79,9 @@ export async function creatNft(provider, program, handle, name, symbol) {
         await createCollection(
             provider, program, creatorPda, authorityPda, mint.publicKey
         );
-        // get collections TODO; fetch fetch creator pda
-        const collections = await getCreatorCollections(program, creator);
+        // fetch all collections
+        const freshCreator = await getCreatorPda(program, creatorPda);
+        const collections = await getCreatorCollections(program, freshCreator);
         console.log(collections)
         app.ports.success.send(
             JSON.stringify(
@@ -91,7 +90,7 @@ export async function creatNft(provider, program, handle, name, symbol) {
                     more: JSON.stringify(
                         {
                             handle: handle,
-                            wallet: publicKey,
+                            wallet: provider.wallet.publicKey.toString(),
                             collections: collections
                         }
                     )
