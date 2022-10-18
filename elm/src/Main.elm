@@ -208,13 +208,7 @@ update msg model =
 
 
                         FromExistingCreator.CreateNewCollection wallet almostCollection ->
-                            ( { model
-                                | state =
-                                    Create <|
-                                        Creator.Existing <|
-                                            ExistingCreator.Authorized <|
-                                                Authorized.WaitingForNewCollectionCreation wallet
-                              }
+                            ( model
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }

@@ -9,6 +9,7 @@ import {
     SPL_TOKEN_PROGRAM_ID,
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
+import {buildMetaData, provision, readLogo, uploadFile} from "../../shdw/shdw";
 
 export async function creatNft(provider, program, handle, name, symbol) {
     try {
@@ -51,12 +52,21 @@ export async function creatNft(provider, program, handle, name, symbol) {
             ],
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
         )
+        // upload metadata
+        const metadataUrl = await uploadMetadata(
+            provider.connection,
+            provider.wallet,
+            handle,
+            authorityIndex,
+            name,
+            symbol
+        );
         // invoke rpc
         await program.methods
             .createNft(
                 name,
                 symbol,
-                "test-uri",
+                metadataUrl,
                 new BN(2) // TODO; supply
             )
             .accounts(
@@ -109,6 +119,23 @@ export async function creatNft(provider, program, handle, name, symbol) {
             error.toString()
         )
     }
+}
+
+async function uploadMetadata(connection, uploader, handle, index, name, symbol) {
+    // read logo from input
+    const logo = await readLogo();
+    // provision space
+    const provisioned = await provision(connection, uploader, logo.size);
+    // upload logo
+    const shdwUrl = await uploadFile(logo, provisioned.drive, provisioned.account);
+    console.log(shdwUrl);
+    const logoUrl = shdwUrl + logo.name;
+    console.log(logoUrl);
+    // build metadata
+    const metadata = buildMetaData(handle, index, name, symbol, "description", logoUrl);
+    // upload metadata
+    await uploadFile(metadata, provisioned.drive, provisioned.account);
+    return (shdwUrl + "meta.json")
 }
 
 async function createCollection(provider, program, creator, authority, mint) {

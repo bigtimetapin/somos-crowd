@@ -832,17 +832,6 @@ body creator =
                                         , create
                                         ]
 
-                                Authorized.WaitingForNewCollectionCreation wallet ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
-                                        , Html.div
-                                            [ class "is-loading"
-                                            ]
-                                            []
-                                        ]
 
                 MaybeExisting string ->
                     Html.div
