@@ -128,9 +128,7 @@ async function uploadMetadata(connection, uploader, handle, index, name, symbol)
     const provisioned = await provision(connection, uploader, logo.size);
     // upload logo
     const shdwUrl = await uploadFile(logo, provisioned.drive, provisioned.account);
-    console.log(shdwUrl);
     const logoUrl = shdwUrl + logo.name;
-    console.log(logoUrl);
     // build metadata
     const metadata = buildMetaData(handle, index, name, symbol, "description", logoUrl);
     // upload metadata

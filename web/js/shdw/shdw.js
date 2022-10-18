@@ -40,11 +40,10 @@ export async function readLogo() {
     if (fileList && fileList.length === 1) {
         console.log("found selected logo");
         file = fileList[0];
-        console.log(file);
-        console.log(file.name);
+        // parse file-type
         const fileName = file.name;
         const fileType = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
-        console.log(fileType);
+        // rename file
         console.log("renaming file")
         const blob = file.slice(0, file.size, file.type); // grab buffer
         file = new File([blob], "logo." + fileType, {type: file.type});
