@@ -1,16 +1,14 @@
 module Model.Creator.Existing.NewCollection exposing (NewCollection, default)
 
-import Model.StringForm exposing (StringForm(..))
-
 
 type alias NewCollection =
-    { name : StringForm
-    , symbol : StringForm
+    { name : String
+    , symbol : String
     }
 
 
 default : NewCollection
 default =
-    { name = Typing ""
-    , symbol = Typing ""
+    { name = ""
+    , symbol = ""
     }

@@ -9,4 +9,7 @@ import Model.Wallet exposing (Wallet)
 type Authorized
     = Top WithCollections
     | CreatingNewCollection Wallet Handle NewCollection
-    -- WaitingForNewCollectionCreation Wallet
+
+
+
+-- WaitingForNewCollectionCreation Wallet

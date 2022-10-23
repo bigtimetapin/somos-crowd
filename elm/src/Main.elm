@@ -17,7 +17,6 @@ import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
-import Model.StringForm as StringForm
 import Model.Wallet as Wallet
 import Msg.Admin as AdminMsg
 import Msg.Creator.Creator as FromCreator
@@ -89,7 +88,7 @@ update msg model =
 
                         FromNewCreator.HandleForm handleForm ->
                             case handleForm of
-                                StringForm.Typing string ->
+                                Handle.Typing string ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -100,7 +99,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                StringForm.Confirm handle ->
+                                Handle.Confirm handle ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -127,7 +126,7 @@ update msg model =
 
                         FromExistingCreator.HandleForm handleForm ->
                             case handleForm of
-                                StringForm.Typing string ->
+                                Handle.Typing string ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -139,7 +138,7 @@ update msg model =
                                     , Cmd.none
                                     )
 
-                                StringForm.Confirm handle ->
+                                Handle.Confirm handle ->
                                     ( { model
                                         | state =
                                             Create <|
@@ -203,9 +202,9 @@ update msg model =
 
                                 NewCollectionForm.Image ->
                                     ( model
-                                    , sender <| Sender.encode0 <| Sender.Create from -- prepare image form events
+                                    , sender <| Sender.encode0 <| Sender.Create from
+                                      -- prepare image form events
                                     )
-
 
                         FromExistingCreator.CreateNewCollection wallet almostCollection ->
                             ( model

@@ -8,7 +8,7 @@ import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.New.New as New
-import Model.StringForm as StringForm
+import Model.Handle as Handle
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -153,7 +153,7 @@ body creator =
                                                     FromCreator <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
-                                                                StringForm.Typing s
+                                                                Handle.Typing s
                                             ]
                                             []
                                         , Html.span
@@ -186,7 +186,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.New <|
                                                                 NewMsg.HandleForm <|
-                                                                    StringForm.Confirm string
+                                                                    Handle.Confirm string
                                                     ]
                                                     [ Html.text <|
                                                         String.concat
@@ -216,7 +216,7 @@ body creator =
                                                     FromCreator <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
-                                                                StringForm.Typing s
+                                                                Handle.Typing s
                                             ]
                                             []
                                         , Html.span
@@ -266,7 +266,7 @@ body creator =
                                                 FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
-                                                            StringForm.Typing string
+                                                            Handle.Typing string
                                             ]
                                             [ Html.text
                                                 """try again
@@ -299,7 +299,7 @@ body creator =
                                                 FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
-                                                            StringForm.Typing string
+                                                            Handle.Typing string
                                             ]
                                             [ Html.text
                                                 """try again
@@ -331,7 +331,7 @@ body creator =
                                                     FromCreator <|
                                                         CreatorMsg.Existing <|
                                                             ExistingMsg.HandleForm <|
-                                                                StringForm.Typing s
+                                                                Handle.Typing s
                                             ]
                                             []
                                         , Html.span
@@ -366,7 +366,7 @@ body creator =
                                                                 FromCreator <|
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.HandleForm <|
-                                                                            StringForm.Confirm string
+                                                                            Handle.Confirm string
                                                             ]
                                                             [ Html.text <|
                                                                 String.concat
@@ -396,7 +396,7 @@ body creator =
                                                             FromCreator <|
                                                                 CreatorMsg.Existing <|
                                                                     ExistingMsg.HandleForm <|
-                                                                        StringForm.Typing s
+                                                                        Handle.Typing s
                                                     ]
                                                     []
                                                 , Html.span
@@ -446,7 +446,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    StringForm.Typing string
+                                                                    Handle.Typing string
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -479,7 +479,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    StringForm.Typing string
+                                                                    Handle.Typing string
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -513,7 +513,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    StringForm.Typing handle
+                                                                    Handle.Typing handle
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -598,205 +598,89 @@ body creator =
                                                 ]
 
                                         nameForm =
-                                            case newCollection.name of
-                                                StringForm.Typing string ->
-                                                    let
-                                                        confirm =
-                                                            case string of
-                                                                "" ->
-                                                                    Html.div
-                                                                        []
-                                                                        []
-
-                                                                _ ->
-                                                                    Html.div
-                                                                        [ class "is-button-1"
-                                                                        , onClick <|
-                                                                            FromCreator <|
-                                                                                CreatorMsg.Existing <|
-                                                                                    ExistingMsg.NewCollectionForm
-                                                                                        wallet
-                                                                                        handle
-                                                                                    <|
-                                                                                        NewCollectionForm.Name
-                                                                                            (StringForm.Confirm string)
-                                                                                            newCollection
-                                                                        ]
-                                                                        [ Html.text <|
-                                                                            String.concat
-                                                                                [ "confirm:"
-                                                                                , " "
-                                                                                , string
-                                                                                ]
-                                                                        ]
-                                                    in
-                                                    Html.div
-                                                        []
-                                                        [ Html.div
-                                                            [ class "field"
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    [ class "field"
+                                                    ]
+                                                    [ Html.p
+                                                        [ class "control has-icons-left"
+                                                        ]
+                                                        [ Html.input
+                                                            [ class "input"
+                                                            , type_ "text"
+                                                            , placeholder "Name your new collection"
+                                                            , onInput <|
+                                                                \s ->
+                                                                    FromCreator <|
+                                                                        CreatorMsg.Existing <|
+                                                                            ExistingMsg.NewCollectionForm
+                                                                                wallet
+                                                                                handle
+                                                                            <|
+                                                                                NewCollectionForm.Name s newCollection
                                                             ]
-                                                            [ Html.p
-                                                                [ class "control has-icons-left"
+                                                            []
+                                                        , Html.span
+                                                            [ class "icon is-left"
+                                                            ]
+                                                            [ Html.i
+                                                                [ class "fas fa-file-signature"
                                                                 ]
-                                                                [ Html.input
-                                                                    [ class "input"
-                                                                    , type_ "text"
-                                                                    , placeholder "Name your new collection"
-                                                                    , onInput <|
-                                                                        \s ->
-                                                                            FromCreator <|
-                                                                                CreatorMsg.Existing <|
-                                                                                    ExistingMsg.NewCollectionForm
-                                                                                        wallet
-                                                                                        handle
-                                                                                    <|
-                                                                                        NewCollectionForm.Name
-                                                                                            (StringForm.Typing s)
-                                                                                            newCollection
-                                                                    ]
-                                                                    []
-                                                                , Html.span
-                                                                    [ class "icon is-left"
-                                                                    ]
-                                                                    [ Html.i
-                                                                        [ class "fas fa-file-signature"
-                                                                        ]
-                                                                        []
-                                                                    ]
-                                                                , confirm
-                                                                ]
+                                                                []
                                                             ]
                                                         ]
-
-                                                StringForm.Confirm string ->
-                                                    Html.div
-                                                        []
-                                                        [ Html.text <|
-                                                            String.concat
-                                                                [ "name:"
-                                                                , " "
-                                                                , string
-                                                                ]
-                                                        , Html.button
-                                                            [ class "is-button-1"
-                                                            , onClick <|
-                                                                FromCreator <|
-                                                                    CreatorMsg.Existing <|
-                                                                        ExistingMsg.NewCollectionForm
-                                                                            wallet
-                                                                            handle
-                                                                        <|
-                                                                            NewCollectionForm.Name
-                                                                                (StringForm.Typing "")
-                                                                                newCollection
-                                                            ]
-                                                            [ Html.text "edit"
-                                                            ]
-                                                        ]
+                                                    ]
+                                                ]
 
                                         symbolFrom =
-                                            case newCollection.symbol of
-                                                StringForm.Typing string ->
-                                                    let
-                                                        upper =
-                                                            String.toUpper string
-
-                                                        confirm =
-                                                            case string of
-                                                                "" ->
-                                                                    Html.div
-                                                                        []
-                                                                        []
-
-                                                                _ ->
-                                                                    Html.div
-                                                                        [ class "is-button-1"
-                                                                        , onClick <|
-                                                                            FromCreator <|
-                                                                                CreatorMsg.Existing <|
-                                                                                    ExistingMsg.NewCollectionForm
-                                                                                        wallet
-                                                                                        handle
-                                                                                    <|
-                                                                                        NewCollectionForm.Symbol
-                                                                                            (StringForm.Confirm upper)
-                                                                                            newCollection
-                                                                        ]
-                                                                        [ Html.text <|
-                                                                            String.concat
-                                                                                [ "confirm:"
-                                                                                , " "
-                                                                                , upper
-                                                                                ]
-                                                                        ]
-                                                    in
-                                                    Html.div
-                                                        []
-                                                        [ Html.div
-                                                            [ class "field"
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    [ class "field"
+                                                    ]
+                                                    [ Html.p
+                                                        [ class "control has-icons-left"
+                                                        ]
+                                                        [ Html.input
+                                                            [ class "input"
+                                                            , type_ "text"
+                                                            , placeholder "Symbol"
+                                                            , onInput <|
+                                                                \s ->
+                                                                    FromCreator <|
+                                                                        CreatorMsg.Existing <|
+                                                                            ExistingMsg.NewCollectionForm
+                                                                                wallet
+                                                                                handle
+                                                                            <|
+                                                                                NewCollectionForm.Symbol
+                                                                                    (String.toUpper s)
+                                                                                    newCollection
                                                             ]
-                                                            [ Html.p
-                                                                [ class "control has-icons-left"
+                                                            []
+                                                        , Html.span
+                                                            [ class "icon is-left"
+                                                            ]
+                                                            [ Html.i
+                                                                [ class "fas fa-file-signature"
                                                                 ]
-                                                                [ Html.input
-                                                                    [ class "input"
-                                                                    , type_ "text"
-                                                                    , placeholder "Symbol"
-                                                                    , onInput <|
-                                                                        \s ->
-                                                                            FromCreator <|
-                                                                                CreatorMsg.Existing <|
-                                                                                    ExistingMsg.NewCollectionForm
-                                                                                        wallet
-                                                                                        handle
-                                                                                    <|
-                                                                                        NewCollectionForm.Symbol
-                                                                                            (StringForm.Typing s)
-                                                                                            newCollection
-                                                                    ]
-                                                                    []
-                                                                , Html.span
-                                                                    [ class "icon is-left"
-                                                                    ]
-                                                                    [ Html.i
-                                                                        [ class "fas fa-file-signature"
-                                                                        ]
-                                                                        []
-                                                                    ]
-                                                                , confirm
-                                                                ]
+                                                                []
                                                             ]
                                                         ]
-
-                                                StringForm.Confirm string ->
-                                                    Html.div
-                                                        []
-                                                        [ Html.text <|
-                                                            String.concat
-                                                                [ "symbol:"
-                                                                , " "
-                                                                , string
-                                                                ]
-                                                        , Html.button
-                                                            [ class "is-button-1"
-                                                            , onClick <|
-                                                                FromCreator <|
-                                                                    CreatorMsg.Existing <|
-                                                                        ExistingMsg.NewCollectionForm
-                                                                            wallet
-                                                                            handle
-                                                                        <|
-                                                                            NewCollectionForm.Symbol
-                                                                                (StringForm.Typing "")
-                                                                                newCollection
-                                                            ]
-                                                            [ Html.text "edit"
-                                                            ]
-                                                        ]
+                                                    ]
+                                                ]
 
                                         create =
-                                            case ( newCollection.name, newCollection.symbol ) of
-                                                ( StringForm.Confirm name, StringForm.Confirm symbol ) ->
+                                            let
+                                                e1 =
+                                                    String.isEmpty newCollection.name
+
+                                                e2 =
+                                                    String.isEmpty newCollection.symbol
+                                            in
+                                            case ( e1, e2 ) of
+                                                ( False, False ) ->
                                                     Html.div
                                                         []
                                                         [ Html.button
@@ -807,8 +691,8 @@ body creator =
                                                                         ExistingMsg.CreateNewCollection
                                                                             wallet
                                                                             { handle = handle
-                                                                            , name = name
-                                                                            , symbol = symbol
+                                                                            , name = newCollection.name
+                                                                            , symbol = newCollection.symbol
                                                                             }
                                                             ]
                                                             [ Html.text "create"
@@ -819,7 +703,6 @@ body creator =
                                                     Html.div
                                                         []
                                                         []
-
                                     in
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"
@@ -831,7 +714,6 @@ body creator =
                                         , symbolFrom
                                         , create
                                         ]
-
 
                 MaybeExisting string ->
                     Html.div

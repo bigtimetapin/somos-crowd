@@ -1,4 +1,4 @@
-module Model.Handle exposing (Handle, WithWallet, decode, decodeWithWallet, encode)
+module Model.Handle exposing (Form(..), Handle, WithWallet, decode, decodeWithWallet, encode)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -8,6 +8,11 @@ import Util.Decode as Util
 
 type alias Handle =
     String
+
+
+type Form
+    = Typing String
+    | Confirm String
 
 
 encode : Handle -> String
