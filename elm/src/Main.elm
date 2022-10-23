@@ -94,7 +94,7 @@ update msg model =
                                             Create <|
                                                 Creator.New <|
                                                     NewCreator.TypingHandle <|
-                                                        String.toLower string
+                                                        Handle.normalize string
                                       }
                                     , Cmd.none
                                     )
@@ -133,7 +133,7 @@ update msg model =
                                                 Creator.Existing <|
                                                     ExistingCreator.HandleForm <|
                                                         ExistingHandleFormStatus.TypingHandle <|
-                                                            String.toLower string
+                                                            Handle.normalize string
                                       }
                                     , Cmd.none
                                     )

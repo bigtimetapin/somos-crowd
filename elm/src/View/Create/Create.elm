@@ -726,6 +726,24 @@ body creator =
                                 """maybe existing
                                 """
                             ]
+                        , Html.div
+                            []
+                            [ Html.button
+                                [ class "is-button-1"
+                                , onClick <|
+                                    FromCreator <|
+                                        CreatorMsg.Existing <|
+                                            ExistingMsg.HandleForm <|
+                                                Handle.Confirm string
+                                ]
+                                [ Html.text <|
+                                    String.concat
+                                        [ "authorize handle:"
+                                        , " "
+                                        , string
+                                        ]
+                                ]
+                            ]
                         ]
     in
     Html.div
