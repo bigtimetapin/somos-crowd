@@ -558,7 +558,12 @@ body creator =
                                             []
                                           <|
                                             List.map
-                                                (\c -> View.Generic.Collection.view { selected = False } withCollections.handle c)
+                                                (\c ->
+                                                    View.Generic.Collection.view
+                                                        { selected = False }
+                                                        withCollections.handle
+                                                        c
+                                                )
                                                 withCollections.collections
                                         ]
 

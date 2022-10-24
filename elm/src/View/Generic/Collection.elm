@@ -22,7 +22,8 @@ view args handle collection =
                 False ->
                     Html.div
                         []
-                        [ Html.button -- TODO; href
+                        [ Html.button
+                            -- TODO; href
                             [ class "is-button-1"
                             , style "width" "100%"
                             , onClick <| FromCollector <| SelectCollection handle collection
