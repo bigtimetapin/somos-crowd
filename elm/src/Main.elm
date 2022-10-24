@@ -27,6 +27,7 @@ import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as FromNewCreator
 import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
+import Sub.Listener.Collector.Collector as ToCollector
 import Sub.Listener.Creator.Creator as ToCreator
 import Sub.Listener.Creator.Existing as ToExistingCreator
 import Sub.Listener.Creator.New as ToNewCreator
@@ -366,6 +367,43 @@ update msg model =
                                                                     }
                                                             in
                                                             Listener.decode model json WithCollections.decode f
+
+                                        -- found msg for collector
+                                        Listener.Collect toCollector ->
+                                            -- what is creator doing?
+                                            case toCollector of
+                                                ToCollector.HandleInvalid ->
+                                                    let
+                                                        f handle =
+                                                            { model
+                                                                | state =
+                                                                    Collect <|
+                                                                        Collector.HandleInvalid handle
+                                                            }
+                                                    in
+                                                    Listener.decode model json Handle.decode f
+
+                                                ToCollector.HandleDoesNotExist ->
+                                                    let
+                                                        f handle =
+                                                            { model
+                                                                | state =
+                                                                    Collect <|
+                                                                        Collector.HandleDoesNotExist handle
+                                                            }
+                                                    in
+                                                    Listener.decode model json Handle.decode f
+
+                                                ToCollector.HandleFound ->
+                                                    let
+                                                        f withCollections =
+                                                            { model
+                                                                | state =
+                                                                    Collect <|
+                                                                        Collector.SelectedCreator withCollections
+                                                            }
+                                                    in
+                                                    Listener.decode model json WithCollections.decode f
 
                                 -- undefined role
                                 Nothing ->

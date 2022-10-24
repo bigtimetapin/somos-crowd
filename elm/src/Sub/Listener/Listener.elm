@@ -4,12 +4,14 @@ import Json.Decode as Decode
 import Model.Model exposing (Model)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
+import Sub.Listener.Collector.Collector as ToCollector exposing (ToCollector)
 import Sub.Listener.Creator.Creator as ToCreator exposing (ToCreator)
 import Util.Decode as Util
 
 
 type Listener
     = Create ToCreator
+    | Collect ToCollector
 
 
 type alias WithMore =
@@ -69,7 +71,12 @@ fromString string =
             Just <| Create toCreator
 
         Nothing ->
-            Nothing
+            case ToCollector.fromString string of
+                Just toCollector ->
+                    Just <| Collect toCollector
+
+                Nothing ->
+                    Nothing
 
 
 type alias Json =

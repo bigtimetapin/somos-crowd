@@ -42,15 +42,22 @@ export async function assertCreatorPdaDoesNotExistAlready(program, handle) {
     return creator
 }
 
-export async function assertCreatorPdaDoesExistAlready(program, handle) {
+export async function assertCreatorPdaDoesExistAlreadyForCreator(program, handle) {
+    return await assertCreatorPdaDoesExistAlready(program, handle, "creator-handle-dne")
+}
+
+export async function assertCreatorPdaDoesExistAlreadyForCollector(program, handle) {
+    return await assertCreatorPdaDoesExistAlready(program, handle, "collector-handle-dne")
+}
+
+async function assertCreatorPdaDoesExistAlready(program, handle, listener) {
     // derive pda
     const pda = await deriveCreatorPda(program, handle);
     // fetch pda
     let creator;
     try {
         creator = await getCreatorPda(program, pda);
-        let msg = "found handle: " + handle;
-        msg = msg + ". " + "still need to authorize."
+        const msg = "found handle: " + handle;
         console.log(msg);
     } catch (error) {
         const msg = "handle does not exist yet: " + handle;
@@ -74,6 +81,10 @@ export function validateHandleForNewCreator(handle) {
 
 export function validateHandleForExistingCreator(handle) {
     return validateHandle(handle, "existing-creator-handle-invalid")
+}
+
+export function validateHandleForCollector(handle) {
+    return validateHandle(handle, "collector-handle-invalid")
 }
 
 function validateHandle(handle, listener) {
