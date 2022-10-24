@@ -233,6 +233,11 @@ update msg model =
                                     { sender = Sender.Collect from, more = Handle.encode string }
                             )
 
+                FromCollector.SelectCollection handle collection ->
+                    ( { model | state = Collect <| Collector.SelectedCollection handle collection }
+                    , Cmd.none
+                    )
+
         FromAdmin from ->
             case from of
                 AdminMsg.Connect ->

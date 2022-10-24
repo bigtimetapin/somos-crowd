@@ -1,10 +1,12 @@
 module Msg.Collector exposing (FromCollector(..), toString)
 
-import Model.Handle as Handle
+import Model.Collection exposing (Collection)
+import Model.Handle as Handle exposing (Handle)
 
 
 type FromCollector
     = HandleForm Handle.Form
+    | SelectCollection Handle Collection
 
 
 toString : FromCollector -> String

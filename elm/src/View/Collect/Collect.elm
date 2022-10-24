@@ -175,7 +175,7 @@ body collector =
                             []
                           <|
                             List.map
-                                View.Generic.Collection.view
+                                (\c -> View.Generic.Collection.view { selected = False } withCollections.handle c)
                                 withCollections.collections
                         ]
 
@@ -199,7 +199,7 @@ body collector =
                             ]
                         , Html.div
                             []
-                            [ View.Generic.Collection.view collection
+                            [ View.Generic.Collection.view { selected = True } handle collection
                             ]
                         ]
 
@@ -235,7 +235,7 @@ body collector =
                             ]
                         , Html.div
                             []
-                            [ View.Generic.Collection.view collection
+                            [ View.Generic.Collection.view { selected = True } handle collection
                             ]
                         ]
     in
