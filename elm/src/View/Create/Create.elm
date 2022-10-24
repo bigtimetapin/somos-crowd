@@ -266,7 +266,7 @@ body creator =
                                                 FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
-                                                            Handle.Typing string
+                                                            Handle.Typing ""
                                             ]
                                             [ Html.text
                                                 """try again
@@ -299,7 +299,7 @@ body creator =
                                                 FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
-                                                            Handle.Typing string
+                                                            Handle.Typing ""
                                             ]
                                             [ Html.text
                                                 """try again
@@ -446,7 +446,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    Handle.Typing string
+                                                                    Handle.Typing ""
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -479,7 +479,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    Handle.Typing string
+                                                                    Handle.Typing ""
                                                     ]
                                                     [ Html.text
                                                         """try again
@@ -513,7 +513,7 @@ body creator =
                                                         FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
-                                                                    Handle.Typing handle
+                                                                    Handle.Typing ""
                                                     ]
                                                     [ Html.text
                                                         """try again

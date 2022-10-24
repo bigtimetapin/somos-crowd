@@ -7,6 +7,7 @@ import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Admin as Administrator
 import Model.AlmostCollection as AlmostCollection
+import Model.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as ExistingCreator
@@ -19,6 +20,7 @@ import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
 import Model.Wallet as Wallet
 import Msg.Admin as AdminMsg
+import Msg.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -34,6 +36,7 @@ import Sub.Sender.Sender as Sender
 import Sub.Sub as Sub
 import Url
 import View.Admin.Admin
+import View.Collect.Collect
 import View.Create.Create
 import View.Error.Error
 import View.Hero
@@ -213,6 +216,22 @@ update msg model =
                                     { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
                             )
 
+        FromCollector from ->
+            case from of
+                FromCollector.HandleForm form ->
+                    case form of
+                        Handle.Typing string ->
+                            ( { model | state = Collect <| Collector.TypingHandle <| Handle.normalize string }
+                            , Cmd.none
+                            )
+
+                        Handle.Confirm string ->
+                            ( { model | state = Collect <| Collector.WaitingForHandleConfirmation }
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Collect from, more = Handle.encode string }
+                            )
+
         FromAdmin from ->
             case from of
                 AdminMsg.Connect ->
@@ -390,6 +409,9 @@ view model =
             case model.state of
                 Create creator ->
                     hero <| View.Create.Create.body creator
+
+                Collect collector ->
+                    hero <| View.Collect.Collect.body collector
 
                 Admin administrator ->
                     hero <| View.Admin.Admin.body administrator

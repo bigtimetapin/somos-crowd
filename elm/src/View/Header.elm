@@ -3,6 +3,7 @@ module View.Header exposing (view)
 import Html exposing (Html)
 import Html.Attributes exposing (class, src, style, width)
 import Html.Events exposing (onClick)
+import Model.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Model exposing (Model)
 import Model.State as State exposing (State(..))
@@ -20,6 +21,11 @@ view model =
         [ class "is-navbar"
         ]
         [ tab_
+            { state = Collect (Collector.TypingHandle "")
+            , title = "Collect"
+            , msg = NoOp
+            }
+        , tab_
             { state = Create Creator.Top
             , title = "Create"
             , msg = NoOp
@@ -71,17 +77,12 @@ isActive model state =
         class_ =
             "is-active-header-tab"
     in
-    case state of
-        Create _ ->
-            case model.state of
-                Create _ ->
-                    class_
+    case ( model.state, state ) of
+        ( Create Creator.Top, Create _ ) ->
+            class_
 
-                _ ->
-                    ""
+        ( Collect (Collector.TypingHandle ""), Collect _ ) ->
+            class_
 
-        Admin _ ->
-            ""
-
-        Error _ ->
+        _ ->
             ""
