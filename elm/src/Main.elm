@@ -66,12 +66,32 @@ update msg model =
             ( model, Cmd.none )
 
         UrlChanged url ->
-            ( { model
-                | state = State.parse url
-                , url = url
-              }
-            , resetViewport
-            )
+            let
+                state : State
+                state =
+                    State.parse url
+
+                bump : Model
+                bump =
+                    { model | state = state, url = url }
+            in
+            case state of
+                Collect (Collector.MaybeExisting handle) ->
+                    ( bump
+                    , Cmd.batch
+                        [ sender <|
+                            Sender.encode <|
+                                { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
+                                , more = Handle.encode handle
+                                }
+                        , resetViewport
+                        ]
+                    )
+
+                _ ->
+                    ( bump
+                    , resetViewport
+                    )
 
         LinkClicked urlRequest ->
             case urlRequest of

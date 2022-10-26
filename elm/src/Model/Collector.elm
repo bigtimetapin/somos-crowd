@@ -18,3 +18,5 @@ type
     | SelectedCollection Handle Collection
     | WaitingForPurchase
     | PurchaseSuccess Wallet Handle Collection
+      -- search by url
+    | MaybeExisting String

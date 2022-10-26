@@ -25,6 +25,9 @@ urlParser =
             (\handle -> Create (Creator.MaybeExisting handle))
             (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map (Collect <| Collector.TypingHandle "") (UrlParser.s "collect")
+        , UrlParser.map
+            (\handle -> Collect (Collector.MaybeExisting handle))
+            (UrlParser.s "collect" </> UrlParser.string)
         , UrlParser.map (Admin Administrator.Top) (UrlParser.s "admin")
         ]
 

@@ -232,6 +232,17 @@ body collector =
                             [ View.Generic.Collection.Collector.Collector.view handle collection
                             ]
                         ]
+
+                MaybeExisting _ ->
+                    Html.div
+                        [ class "has-border-2 px-2 pt-2 pb-6"
+                        ]
+                        [ header
+                        , Html.div
+                            [ class "is-loading"
+                            ]
+                            []
+                        ]
     in
     Html.div
         [ class "container"
