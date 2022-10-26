@@ -217,6 +217,20 @@ update msg model =
                                     { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
                             )
 
+                        FromExistingCreator.SelectCollection wallet handle collection ->
+                            ( { model
+                                | state =
+                                    Create <|
+                                        Creator.Existing <|
+                                            ExistingCreator.Authorized <|
+                                                Authorized.SelectedCollection
+                                                    wallet
+                                                    handle
+                                                    collection
+                              }
+                            , Cmd.none
+                            )
+
         FromCollector from ->
             case from of
                 FromCollector.HandleForm form ->

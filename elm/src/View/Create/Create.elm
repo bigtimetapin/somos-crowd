@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_)
+import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Authorized as Authorized
@@ -14,7 +14,7 @@ import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as NewMsg
 import Msg.Msg exposing (Msg(..))
-import View.Generic.Collection
+import View.Generic.Collection.Creator.Creator
 import View.Generic.Wallet
 
 
@@ -554,17 +554,10 @@ body creator =
                                                 [ Html.text "create new collection"
                                                 ]
                                             ]
-                                        , Html.div
-                                            []
-                                          <|
-                                            List.map
-                                                (\c ->
-                                                    View.Generic.Collection.view
-                                                        { selected = False }
-                                                        withCollections.handle
-                                                        c
-                                                )
-                                                withCollections.collections
+                                        , View.Generic.Collection.Creator.Creator.viewMany
+                                            withCollections.wallet
+                                            withCollections.handle
+                                            withCollections.collections
                                         ]
 
                                 Authorized.CreatingNewCollection wallet handle newCollection ->
@@ -596,6 +589,7 @@ body creator =
                                                     []
                                                     [ Html.img
                                                         [ src "images/upload/default-pfp.jpg"
+                                                        , width 500
                                                         , id "dap-cool-collection-logo"
                                                         ]
                                                         []
@@ -718,6 +712,15 @@ body creator =
                                         , nameForm
                                         , symbolFrom
                                         , create
+                                        ]
+
+                                Authorized.SelectedCollection wallet handle collection ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ View.Generic.Wallet.view wallet
+                                        , header
+                                        , View.Generic.Collection.Creator.Creator.view handle collection
                                         ]
 
                 MaybeExisting string ->

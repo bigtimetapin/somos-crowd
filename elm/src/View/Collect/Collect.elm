@@ -7,7 +7,7 @@ import Model.Collector exposing (Collector(..))
 import Model.Handle as Handle
 import Msg.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
-import View.Generic.Collection
+import View.Generic.Collection.Collector.Collector
 import View.Generic.Wallet
 
 
@@ -171,12 +171,9 @@ body collector =
                             []
                             [ Html.text "collections ⬇️"
                             ]
-                        , Html.div
-                            []
-                          <|
-                            List.map
-                                (\c -> View.Generic.Collection.view { selected = False } withCollections.handle c)
-                                withCollections.collections
+                        , View.Generic.Collection.Collector.Collector.viewMany
+                            withCollections.handle
+                            withCollections.collections
                         ]
 
                 SelectedCollection handle collection ->
@@ -197,10 +194,7 @@ body collector =
                             []
                             [ Html.text "collection selected ⬇️"
                             ]
-                        , Html.div
-                            []
-                            [ View.Generic.Collection.view { selected = True } handle collection
-                            ]
+                        , View.Generic.Collection.Collector.Collector.view handle collection
                         ]
 
                 WaitingForPurchase ->
@@ -235,7 +229,7 @@ body collector =
                             ]
                         , Html.div
                             []
-                            [ View.Generic.Collection.view { selected = True } handle collection
+                            [ View.Generic.Collection.Collector.Collector.view handle collection
                             ]
                         ]
     in
