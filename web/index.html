@@ -17,9 +17,13 @@
 <body>
 <pre id="elm"></pre>
 <script src="elm.min.js"></script>
-<script src="js/bundle.js" type="module"></script>
-<script>
+<script type="module">
     let app = Elm.Main.init({node: document.getElementById("elm")});
+    import {main} from "./js/bundle.js";
+    //  listen for sender
+    app.ports.sender.subscribe(async function (json) {
+        await main(app, json);
+    });
 </script>
 </body>
 </html>

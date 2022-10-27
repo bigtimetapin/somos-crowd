@@ -1,6 +1,6 @@
 import {web3} from "@project-serum/anchor";
 
-export async function initNewCreator(provider, program, handle, pda) {
+export async function initNewCreator(app, provider, program, handle, pda) {
     try {
         await program.methods
             .initNewCreator(

@@ -11,7 +11,7 @@ import {
 } from "../util/constants";
 import {buildMetaData, provision, readLogo, uploadFile} from "../../shdw/shdw";
 
-export async function creatNft(provider, program, handle, name, symbol) {
+export async function creatNft(app, provider, program, handle, name, symbol) {
     try {
         // get creator
         const creatorPda = await deriveCreatorPda(program, handle);

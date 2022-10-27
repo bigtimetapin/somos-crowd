@@ -14,8 +14,9 @@ import {creatNft} from "./anchor/methods/create-nft";
 
 // init phantom
 let phantom = null;
-//  listen for sender
-app.ports.sender.subscribe(async function (json) {
+
+export async function main(app, json) {
+    console.log(json);
     try {
         // parse json as object
         const parsed = JSON.parse(json);
@@ -26,23 +27,24 @@ app.ports.sender.subscribe(async function (json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForNewCreator(more.handle);
+            const validated = validateHandleForNewCreator(app, more.handle);
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
                 // assert creator pda does-not-exist
                 const creator = await assertCreatorPdaDoesNotExistAlready(
+                    app,
                     ephemeralPP.program,
                     validated
                 );
                 // create pda
                 if (creator) {
                     // get phantom
-                    phantom = await getPhantom();
+                    phantom = await getPhantom(app);
                     // get provider & program
                     const pp = getPP(phantom);
                     // invoke init-new-creator
-                    await initNewCreator(pp.provider, pp.program, validated, creator);
+                    await initNewCreator(app, pp.provider, pp.program, validated, creator);
                 }
             }
             // or existing creator confirm handle
@@ -50,19 +52,20 @@ app.ports.sender.subscribe(async function (json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForExistingCreator(more.handle);
+            const validated = validateHandleForExistingCreator(app, more.handle);
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
                 // asert creator pda exists
                 const creator = await assertCreatorPdaDoesExistAlreadyForCreator(
+                    app,
                     ephemeralPP.program,
                     validated
                 );
                 // authorize pda
                 if (creator) {
                     // get phantom
-                    phantom = await getPhantom();
+                    phantom = await getPhantom(app);
                     // get provider & program
                     const pp = getPP(phantom);
                     // assert authority is current user
@@ -104,8 +107,12 @@ app.ports.sender.subscribe(async function (json) {
             }
             // or creator prepare image form
         } else if (sender === "creator-prepare-image-form") {
-            const img = document.getElementById("dap-cool-collection-logo");
-            const imgSelector = document.getElementById("dap-cool-collection-logo-selector");
+            const img = document.getElementById(
+                "dap-cool-collection-logo"
+            );
+            const imgSelector = document.getElementById(
+                "dap-cool-collection-logo-selector"
+            );
             imgSelector.addEventListener("change", (selectEvent) => {
                 // capture file list
                 const fileList = selectEvent.target.files;
@@ -126,18 +133,26 @@ app.ports.sender.subscribe(async function (json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // invoke rpc
-            await creatNft(pp.provider, pp.program, more.handle, more.name, more.symbol);
+            await creatNft(
+                app,
+                pp.provider,
+                pp.program,
+                more.handle,
+                more.name,
+                more.symbol
+            );
             // or collector search collector
         } else if (sender === "collector-search-handle") {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForCollector(more.handle);
+            const validated = validateHandleForCollector(app, more.handle);
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
                 // asert creator pda exists
                 const creator = await assertCreatorPdaDoesExistAlreadyForCollector(
+                    app,
                     ephemeralPP.program,
                     validated
                 );
@@ -173,4 +188,4 @@ app.ports.sender.subscribe(async function (json) {
             error.toString()
         );
     }
-});
+}

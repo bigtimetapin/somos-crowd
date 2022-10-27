@@ -16,7 +16,7 @@ export async function getCreatorPda(program, pda) {
     return await program.account.creator.fetch(pda);
 }
 
-export async function assertCreatorPdaDoesNotExistAlready(program, handle) {
+export async function assertCreatorPdaDoesNotExistAlready(app, program, handle) {
     // derive pda
     const pda = await deriveCreatorPda(program, handle);
     // fetch pda
@@ -42,15 +42,15 @@ export async function assertCreatorPdaDoesNotExistAlready(program, handle) {
     return creator
 }
 
-export async function assertCreatorPdaDoesExistAlreadyForCreator(program, handle) {
-    return await assertCreatorPdaDoesExistAlready(program, handle, "creator-handle-dne")
+export async function assertCreatorPdaDoesExistAlreadyForCreator(app, program, handle) {
+    return await assertCreatorPdaDoesExistAlready(app, program, handle, "creator-handle-dne")
 }
 
-export async function assertCreatorPdaDoesExistAlreadyForCollector(program, handle) {
-    return await assertCreatorPdaDoesExistAlready(program, handle, "collector-handle-dne")
+export async function assertCreatorPdaDoesExistAlreadyForCollector(app, program, handle) {
+    return await assertCreatorPdaDoesExistAlready(app, program, handle, "collector-handle-dne")
 }
 
-async function assertCreatorPdaDoesExistAlready(program, handle, listener) {
+async function assertCreatorPdaDoesExistAlready(app, program, handle, listener) {
     // derive pda
     const pda = await deriveCreatorPda(program, handle);
     // fetch pda
@@ -65,7 +65,7 @@ async function assertCreatorPdaDoesExistAlready(program, handle, listener) {
         app.ports.success.send(
             JSON.stringify(
                 {
-                    listener: "creator-handle-dne",
+                    listener: listener,
                     more: JSON.stringify(handle)
                 }
             )
@@ -75,19 +75,19 @@ async function assertCreatorPdaDoesExistAlready(program, handle, listener) {
     return creator
 }
 
-export function validateHandleForNewCreator(handle) {
-    return validateHandle(handle, "new-creator-handle-invalid")
+export function validateHandleForNewCreator(app, handle) {
+    return validateHandle(app, handle, "new-creator-handle-invalid")
 }
 
-export function validateHandleForExistingCreator(handle) {
-    return validateHandle(handle, "existing-creator-handle-invalid")
+export function validateHandleForExistingCreator(app, handle) {
+    return validateHandle(app, handle, "existing-creator-handle-invalid")
 }
 
-export function validateHandleForCollector(handle) {
-    return validateHandle(handle, "collector-handle-invalid")
+export function validateHandleForCollector(app, handle) {
+    return validateHandle(app, handle, "collector-handle-invalid")
 }
 
-function validateHandle(handle, listener) {
+function validateHandle(app, handle, listener) {
     if (isValidHandle(handle)) {
         return handle
     } else {

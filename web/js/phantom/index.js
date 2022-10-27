@@ -1,6 +1,6 @@
 /*! https://docs.phantom.app/ */
 
-export async function getPhantom() {
+export async function getPhantom(app) {
     try {
         // connect
         const connection = await window.solana.connect();
