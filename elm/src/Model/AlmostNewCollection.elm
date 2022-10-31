@@ -1,17 +1,17 @@
-module Model.AlmostCollection exposing (AlmostCollection, encode)
+module Model.AlmostNewCollection exposing (AlmostNewCollection, encode)
 
 import Json.Encode as Encode
 import Model.Handle exposing (Handle)
 
 
-type alias AlmostCollection =
+type alias AlmostNewCollection =
     { handle : Handle
     , name : String
     , symbol : String
     }
 
 
-encode : AlmostCollection -> String
+encode : AlmostNewCollection -> String
 encode almostCollection =
     let
         encoder =

@@ -33,7 +33,7 @@ init _ url key =
             }
     in
     case state of
-        Collect (Collector.MaybeExisting handle) ->
+        Collect (Collector.MaybeExistingCreator handle) ->
             ( model
             , sender <|
                 Sender.encode <|

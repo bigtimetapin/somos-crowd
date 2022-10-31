@@ -1,6 +1,6 @@
 module Msg.Creator.Existing.Existing exposing (Existing(..), toString)
 
-import Model.AlmostCollection exposing (AlmostCollection)
+import Model.AlmostNewCollection exposing (AlmostNewCollection)
 import Model.Collection exposing (Collection)
 import Model.Handle as Handle exposing (Handle)
 import Model.Wallet exposing (Wallet)
@@ -13,7 +13,7 @@ type Existing
       -- new collection
     | StartCreatingNewCollection Wallet Handle
     | NewCollectionForm Wallet Handle NewCollectionForm
-    | CreateNewCollection Wallet AlmostCollection
+    | CreateNewCollection Wallet AlmostNewCollection
       -- existing collection
     | SelectCollection Wallet Handle Collection
 

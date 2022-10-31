@@ -11,6 +11,7 @@ import {
 import {getCreatorCollections} from "./anchor/pda/get-creator-collections";
 import {initNewCreator} from "./anchor/methods/init-new-creator";
 import {creatNft} from "./anchor/methods/create-nft";
+import {getAuthorityPda} from "./anchor/pda/authority-pda";
 
 // init phantom
 let phantom = null;
@@ -141,7 +142,7 @@ export async function main(app, json) {
                 more.name,
                 more.symbol
             );
-            // or collector search collector
+            // or collector search collector TODO;
         } else if (sender === "collector-search-handle") {
             // parse more json
             const more = JSON.parse(parsed.more);
@@ -168,6 +169,39 @@ export async function main(app, json) {
                                         handle: validated,
                                         wallet: creator.authority.toString(),
                                         collections: collections
+                                    }
+                                )
+                            }
+                        )
+                    );
+                }
+            }
+            // or collector select collection
+        } else if (sender === "collector-select-collection") {
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // validate handle
+            const validated = validateHandleForCollector(app, more.handle);
+            if (validated) {
+                // get ephemeral provider & program
+                const ephemeralPP = getEphemeralPP();
+                // asert creator pda exists
+                const creator = await assertCreatorPdaDoesExistAlreadyForCollector(
+                    app,
+                    ephemeralPP.program,
+                    validated
+                );
+                if (creator) {
+                    // get collection
+                    const collection = await getAuthorityPda(ephemeralPP.program, validated, more.index);
+                    app.ports.success.send(
+                        JSON.stringify(
+                            {
+                                listener: "collector-select-collection",
+                                more: JSON.stringify(
+                                    {
+                                        handle: validated,
+                                        collection: collection
                                     }
                                 )
                             }

@@ -1,9 +1,7 @@
 module Model.Collector exposing (Collector(..))
 
-import Model.Collection exposing (Collection)
 import Model.Creator.Existing.WithCollections exposing (WithCollections)
-import Model.Handle exposing (Handle)
-import Model.Wallet exposing (Wallet)
+import Model.WithCollection exposing (WithCollection)
 
 
 type
@@ -15,8 +13,9 @@ type
     | HandleDoesNotExist String
       -- selected
     | SelectedCreator WithCollections
-    | SelectedCollection Handle Collection
+    | SelectedCollection WithCollection
     | WaitingForPurchase
-    | PurchaseSuccess Wallet Handle Collection
+    | PurchaseSuccess WithCollection
       -- search by url
-    | MaybeExisting String
+    | MaybeExistingCreator String
+    | MaybeExistingCollection String Int

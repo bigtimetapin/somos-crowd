@@ -43,7 +43,8 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive new-edition-mark
-    let n = (await getAuthorityPda(program, authority)).numMinted + 1;
+    let handle; // TODO
+    let n = (await getAuthorityPda(program, handle, authorityIndex)).numMinted + 1;
     const newEditionBN = new BN.BN(n);
     const newEditionMarkLiteral = newEditionBN.div(new BN.BN(248)).toString();
     let newEditionMark;

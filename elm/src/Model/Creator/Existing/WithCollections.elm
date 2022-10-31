@@ -7,9 +7,10 @@ import Model.Wallet exposing (Wallet)
 import Util.Decode as Util
 
 
+-- TODO; move to root
 type alias WithCollections =
     { handle : Handle
-    , wallet : Wallet
+    , wallet : Wallet -- TODO; maybe type
     , collections : List Collection
     }
 

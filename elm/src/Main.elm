@@ -6,7 +6,8 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model.Admin as Administrator
-import Model.AlmostCollection as AlmostCollection
+import Model.AlmostExistingCollection as AlmostExistingCollection
+import Model.AlmostNewCollection as AlmostCollection
 import Model.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Authorized as Authorized
@@ -19,6 +20,7 @@ import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
 import Model.Wallet as Wallet
+import Model.WithCollection as WithCollection
 import Msg.Admin as AdminMsg
 import Msg.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
@@ -76,13 +78,25 @@ update msg model =
                     { model | state = state, url = url }
             in
             case state of
-                Collect (Collector.MaybeExisting handle) ->
+                Collect (Collector.MaybeExistingCreator handle) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
                                 { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
                                 , more = Handle.encode handle
+                                }
+                        , resetViewport
+                        ]
+                    )
+
+                Collect (Collector.MaybeExistingCollection handle index) ->
+                    ( bump
+                    , Cmd.batch
+                        [ sender <|
+                            Sender.encode <|
+                                { sender = Sender.Collect <| FromCollector.SelectCollection handle index
+                                , more = AlmostExistingCollection.encode { handle = handle, index = index }
                                 }
                         , resetViewport
                         ]
@@ -267,8 +281,8 @@ update msg model =
                                     { sender = Sender.Collect from, more = Handle.encode string }
                             )
 
-                FromCollector.SelectCollection handle collection ->
-                    ( { model | state = Collect <| Collector.SelectedCollection handle collection }
+                FromCollector.SelectCollection _ _  ->
+                    ( model
                     , Cmd.none
                     )
 
@@ -443,6 +457,18 @@ update msg model =
                                                             }
                                                     in
                                                     Listener.decode model json WithCollections.decode f
+
+                                                ToCollector.CollectionSelected ->
+                                                    let
+                                                        f withCollection =
+                                                            { model
+                                                                | state =
+                                                                    Collect <|
+                                                                        Collector.SelectedCollection withCollection
+                                                            }
+                                                    in
+                                                    Listener.decode model json WithCollection.decode f
+
 
                                 -- undefined role
                                 Nothing ->

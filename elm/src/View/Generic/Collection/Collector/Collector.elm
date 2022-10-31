@@ -2,10 +2,10 @@ module View.Generic.Collection.Collector.Collector exposing (view, viewMany)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class, style)
-import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
+import Model.Collector as Collector
 import Model.Handle exposing (Handle)
-import Msg.Collector exposing (FromCollector(..))
+import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
@@ -25,10 +25,9 @@ select handle collection =
     Html.div
         []
         [ Html.button
-            -- TODO; href
             [ class "is-button-1"
             , style "width" "100%"
-            , onClick <| FromCollector <| SelectCollection handle collection
+            , State.href <| Collect <| Collector.MaybeExistingCollection handle collection.index
             ]
             [ Html.text "Select"
             ]

@@ -2,9 +2,12 @@ module Sub.Listener.Collector.Collector exposing (ToCollector(..), fromString)
 
 
 type ToCollector
+    -- handle search
     = HandleInvalid
     | HandleDoesNotExist
     | HandleFound
+    -- select collection
+    | CollectionSelected
 
 
 fromString : String -> Maybe ToCollector
@@ -18,6 +21,9 @@ fromString string =
 
         "collector-handle-found" ->
             Just HandleFound
+
+        "collector-select-collection" ->
+            Just CollectionSelected
 
         _ ->
             Nothing

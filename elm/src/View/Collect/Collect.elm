@@ -176,7 +176,7 @@ body collector =
                             withCollections.collections
                         ]
 
-                SelectedCollection handle collection ->
+                SelectedCollection withCollection ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
@@ -187,14 +187,16 @@ body collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , handle
+                                    , withCollection.handle
                                     ]
                             ]
                         , Html.div
                             []
                             [ Html.text "collection selected ⬇️"
                             ]
-                        , View.Generic.Collection.Collector.Collector.view handle collection
+                        , View.Generic.Collection.Collector.Collector.view
+                            withCollection.handle
+                            withCollection.collection
                         ]
 
                 WaitingForPurchase ->
@@ -208,11 +210,11 @@ body collector =
                             []
                         ]
 
-                PurchaseSuccess wallet handle collection ->
+                PurchaseSuccess withCollection ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ View.Generic.Wallet.view wallet
+                        [ View.Generic.Wallet.maybeView withCollection.wallet
                         , header
                         , Html.div
                             []
@@ -220,7 +222,7 @@ body collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , handle
+                                    , withCollection.handle
                                     ]
                             ]
                         , Html.div
@@ -229,11 +231,13 @@ body collector =
                             ]
                         , Html.div
                             []
-                            [ View.Generic.Collection.Collector.Collector.view handle collection
+                            [ View.Generic.Collection.Collector.Collector.view
+                                withCollection.handle
+                                withCollection.collection
                             ]
                         ]
 
-                MaybeExisting _ ->
+                MaybeExistingCreator _ ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
@@ -243,6 +247,18 @@ body collector =
                             ]
                             []
                         ]
+
+                MaybeExistingCollection _ _ ->
+                    Html.div
+                        [ class "has-border-2 px-2 pt-2 pb-6"
+                        ]
+                        [ header
+                        , Html.div
+                            [ class "is-loading"
+                            ]
+                            []
+                        ]
+
     in
     Html.div
         [ class "container"
