@@ -17,18 +17,24 @@ type State
 urlParser : UrlParser.Parser (State -> c) c
 urlParser =
     UrlParser.oneOf
-        [ UrlParser.map (Create Creator.Top) UrlParser.top
-        , UrlParser.map (Create Creator.Top) (UrlParser.s "creator")
+        -- collector
+        [ UrlParser.map
+            (Collect <| Collector.TypingHandle "")
+            UrlParser.top
+        , UrlParser.map
+            (\handle -> Collect (Collector.MaybeExistingCreator handle))
+            UrlParser.string
+        , UrlParser.map
+            (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
+            (UrlParser.string </> UrlParser.int)
+
+        -- creator
+        , UrlParser.map
+            (Create Creator.Top)
+            (UrlParser.s "creator")
         , UrlParser.map
             (\handle -> Create (Creator.MaybeExisting handle))
             (UrlParser.s "creator" </> UrlParser.string)
-        , UrlParser.map (Collect <| Collector.TypingHandle "") (UrlParser.s "collect")
-        , UrlParser.map
-            (\handle -> Collect (Collector.MaybeExistingCreator handle))
-            (UrlParser.s "collect" </> UrlParser.string)
-        , UrlParser.map
-            (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
-            (UrlParser.s "collect" </> UrlParser.string </> UrlParser.int)
         ]
 
 
@@ -59,15 +65,14 @@ path state =
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat
-                        [ "#/collect"
-                        , "/"
+                        [ "#/"
                         , string
                         ]
 
                 Collector.MaybeExistingCollection string int ->
                     String.join
                         "/"
-                        [ "#/collect"
+                        [ "#"
                         , string
                         , String.fromInt int
                         ]
