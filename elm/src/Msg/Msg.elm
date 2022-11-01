@@ -2,7 +2,6 @@ module Msg.Msg exposing (Msg(..), resetViewport)
 
 import Browser
 import Browser.Dom as Dom
-import Msg.Admin exposing (FromAdmin)
 import Msg.Collector exposing (FromCollector)
 import Msg.Creator.Creator exposing (FromCreator)
 import Msg.Js exposing (FromJs)
@@ -20,8 +19,6 @@ type
     | FromCreator FromCreator
       -- collector
     | FromCollector FromCollector
-      -- admin
-    | FromAdmin FromAdmin
       -- js ports
     | FromJs FromJs
 

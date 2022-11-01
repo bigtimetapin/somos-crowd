@@ -1,7 +1,6 @@
 module Sub.Sender.Sender exposing (Sender(..), WithMore, encode, encode0)
 
 import Json.Encode as Encode
-import Msg.Admin as AdminMsg exposing (FromAdmin)
 import Msg.Collector as CollectorMsg exposing (FromCollector)
 import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
 
@@ -9,7 +8,6 @@ import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
 type Sender
     = Create FromCreator
     | Collect FromCollector
-    | Administrate FromAdmin
 
 
 type alias WithMore =
@@ -49,9 +47,6 @@ toString role =
 
         Collect fromCollector ->
             CollectorMsg.toString fromCollector
-
-        Administrate fromAdmin ->
-            AdminMsg.toString fromAdmin
 
 
 type alias Json =

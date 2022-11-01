@@ -5,7 +5,6 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
-import Model.Admin as Administrator
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.AlmostNewCollection as AlmostCollection
 import Model.Collector.Collector as Collector
@@ -18,10 +17,8 @@ import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
-import Model.Wallet as Wallet
 import Model.WithCollection as WithCollection
 import Model.WithCollections as WithCollections
-import Msg.Admin as AdminMsg
 import Msg.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
@@ -38,7 +35,6 @@ import Sub.Sender.Ports exposing (sender)
 import Sub.Sender.Sender as Sender
 import Sub.Sub as Sub
 import Url
-import View.Admin.Admin
 import View.Collect.Collect
 import View.Create.Create
 import View.Error.Error
@@ -286,18 +282,6 @@ update msg model =
                     , Cmd.none
                     )
 
-        FromAdmin from ->
-            case from of
-                AdminMsg.Connect ->
-                    ( { model | state = Admin <| Administrator.WaitingForWallet }
-                    , sender <| Sender.encode0 <| Sender.Administrate from
-                    )
-
-                AdminMsg.InitializeTariff wallet ->
-                    ( { model | state = Admin <| Administrator.WaitingForInitializeTariff wallet }
-                    , sender <| Sender.encode <| { sender = Sender.Administrate from, more = Wallet.encode wallet }
-                    )
-
         FromJs fromJsMsg ->
             case fromJsMsg of
                 -- JS sending success for decoding
@@ -514,9 +498,6 @@ view model =
 
                 Collect collector ->
                     hero <| View.Collect.Collect.body collector
-
-                Admin administrator ->
-                    hero <| View.Admin.Admin.body administrator
 
                 Error error ->
                     hero (View.Error.Error.body error)

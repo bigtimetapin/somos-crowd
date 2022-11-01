@@ -2,7 +2,6 @@ module Model.State exposing (State(..), href, parse)
 
 import Html
 import Html.Attributes
-import Model.Admin as Administrator exposing (Admin)
 import Model.Collector.Collector as Collector exposing (Collector)
 import Model.Creator.Creator as Creator exposing (Creator)
 import Url
@@ -12,7 +11,6 @@ import Url.Parser as UrlParser exposing ((</>))
 type State
     = Create Creator
     | Collect Collector
-    | Admin Admin
     | Error String
 
 
@@ -31,7 +29,6 @@ urlParser =
         , UrlParser.map
             (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
             (UrlParser.s "collect" </> UrlParser.string </> UrlParser.int)
-        , UrlParser.map (Admin Administrator.Top) (UrlParser.s "admin")
         ]
 
 
@@ -55,9 +52,6 @@ parse url =
 path : State -> String
 path state =
     case state of
-        Admin _ ->
-            "#/admin"
-
         Create _ ->
             "#/creator"
 
