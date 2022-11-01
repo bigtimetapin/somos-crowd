@@ -1,7 +1,7 @@
 module View.Generic.Collection.Collector.Collector exposing (view, viewMany)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
 import Model.Collector as Collector
 import Model.Handle exposing (Handle)
@@ -24,11 +24,10 @@ select : Handle -> Collection -> Html Msg
 select handle collection =
     Html.div
         []
-        [ Html.button
+        [ Html.a
             [ class "is-button-1"
-            , style "width" "100%"
             , State.href <| Collect <| Collector.MaybeExistingCollection handle collection.index
             ]
-            [ Html.text "Select"
+            [ Html.text "Select this"
             ]
         ]

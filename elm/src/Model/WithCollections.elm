@@ -1,4 +1,4 @@
-module Model.Creator.Existing.WithCollections exposing (WithCollections, decode)
+module Model.WithCollections exposing (WithCollections, decode)
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)
@@ -7,10 +7,9 @@ import Model.Wallet exposing (Wallet)
 import Util.Decode as Util
 
 
--- TODO; move to root
 type alias WithCollections =
-    { handle : Handle
-    , wallet : Wallet -- TODO; maybe type
+    { wallet : Maybe Wallet
+    , handle : Handle
     , collections : List Collection
     }
 
@@ -21,8 +20,8 @@ decode string =
         decoder : Decode.Decoder WithCollections
         decoder =
             Decode.map3 WithCollections
+                (Decode.maybe <| Decode.field "wallet" Decode.string)
                 (Decode.field "handle" Decode.string)
-                (Decode.field "wallet" Decode.string)
                 (Decode.field "collections" <| Decode.list Collection.decoder)
     in
     Util.decode string decoder identity

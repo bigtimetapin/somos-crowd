@@ -258,7 +258,6 @@ body collector =
                             ]
                             []
                         ]
-
     in
     Html.div
         [ class "container"

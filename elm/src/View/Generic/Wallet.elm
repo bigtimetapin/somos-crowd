@@ -1,4 +1,4 @@
-module View.Generic.Wallet exposing (view, maybeView)
+module View.Generic.Wallet exposing (maybeView, view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class, style)
@@ -14,6 +14,7 @@ view wallet =
         ]
         [ Html.text (Wallet.slice wallet)
         ]
+
 
 maybeView : Maybe Wallet -> Html Msg
 maybeView maybeWallet =

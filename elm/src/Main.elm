@@ -14,13 +14,13 @@ import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.Existing.NewCollection as NewCollection
-import Model.Creator.Existing.WithCollections as WithCollections
 import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
 import Model.Wallet as Wallet
 import Model.WithCollection as WithCollection
+import Model.WithCollections as WithCollections
 import Msg.Admin as AdminMsg
 import Msg.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
@@ -281,7 +281,7 @@ update msg model =
                                     { sender = Sender.Collect from, more = Handle.encode string }
                             )
 
-                FromCollector.SelectCollection _ _  ->
+                FromCollector.SelectCollection _ _ ->
                     ( model
                     , Cmd.none
                     )
@@ -353,7 +353,7 @@ update msg model =
                                                                                     ExistingCreator.Authorized <|
                                                                                         Authorized.Top
                                                                                             { handle = handleWithWallet.handle
-                                                                                            , wallet = handleWithWallet.wallet
+                                                                                            , wallet = Just handleWithWallet.wallet
                                                                                             , collections = []
                                                                                             }
                                                                     }
@@ -468,7 +468,6 @@ update msg model =
                                                             }
                                                     in
                                                     Listener.decode model json WithCollection.decode f
-
 
                                 -- undefined role
                                 Nothing ->

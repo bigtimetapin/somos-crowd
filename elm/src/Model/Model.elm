@@ -1,6 +1,7 @@
 module Model.Model exposing (Model, init)
 
 import Browser.Navigation as Nav
+import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collector as Collector
 import Model.Handle as Handle
 import Model.State as State exposing (State(..))
@@ -39,6 +40,15 @@ init _ url key =
                 Sender.encode <|
                     { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
                     , more = Handle.encode handle
+                    }
+            )
+
+        Collect (Collector.MaybeExistingCollection handle index) ->
+            ( model
+            , sender <|
+                Sender.encode <|
+                    { sender = Sender.Collect <| FromCollector.SelectCollection handle index
+                    , more = AlmostExistingCollection.encode { handle = handle, index = index }
                     }
             )
 

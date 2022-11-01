@@ -6,11 +6,13 @@ import Model.Handle exposing (Handle)
 import Model.Wallet exposing (Wallet)
 import Util.Decode as Util
 
+
 type alias WithCollection =
-    { wallet: Maybe Wallet
-    , handle: Handle
-    , collection: Collection
+    { wallet : Maybe Wallet
+    , handle : Handle
+    , collection : Collection
     }
+
 
 decode : String -> Result String WithCollection
 decode string =

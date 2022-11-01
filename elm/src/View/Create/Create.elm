@@ -526,39 +526,46 @@ body creator =
                         Existing.Authorized authorized ->
                             case authorized of
                                 Authorized.Top withCollections ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ View.Generic.Wallet.view withCollections.wallet
-                                        , header
-                                        , Html.div
-                                            []
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "authorized as:"
-                                                    , " "
-                                                    , withCollections.handle
+                                    case withCollections.wallet of
+                                        Just wallet ->
+                                            Html.div
+                                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                                ]
+                                                [ View.Generic.Wallet.maybeView withCollections.wallet
+                                                , header
+                                                , Html.div
+                                                    []
+                                                    [ Html.text <|
+                                                        String.concat
+                                                            [ "authorized as:"
+                                                            , " "
+                                                            , withCollections.handle
+                                                            ]
                                                     ]
-                                            ]
-                                        , Html.div
-                                            []
-                                            [ Html.button
-                                                [ class "is-button-1"
-                                                , onClick <|
-                                                    FromCreator <|
-                                                        CreatorMsg.Existing <|
-                                                            ExistingMsg.StartCreatingNewCollection
-                                                                withCollections.wallet
-                                                                withCollections.handle
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        [ class "is-button-1"
+                                                        , onClick <|
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing <|
+                                                                    ExistingMsg.StartCreatingNewCollection
+                                                                        wallet
+                                                                        withCollections.handle
+                                                        ]
+                                                        [ Html.text "create new collection"
+                                                        ]
+                                                    ]
+                                                , View.Generic.Collection.Creator.Creator.viewMany
+                                                    wallet
+                                                    withCollections.handle
+                                                    withCollections.collections
                                                 ]
-                                                [ Html.text "create new collection"
-                                                ]
-                                            ]
-                                        , View.Generic.Collection.Creator.Creator.viewMany
-                                            withCollections.wallet
-                                            withCollections.handle
-                                            withCollections.collections
-                                        ]
+
+                                        Nothing ->
+                                            Html.div
+                                                []
+                                                []
 
                                 Authorized.CreatingNewCollection wallet handle newCollection ->
                                     let

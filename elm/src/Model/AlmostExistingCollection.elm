@@ -16,7 +16,7 @@ encode almostCollection =
         encoder =
             Encode.object
                 [ ( "handle", Encode.string almostCollection.handle )
-                , ( "int", Encode.string <| String.fromInt almostCollection.index )
+                , ( "index", Encode.int almostCollection.index )
                 ]
     in
     Encode.encode 0 encoder

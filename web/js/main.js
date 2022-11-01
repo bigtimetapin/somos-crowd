@@ -142,7 +142,7 @@ export async function main(app, json) {
                 more.name,
                 more.symbol
             );
-            // or collector search collector TODO;
+            // or collector search collector
         } else if (sender === "collector-search-handle") {
             // parse more json
             const more = JSON.parse(parsed.more);
@@ -167,7 +167,6 @@ export async function main(app, json) {
                                 more: JSON.stringify(
                                     {
                                         handle: validated,
-                                        wallet: creator.authority.toString(),
                                         collections: collections
                                     }
                                 )
@@ -197,7 +196,7 @@ export async function main(app, json) {
                     app.ports.success.send(
                         JSON.stringify(
                             {
-                                listener: "collector-select-collection",
+                                listener: "collector-collection-found",
                                 more: JSON.stringify(
                                     {
                                         handle: validated,

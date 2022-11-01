@@ -81,7 +81,6 @@ path state =
                 _ ->
                     "#/collect"
 
-
         Error _ ->
             "#/invalid"
 
