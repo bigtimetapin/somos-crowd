@@ -3,7 +3,7 @@ module View.Generic.Collection.Collector.Collector exposing (view, viewMany)
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
-import Model.Collector as Collector
+import Model.Collector.Collector as Collector
 import Model.Handle exposing (Handle)
 import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))

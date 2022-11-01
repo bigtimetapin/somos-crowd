@@ -3,7 +3,7 @@ module View.Collect.Collect exposing (body)
 import Html exposing (Html)
 import Html.Attributes exposing (class, placeholder, type_)
 import Html.Events exposing (onClick, onInput)
-import Model.Collector exposing (Collector(..))
+import Model.Collector.Collector exposing (Collector(..))
 import Model.Handle as Handle
 import Msg.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))

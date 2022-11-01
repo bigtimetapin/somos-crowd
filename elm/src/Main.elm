@@ -8,7 +8,7 @@ import Html exposing (Html)
 import Model.Admin as Administrator
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.AlmostNewCollection as AlmostCollection
-import Model.Collector as Collector
+import Model.Collector.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as ExistingCreator

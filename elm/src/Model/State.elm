@@ -3,7 +3,7 @@ module Model.State exposing (State(..), href, parse)
 import Html
 import Html.Attributes
 import Model.Admin as Administrator exposing (Admin)
-import Model.Collector as Collector exposing (Collector)
+import Model.Collector.Collector as Collector exposing (Collector)
 import Model.Creator.Creator as Creator exposing (Creator)
 import Url
 import Url.Parser as UrlParser exposing ((</>))

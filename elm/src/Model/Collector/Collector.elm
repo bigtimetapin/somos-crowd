@@ -1,4 +1,4 @@
-module Model.Collector exposing (Collector(..))
+module Model.Collector.Collector exposing (Collector(..))
 
 import Model.WithCollection exposing (WithCollection)
 import Model.WithCollections exposing (WithCollections)

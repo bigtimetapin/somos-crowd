@@ -2,7 +2,7 @@ module Model.Model exposing (Model, init)
 
 import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
-import Model.Collector as Collector
+import Model.Collector.Collector as Collector
 import Model.Handle as Handle
 import Model.State as State exposing (State(..))
 import Msg.Collector as FromCollector
