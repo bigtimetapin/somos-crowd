@@ -45,35 +45,48 @@ body collector =
                                         ]
                     in
                     Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
+                        [ class "has-text-centered"
                         ]
-                        [ header
+                        [ Html.div
+                            [ class "is-text-container-1 is-size-1 mb-2"
+                            ]
+                            [ Html.text "Sell your work."
+                            ]
                         , Html.div
-                            [ class "field"
+                            [ class "is-text-container-1 is-size-1 mb-5"
                             ]
                             [ Html.p
-                                [ class "control has-icons-left"
-                                ]
-                                [ Html.input
-                                    [ class "input"
-                                    , type_ "text"
-                                    , placeholder "Handle"
-                                    , onInput <|
-                                        \s ->
-                                            FromCollector <|
-                                                CollectorMsg.HandleForm <|
-                                                    Handle.Typing s
-                                    ]
-                                    []
-                                , Html.span
-                                    [ class "icon is-left"
-                                    ]
-                                    [ Html.i
-                                        [ class "fas fa-at"
+                                []
+                                [ Html.text <|
+                                    String.concat
+                                        [ "Unlock and"
+                                        , " "
                                         ]
-                                        []
+                                , Html.strong
+                                    [ class "is-family-secondary is-italic"
                                     ]
+                                    [ Html.text "own"
+                                    ]
+                                , Html.text <|
+                                    String.concat
+                                        [ " "
+                                        , "exclusive content."
+                                        ]
                                 ]
+                            ]
+                        , Html.div
+                            []
+                            [ Html.input
+                                [ class "input is-size-3"
+                                , type_ "text"
+                                , placeholder "🔍 Find Creators"
+                                , onInput <|
+                                    \s ->
+                                        FromCollector <|
+                                            CollectorMsg.HandleForm <|
+                                                Handle.Typing s
+                                ]
+                                []
                             ]
                         , select
                         ]

@@ -19,7 +19,8 @@ view =
                 [ Html.h1
                     [ class "is-text-container-4"
                     ]
-                    [ Html.text "DAPCOOL"
+                    [ Html.text "DAP.COOL"
+                    , Html.text "🆒"
                     ]
                 ]
             ]
