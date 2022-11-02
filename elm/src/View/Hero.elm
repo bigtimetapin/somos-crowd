@@ -2,21 +2,20 @@ module View.Hero exposing (view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
-import Model.Model exposing (Model)
 import Msg.Msg exposing (Msg)
 import View.Footer
 import View.Header
 
 
-view : Model -> Html Msg -> Html Msg
-view model body =
+view : Html Msg -> Html Msg
+view body =
     Html.section
-        [ class "hero is-fullheight has-black"
+        [ class "hero is-fullheight has-black is-family-primary"
         ]
         [ Html.div
             [ class "hero-head"
             ]
-            [ View.Header.view model
+            [ View.Header.view
             ]
         , Html.div
             [ class "hero-body"

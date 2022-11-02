@@ -489,7 +489,7 @@ view model =
     let
         hero : Html Msg -> Html Msg
         hero =
-            View.Hero.view model
+            View.Hero.view
 
         html =
             case model.state of

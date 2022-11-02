@@ -32,30 +32,13 @@ a:link, a:visited {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // fonts ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
-$family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helvetica", "Arial", sans-serif;
+/* https://developers.google.com/fonts/docs/css2 */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700');
+$family-primary: "Roboto", BlinkMacSystemFont, -apple-system, "Helvetica", "Arial", sans-serif;
 
-@font-face {
-  font-family: WorkSans;
-  src: url("../fonts/WorkSans-SemiBold.ttf") format("truetype");
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@1,400;1,700');
+$family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica", "Arial", sans-serif;
 
-@font-face {
-  font-family: Imbue;
-  src: url("../fonts/Imbue-Medium.ttf") format("truetype");
-}
-
-.has-font-1 {
-  font-family: WorkSans, sans-serif;
-}
-
-.has-font-2 {
-  font-family: Imbue, sans-serif;
-}
-
-.has-opacity {
-  opacity: 75%;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // colors //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,42 +46,11 @@ $family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helveti
   color: transparent;
 }
 
-.has-off-white {
-  background-color: #FDF9EF;
-}
-
-.has-off-white-text {
-  color: #FDF9EF;
-}
-
 .has-black {
-  background-color: #241F20;
+  background-color: #2B2B2B;
   color: #FDF9EF;
 }
 
-.has-black-text {
-  color: #241F20;
-}
-
-.has-sky-blue {
-  background-color: #3D92CA;
-}
-
-.has-sky-blue-text {
-  color: #3D92CA !important;
-}
-
-.has-hyper-blue {
-  background-color: #002BFF;
-}
-
-.has-ver-blue {
-  background-color: #00F4EF;
-}
-
-.has-orange {
-  background-color: #FF3C24;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // spacing /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,9 +73,10 @@ $family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helveti
   position: fixed; /* Set the navbar to fixed position */
   top: 0; /* Position the navbar at the top of the page */
   width: 100%; /* Full width */
+  height: 64px;
   z-index: 101;
   // blend in
-  background-color: #241F20;
+  background-color: #2B2B2B;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +87,7 @@ $family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helveti
 }
 
 .is-button-1, .is-button-2 {
-  background-color: #241F20;
+  background-color: #2B2B2B;
   border: 1px dotted #4a4a4a;
   color: #FDF9EF;
 }
@@ -144,7 +97,7 @@ $family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helveti
 }
 
 .is-button-3 {
-  color: #241F20;
+  color: #2B2B2B;
   border: 1px dotted #4a4a4a;
   background-color: #FDF9EF;
 }
@@ -156,11 +109,11 @@ $family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helveti
 
 .is-button-1:hover, .is-button-2:hover, .is-active-header-tab, .is-active-button {
   background-color: #FDF9EF;
-  color: #241F20;
+  color: #2B2B2B;
 }
 
 .is-active-button {
-  box-shadow: inset 0px 5px 5px #241F20;
+  box-shadow: inset 0px 5px 5px #2B2B2B;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,11 +125,43 @@ $family-secondary: "Press Start 2P", BlinkMacSystemFont, -apple-system, "Helveti
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
+.is-text-container-1, .is-text-container-2, .is-text-container-3, .is-text-container-4 {
+  font-weight: 700;
+}
+
+.is-text-container-1 {
+  line-height: 75px;
+}
+
+.is-text-container-2 {
+  line-height: 56px;
+}
+
+.is-text-container-3, .is-light-text-container-3 {
+  line-height: 38px;
+}
+
+.is-light-text-container-3 {
+  font-weight: 400;
+}
+
+.is-text-container-4, .is-light-text-container-4 {
+  line-height: 28px;
+}
+
+.is-light-text-container-4 {
+  font-weight: 400;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Bulma Variable Overrides ///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// navbar
-$navbar-item-img-max-height: 4.00rem;
-$navbar-height: 4.00rem;
+// sizes
+$size-1: 64px;
+$size-2: 48px;
+$size-3: 32px;
+$size-4: 24px;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Bulma Import ///////////////////////////////////////////////////////////////////////////////////////////////////////

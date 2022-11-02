@@ -1,88 +1,51 @@
 module View.Header exposing (view)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, src, style, width)
-import Html.Events exposing (onClick)
-import Model.Collector.Collector as Collector
-import Model.Creator.Creator as Creator
-import Model.Model exposing (Model)
-import Model.State as State exposing (State(..))
+import Html.Attributes exposing (class)
 import Msg.Msg exposing (Msg(..))
 
 
-view : Model -> Html Msg
-view model =
-    let
-        tab_ : Args -> Html Msg
-        tab_ =
-            tab model
-    in
+view : Html Msg
+view =
     Html.nav
-        [ class "is-navbar"
+        [ class "is-navbar level is-mobile is-size-4"
         ]
-        [ tab_
-            { state = Collect (Collector.TypingHandle "")
-            , title = "Collect"
-            , msg = NoOp
-            }
-        , tab_
-            { state = Create Creator.Top
-            , title = "Create"
-            , msg = NoOp
-            }
-        , Html.div
-            [ style "float" "right"
+        [ Html.div
+            [ class "level-left ml-5 my-3"
             ]
-            [ Html.a
-                [ State.href <| Create Creator.Top
+            [ Html.div
+                [ class "level-item"
                 ]
-                [ Html.img
-                    [ src "images/logo/02_somos.png"
-                    , width 50
+                [ Html.h1
+                    [ class "is-text-container-4"
                     ]
-                    []
+                    [ Html.text "DAPCOOL"
+                    ]
+                ]
+            ]
+        , Html.div
+            [ class "level-right mr-5 my-3"
+            ]
+            [ Html.div
+                [ class "level-item"
+                ]
+                [ Html.span
+                    [ class "icon-text"
+                    ]
+                    [ Html.span
+                        [ class "is-light-text-container-4"
+                        ]
+                        [ Html.text "My Account"
+                        ]
+                    , Html.span
+                        [ class "icon"
+                        ]
+                        [ Html.i
+                            [ class "fas fa-user"
+                            ]
+                            []
+                        ]
+                    ]
                 ]
             ]
         ]
-
-
-type alias Args =
-    { state : State
-    , title : String
-    , msg : Msg
-    }
-
-
-tab : Model -> Args -> Html Msg
-tab model args =
-    Html.div
-        [ style "float" "left"
-        ]
-        [ Html.a
-            [ State.href args.state
-            , onClick args.msg
-            ]
-            [ Html.button
-                [ class (String.join " " [ "is-family-secondary", "is-button-1", isActive model args.state ])
-                ]
-                [ Html.text args.title
-                ]
-            ]
-        ]
-
-
-isActive : Model -> State -> String
-isActive model state =
-    let
-        class_ =
-            "is-active-header-tab"
-    in
-    case ( model.state, state ) of
-        ( Create Creator.Top, Create _ ) ->
-            class_
-
-        ( Collect (Collector.TypingHandle ""), Collect _ ) ->
-            class_
-
-        _ ->
-            ""
