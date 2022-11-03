@@ -37,7 +37,7 @@ strong {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // fonts ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* https://developers.google.com/fonts/docs/css2 */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700');
 $family-primary: "Roboto", BlinkMacSystemFont, -apple-system, "Helvetica", "Arial", sans-serif;
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@1,400;1,700');
@@ -146,12 +146,8 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   line-height: 56px;
 }
 
-.is-text-container-3, .is-light-text-container-3 {
+.is-text-container-3 {
   line-height: 38px;
-}
-
-.is-light-text-container-3 {
-  font-weight: 400;
 }
 
 .is-text-container-4, .is-light-text-container-4 {
@@ -159,7 +155,7 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 }
 
 .is-light-text-container-4 {
-  font-weight: 400;
+  font-weight: 300;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
