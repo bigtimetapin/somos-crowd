@@ -22,19 +22,22 @@ urlParser =
             (Collect <| Collector.TypingHandle "")
             UrlParser.top
         , UrlParser.map
+            (Collect (Collector.TypingHandle ""))
+            (UrlParser.s "creator")
+        , UrlParser.map
             (\handle -> Collect (Collector.MaybeExistingCreator handle))
-            UrlParser.string
+            (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map
             (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
-            (UrlParser.string </> UrlParser.int)
+            (UrlParser.s "creator" </> UrlParser.string </> UrlParser.int)
 
         -- creator
         , UrlParser.map
             (Create Creator.Top)
-            (UrlParser.s "creator")
+            (UrlParser.s "admin")
         , UrlParser.map
             (\handle -> Create (Creator.MaybeExisting handle))
-            (UrlParser.s "creator" </> UrlParser.string)
+            (UrlParser.s "admin" </> UrlParser.string)
         ]
 
 
@@ -59,26 +62,26 @@ path : State -> String
 path state =
     case state of
         Create _ ->
-            "#/creator"
+            "#/admin"
 
         Collect collector ->
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat
-                        [ "#/"
+                        [ "#/creator"
                         , string
                         ]
 
                 Collector.MaybeExistingCollection string int ->
                     String.join
                         "/"
-                        [ "#"
+                        [ "#/creator"
                         , string
                         , String.fromInt int
                         ]
 
                 _ ->
-                    "#/collect"
+                    "#/creator"
 
         Error _ ->
             "#/invalid"
