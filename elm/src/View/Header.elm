@@ -34,9 +34,9 @@ view =
                     [ class "icon-text"
                     ]
                     [ Html.span
-                        [ class "is-light-text-container-4"
+                        [ class "is-light-text-container-4 mr-2"
                         ]
-                        [ Html.text "My Account"
+                        [ Html.text "Connect Wallet"
                         ]
                     , Html.span
                         [ class "icon"
