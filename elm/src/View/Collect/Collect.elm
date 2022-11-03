@@ -5,7 +5,8 @@ import Html.Attributes exposing (class, placeholder, style, type_)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
 import Model.Handle as Handle
-import Msg.Collector as CollectorMsg
+import Msg.Collector.Collector as CollectorMsg
+import Msg.Collector.PurchaseCollection as PurchaseCollection
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
 import View.Generic.Wallet
@@ -188,6 +189,17 @@ body collector =
                         , View.Generic.Collection.Collector.Collector.view
                             withCollection.handle
                             withCollection.collection
+                        , Html.button
+                            [ class "is-button-1"
+                            , onClick <|
+                                FromCollector <|
+                                    CollectorMsg.PurchaseCollection <|
+                                        PurchaseCollection.Purchase
+                                            withCollection.handle
+                                            withCollection.collection.index
+                            ]
+                            [ Html.text "Purchase"
+                            ]
                         ]
 
                 WaitingForPurchase ->

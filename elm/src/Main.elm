@@ -19,7 +19,8 @@ import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
 import Model.WithCollection as WithCollection
 import Model.WithCollections as WithCollections
-import Msg.Collector as FromCollector
+import Msg.Collector.Collector as FromCollector
+import Msg.Collector.PurchaseCollection as PurchaseCollection
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -281,6 +282,32 @@ update msg model =
                     ( model
                     , Cmd.none
                     )
+
+                FromCollector.PurchaseCollection purchaseCollection ->
+                    case purchaseCollection of
+                        PurchaseCollection.Purchase handle int ->
+                            ( model
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Collect from
+                                    , more = AlmostExistingCollection.encode { handle = handle, index = int }
+                                    }
+                            )
+
+                        PurchaseCollection.CouldNotFindWallet handle int ->
+                            ( model
+                            , Cmd.none
+                            )
+
+                        PurchaseCollection.Success handle int ->
+                            ( model
+                            , Cmd.none
+                            )
+
+                        PurchaseCollection.Failure string handle int ->
+                            ( model
+                            , Cmd.none
+                            )
 
         FromJs fromJsMsg ->
             case fromJsMsg of

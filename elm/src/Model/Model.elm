@@ -5,7 +5,7 @@ import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collector.Collector as Collector
 import Model.Handle as Handle
 import Model.State as State exposing (State(..))
-import Msg.Collector as FromCollector
+import Msg.Collector.Collector as FromCollector
 import Msg.Msg exposing (Msg(..))
 import Sub.Sender.Ports exposing (sender)
 import Sub.Sender.Sender as Sender

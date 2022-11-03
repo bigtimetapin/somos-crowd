@@ -1,7 +1,7 @@
 module Sub.Sender.Sender exposing (Sender(..), WithMore, encode, encode0)
 
 import Json.Encode as Encode
-import Msg.Collector as CollectorMsg exposing (FromCollector)
+import Msg.Collector.Collector as CollectorMsg exposing (FromCollector)
 import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
 
 
