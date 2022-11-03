@@ -1,7 +1,7 @@
 module View.Collect.Collect exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, placeholder, type_)
+import Html.Attributes exposing (class, placeholder, style, type_)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
 import Model.Handle as Handle
@@ -45,35 +45,8 @@ body collector =
                                         ]
                     in
                     Html.div
-                        [ class "has-text-centered"
-                        ]
-                        [ Html.div
-                            [ class "is-text-container-1 is-size-1 mb-2"
-                            ]
-                            [ Html.text "Sell your work."
-                            ]
-                        , Html.div
-                            [ class "is-text-container-1 is-size-1 mb-5"
-                            ]
-                            [ Html.p
-                                []
-                                [ Html.text <|
-                                    String.concat
-                                        [ "Unlock and"
-                                        , " "
-                                        ]
-                                , Html.strong
-                                    [ class "is-family-secondary is-italic"
-                                    ]
-                                    [ Html.text "own"
-                                    ]
-                                , Html.text <|
-                                    String.concat
-                                        [ " "
-                                        , "exclusive content."
-                                        ]
-                                ]
-                            ]
+                        []
+                        [ header
                         , Html.div
                             []
                             [ Html.input
@@ -89,6 +62,11 @@ body collector =
                                 []
                             ]
                         , select
+                        , Html.div
+                            [ class "my-6"
+                            ]
+                            []
+                        , hiw
                         ]
 
                 WaitingForHandleConfirmation ->
@@ -282,10 +260,115 @@ body collector =
 header : Html Msg
 header =
     Html.div
-        [ class "is-family-secondary mt-2 mb-5"
+        [ class "has-text-centered"
         ]
         [ Html.h2
-            []
-            [ Html.text "Collector Console"
+            [ class "is-text-container-1 is-size-1 mb-2"
+            ]
+            [ Html.text "Sell your work."
+            ]
+        , Html.h2
+            [ class "is-text-container-1 is-size-1 mb-5"
+            ]
+            [ Html.p
+                []
+                [ Html.text <|
+                    String.concat
+                        [ "Unlock and"
+                        , " "
+                        ]
+                , Html.strong
+                    [ class "is-family-secondary is-italic"
+                    ]
+                    [ Html.text "own"
+                    ]
+                , Html.text <|
+                    String.concat
+                        [ " "
+                        , "exclusive content."
+                        ]
+                ]
+            ]
+        ]
+
+
+hiw : Html Msg
+hiw =
+    Html.div
+        [ class "is-hiw mt-6"
+        ]
+        [ Html.h3
+            [ class "is-text-container-2 is-size-2 has-text-centered mt-6 mb-5"
+            , style "height" "100px"
+            ]
+            [ Html.text "How It Works"
+            ]
+        , Html.div
+            [ class "columns is-mobile my-6"
+            , style "height" "150px"
+            ]
+            [ Html.div
+                [ class "column is-5"
+                ]
+                []
+            , Html.div
+                [ class "column is-7"
+                ]
+                [ Html.div
+                    [ class "is-text-container-3 is-size-3"
+                    ]
+                    [ Html.text "Creators"
+                    ]
+                , Html.div
+                    [ class "is-light-text-container-4 is-size-4"
+                    ]
+                    [ Html.div
+                        []
+                        [ Html.text "Publish exclusive content that can be"
+                        ]
+                    , Html.div
+                        []
+                        [ Html.text "unlocked with the purchase of an NFT."
+                        ]
+                    ]
+                ]
+            ]
+        , Html.div
+            [ class "columns is-mobile mt-6"
+            , style "height" "150px"
+            ]
+            [ Html.div
+                [ class "column is-3"
+                ]
+                []
+            , Html.div
+                [ class "column is-5"
+                ]
+                [ Html.div
+                    [ class "is-text-container-3 is-size-3"
+                    ]
+                    [ Html.text "Collectors"
+                    ]
+                , Html.div
+                    [ class "is-light-text-container-4 is-size-4"
+                    ]
+                    [ Html.div
+                        []
+                        [ Html.text "Unlock exclusive content from your"
+                        ]
+                    , Html.div
+                        []
+                        [ Html.text "favorite Creators. Take ownership and re-"
+                        ]
+                    , Html.div
+                        []
+                        [ Html.text "sell in secondary markets with blockchain."
+                        ]
+                    ]
+                ]
+            , Html.div
+                [ class "column is-4"
+                ]
+                []
             ]
         ]
