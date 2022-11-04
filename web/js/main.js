@@ -12,6 +12,7 @@ import {getCreatorCollections} from "./anchor/pda/get-creator-collections";
 import {initNewCreator} from "./anchor/methods/init-new-creator";
 import {creatNft} from "./anchor/methods/create-nft";
 import {getAuthorityPda} from "./anchor/pda/authority-pda";
+import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 
 // init phantom
 let phantom = null;
@@ -208,6 +209,22 @@ export async function main(app, json) {
                     );
                 }
             }
+            // or collector purchase collection
+        } else if (sender === "collector-purchase-collection") {
+            // get phantom
+            phantom = await getPhantom(app);
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // invoke rpc
+            await mintNewCopy(
+                app,
+                pp.provider,
+                pp.program,
+                more.handle,
+                more.index
+            )
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;

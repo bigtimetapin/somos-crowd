@@ -11,9 +11,10 @@ type
     | WaitingForHandleConfirmation
     | HandleInvalid String
     | HandleDoesNotExist String
-      -- selected
+      -- select collection
     | SelectedCreator WithCollections
     | SelectedCollection WithCollection
+      -- purchase collection
     | WaitingForPurchase
     | PurchaseSuccess WithCollection
       -- search by url

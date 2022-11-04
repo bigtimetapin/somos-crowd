@@ -5,10 +5,16 @@ export async function getAuthorityPda(program, handle, index) {
     const authority = await program.account.authority.fetch(pda);
     console.log(authority);
     return {
+        // meta
         name: authority.name,
         symbol: authority.symbol,
         index: index,
-        numMinted: authority.numMinted
+        // for other pda derivations
+        mint: authority.mint,
+        collection: authority.collection,
+        numMinted: authority.numMinted,
+        // pda for program invocation
+        pda: pda
     }
 }
 

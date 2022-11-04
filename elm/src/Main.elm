@@ -20,7 +20,6 @@ import Model.State as State exposing (State(..))
 import Model.WithCollection as WithCollection
 import Model.WithCollections as WithCollections
 import Msg.Collector.Collector as FromCollector
-import Msg.Collector.PurchaseCollection as PurchaseCollection
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -283,31 +282,14 @@ update msg model =
                     , Cmd.none
                     )
 
-                FromCollector.PurchaseCollection purchaseCollection ->
-                    case purchaseCollection of
-                        PurchaseCollection.Purchase handle int ->
-                            ( model
-                            , sender <|
-                                Sender.encode <|
-                                    { sender = Sender.Collect from
-                                    , more = AlmostExistingCollection.encode { handle = handle, index = int }
-                                    }
-                            )
-
-                        PurchaseCollection.CouldNotFindWallet handle int ->
-                            ( model
-                            , Cmd.none
-                            )
-
-                        PurchaseCollection.Success handle int ->
-                            ( model
-                            , Cmd.none
-                            )
-
-                        PurchaseCollection.Failure string handle int ->
-                            ( model
-                            , Cmd.none
-                            )
+                FromCollector.PurchaseCollection handle int ->
+                    ( { model | state = Collect <| Collector.WaitingForPurchase }
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Collect from
+                            , more = AlmostExistingCollection.encode { handle = handle, index = int }
+                            }
+                    )
 
         FromJs fromJsMsg ->
             case fromJsMsg of
@@ -476,6 +458,17 @@ update msg model =
                                                                 | state =
                                                                     Collect <|
                                                                         Collector.SelectedCollection withCollection
+                                                            }
+                                                    in
+                                                    Listener.decode model json WithCollection.decode f
+
+                                                ToCollector.CollectionPurchased ->
+                                                    let
+                                                        f withCollection =
+                                                            { model
+                                                                | state =
+                                                                    Collect <|
+                                                                        Collector.PurchaseSuccess withCollection
                                                             }
                                                     in
                                                     Listener.decode model json WithCollection.decode f

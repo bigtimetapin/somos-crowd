@@ -9,6 +9,8 @@ type
     | HandleFound
       -- select collection
     | CollectionSelected
+      -- purchase collection
+    | CollectionPurchased
 
 
 fromString : String -> Maybe ToCollector
@@ -25,6 +27,9 @@ fromString string =
 
         "collector-collection-found" ->
             Just CollectionSelected
+
+        "collector-collection-purchased" ->
+            Just CollectionPurchased
 
         _ ->
             Nothing
