@@ -270,7 +270,7 @@ body collector =
 header : Html Msg
 header =
     Html.div
-        [ class "has-text-centered"
+        [ class "has-head-space has-text-centered"
         ]
         [ Html.h2
             [ class "is-text-container-1 is-size-1 mb-2"
