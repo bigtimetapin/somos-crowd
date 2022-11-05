@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 ## idl
-cp ../../target/idl/somos_crowd.json anchor/idl.json
+cp ../../target/types/somos_crowd.ts anchor/idl.ts
